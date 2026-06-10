@@ -44,12 +44,17 @@ public class PlayerController : MonoBehaviour
         transform.position += Animator.deltaPosition;
     }
 
+    //角色转向
     public void HandleRotation()
     {
         Vector2 input = MoveInput.MoveValue;
         if (input.magnitude < 0.1f) return;
 
-        Vector3 moveDir = CameraManager.Instance.GetMoveDir(input);
+        Transform cam = Camera.main.transform;
+        Vector3 forward = cam.forward; forward.y = 0;
+        Vector3 right   = cam.right;   right.y = 0;
+        Vector3 moveDir = (forward * input.y + right * input.x).normalized;
+
         transform.rotation = Quaternion.Slerp(
             transform.rotation, Quaternion.LookRotation(moveDir),
             Time.deltaTime * rotationSpeed
