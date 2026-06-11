@@ -1,9 +1,11 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class RunState : LocomotionState
+public class SprintState : LocomotionState
 {
-    public RunState(LocomotionStateMachine sm) : base(sm) { }
+    public SprintState (LocomotionStateMachine sm) : base(sm) { }
 
     public override void Enter()
     {
@@ -11,16 +13,20 @@ public class RunState : LocomotionState
         Owner.Animator.SetBool("HasInput", true);
     }
 
+    public override void Update()
+    {
+        base.Update();
+
+    }
+
     protected override void AddInputCallbacks()
     {
         Owner.PlayerInput.actions["Player/Move"].canceled += OnMoveCanceled;
-        Owner.PlayerInput.actions["Player/Rush"].started += OnSprintStarted;
     }
 
     protected override void RemoveInputCallbacks()
     {
         Owner.PlayerInput.actions["Player/Move"].canceled -= OnMoveCanceled;
-        Owner.PlayerInput.actions["Player/Rush"].started  -= OnSprintStarted;
     }
 
     private void OnMoveCanceled(InputAction.CallbackContext ctx)
@@ -28,13 +34,8 @@ public class RunState : LocomotionState
         Sm.ChangeState(Sm.IdleState);
     }
 
-    private void OnSprintStarted(InputAction.CallbackContext ctx)
-    {
-        Sm.ChangeState(Sm.SprintState);
-    }
-
     protected override float GetTargetSpeed()
     {
-        return Owner.MoveInput.MoveValue.magnitude > 0.1f ? 2f : 0f;
+        return Owner.MoveInput.MoveValue.magnitude > 0.1f ? 3f : 0f;
     }
 }

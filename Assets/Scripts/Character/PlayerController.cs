@@ -44,6 +44,24 @@ public class PlayerController : MonoBehaviour
         transform.position += Animator.deltaPosition;
     }
 
+    // 动画 → FSM 路由：根据字符串找到对应状态
+    public void OnAnimationTranslateEvent(string targetState)
+    {
+        switch (targetState)
+        {
+            case "DashingState":
+                // Locomotion.OnAnimationTranslateEvent(Locomotion.DashingState);
+                break;
+            // 以后新增动画驱动状态在这加 case
+        }
+    }
+
+    public void OnAnimationExitEvent()
+    {
+        Locomotion.OnAnimationExitEvent();
+    }
+
+
     //角色转向
     public void HandleRotation()
     {

@@ -7,7 +7,7 @@ public class LocomotionStateMachine : StateMachine
 
     public IdleState          IdleState          { get; }
     public RunState           RunState           { get; }
-    // public SprintState        SprintState        { get; }
+    public SprintState        SprintState        { get; }
     // public MovementNullState  MovementNullState  { get; }
 
     public LocomotionStateMachine(PlayerController owner)
@@ -15,7 +15,7 @@ public class LocomotionStateMachine : StateMachine
         Owner = owner;
         IdleState         = new IdleState(this);
         RunState          = new RunState(this);
-        // SprintState       = new SprintState(this);
+        SprintState       = new SprintState(this);
         // MovementNullState = new MovementNullState(this);
     }
 }
