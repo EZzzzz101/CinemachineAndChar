@@ -13,11 +13,13 @@ public class IdleState : LocomotionState
     /// <summary>Idle 只关心一件事：玩家开始推方向键 → 切到走路或跑步</summary>
     protected override void AddInputCallbacks()
     {
+        base.AddInputCallbacks();
         Owner.PlayerInput.actions["Player/Move"].started += OnMoveStarted;
     }
 
     protected override void RemoveInputCallbacks()
     {
+        base.RemoveInputCallbacks();
         Owner.PlayerInput.actions["Player/Move"].started -= OnMoveStarted;
     }
 

@@ -3,7 +3,12 @@ using UnityEngine;
 
 public class AnimationEnterBehaviour : StateMachineBehaviour
 {
-    [SerializeField] private string _targetState; // 在Inspector里填 "DashingState"
+    public enum AnimationEnterState
+    {
+        Dash,
+        DashBack,
+    }
+    [SerializeField] private AnimationEnterState _targetState; // 在Inspector里填 "DashingState"
 
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {

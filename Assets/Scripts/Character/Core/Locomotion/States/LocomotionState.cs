@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 /// <summary>
 /// Locomotion 状态基类
@@ -29,8 +30,20 @@ public abstract class LocomotionState : IState
     }
 
     /// <summary>子类在这里只订阅自己关心的输入</summary>
-    protected virtual void AddInputCallbacks(){}
-    protected virtual void RemoveInputCallbacks() { }
+    protected virtual void AddInputCallbacks()
+    {
+        Owner.PlayerInput.actions["Player/Dash"].started += OnDashStarted;
+    }
+    protected virtual void RemoveInputCallbacks()
+    {
+        Owner.PlayerInput.actions["Player/Dash"].started -= OnDashStarted;
+    }
+
+    // 子类可以覆写，比如后面限制某些条件不能冲刺
+    protected virtual void OnDashStarted(InputAction.CallbackContext ctx)
+    {
+        Owner.Animator.CrossFadeInFixedTime("DashFront", 0.1555f);
+    }
 
     //获取目标速度虚函数
     protected virtual float GetTargetSpeed() => 0f;

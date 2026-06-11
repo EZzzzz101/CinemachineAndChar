@@ -54,4 +54,10 @@ PlayerController (顶层 MonoBehaviour)
 
 - 每个状态在 `Enter` 时订阅输入，`Exit` 时取消订阅
 - 速度通过 `GetTargetSpeed()` 虚方法声明，基类 `Update()` 统一 SmoothDamp
-- `Player/Run` = 左 Shift，`Player/Fire` = 鼠标左键，`Player/Move` = WASD
+- `Player/Dash` = 左 Shift，`Player/Fire` = 鼠标左键，`Player/Move` = WASD
+- **子类覆写虚方法后必须手动 `base.AddInputCallbacks()`**，否则基类的输入订阅丢失（C# 多态规则：调用虚方法时会走到子类版本，不会自动调基类版本）
+- **学习过程记录在 CLAUDE_XX.md 文件中，每次重要学习都追加新文件，不覆盖旧文件**
+
+## ⚠️ 每次对话开头必读提醒
+
+**Claude：请阅读本文件所在目录下所有 `CLAUDE*.md` 文件（按数字顺序），了解项目架构和学习历史，不要重复犯已经纠正过的错误。**

@@ -17,6 +17,7 @@ public class PlayerController : MonoBehaviour
     public LocomotionStateMachine Locomotion { get; private set; }
     // public ActionStateMachine     Action     { get; private set; }
 
+
     void Awake()
     {
         Animator    = GetComponent<Animator>();
@@ -44,13 +45,13 @@ public class PlayerController : MonoBehaviour
         transform.position += Animator.deltaPosition;
     }
 
-    // 动画 → FSM 路由：根据字符串找到对应状态
-    public void OnAnimationTranslateEvent(string targetState)
+    // 动画 → FSM 路由：根据枚举找到对应状态
+    public void OnAnimationTranslateEvent(AnimationEnterBehaviour.AnimationEnterState targetState)
     {
         switch (targetState)
         {
-            case "DashingState":
-                // Locomotion.OnAnimationTranslateEvent(Locomotion.DashingState);
+            case AnimationEnterBehaviour.AnimationEnterState.Dash:
+                Locomotion.OnAnimationTranslateEvent(Locomotion.DashingState);
                 break;
             // 以后新增动画驱动状态在这加 case
         }
