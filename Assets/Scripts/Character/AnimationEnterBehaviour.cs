@@ -5,10 +5,12 @@ public class AnimationEnterBehaviour : StateMachineBehaviour
 {
     public enum AnimationEnterState
     {
-        Dash,
+        DashFront,
         DashBack,
+
+        Atk,
     }
-    [SerializeField] private AnimationEnterState _targetState; // 在Inspector里填 "DashingState"
+    [SerializeField] private AnimationEnterState _targetState;
 
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {

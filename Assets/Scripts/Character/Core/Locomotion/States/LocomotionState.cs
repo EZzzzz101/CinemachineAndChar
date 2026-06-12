@@ -42,7 +42,10 @@ public abstract class LocomotionState : IState
     // 子类可以覆写，比如后面限制某些条件不能冲刺
     protected virtual void OnDashStarted(InputAction.CallbackContext ctx)
     {
-        Owner.Animator.CrossFadeInFixedTime("DashFront", 0.1555f);
+        if(Owner.MoveInput.MoveValue.magnitude>0.1f)
+            Owner.Animator.CrossFadeInFixedTime("DashFront", 0.1555f);
+        else
+            Owner.Animator.CrossFadeInFixedTime("DashBack", 0.1555f);
     }
 
     //获取目标速度虚函数

@@ -9,6 +9,7 @@ public class DashingState : LocomotionState
     public override void Enter()
     {
         base.Enter();
+        Debug.Log($"[DashingState] Enter via: {Owner.LastAnimEnterState}");
     }
 
     #region Dash转到 Idle?Sprint
@@ -19,7 +20,7 @@ public class DashingState : LocomotionState
             Sm.ChangeState(Sm.IdleState);
             return;
         }
-         Sm.ChangeState(Sm.SprintState);
+        Sm.ChangeState(Sm.SprintState);
     }
     #endregion
 

@@ -1,4 +1,7 @@
 
+using UnityEngine;
+
+
 /// <summary>
 /// 抽象状态机基类 — 所有状态机（Locomotion、Action）都继承它
 /// ChangeState 的核心逻辑只写一次，子类复用
@@ -11,6 +14,10 @@ public abstract class StateMachine
     public void ChangeState(IState newState)
     {
         if (newState == null) return;
+
+        // 加这一行就能看到每次切换：
+        Debug.Log($"[FSM] {_currentState?.GetType().Name} → {newState.GetType().Name}");
+        
         _currentState?.Exit();
         _currentState = newState;
         _currentState.Enter();

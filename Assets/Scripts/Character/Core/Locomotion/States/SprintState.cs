@@ -16,16 +16,17 @@ public class SprintState : LocomotionState
     public override void Update()
     {
         base.Update();
-
     }
 
     protected override void AddInputCallbacks()
     {
+        base.AddInputCallbacks();
         Owner.PlayerInput.actions["Player/Move"].canceled += OnMoveCanceled;
     }
 
     protected override void RemoveInputCallbacks()
     {
+        base.RemoveInputCallbacks();
         Owner.PlayerInput.actions["Player/Move"].canceled -= OnMoveCanceled;
     }
 

@@ -9,13 +9,20 @@ public class PlayerController : MonoBehaviour
     [Header("配置")]
     public float SpeedSmoothTime=0.2f;
     [SerializeField] private float rotationSpeed = 10f;
+    
+    [Header("Combo动画预输入比")]
+    [Range(0,1)]
+    public float _inputWindowStart = 0.7f;  // 动画播到 70% 才接受预输入
 
     public Animator          Animator      { get; private set; }
     public MoveInputMY         MoveInput     { get; private set; }
     public PlayerInput       PlayerInput   { get; private set; }
 
     public LocomotionStateMachine Locomotion { get; private set; }
-    // public ActionStateMachine     Action     { get; private set; }
+    public ActionStateMachine     Action     { get; private set; }
+
+    //动画枚举动作
+    public AnimationEnterBehaviour.AnimationEnterState LastAnimEnterState { get; private set; }
 
 
     void Awake()
@@ -25,19 +32,19 @@ public class PlayerController : MonoBehaviour
         PlayerInput = GetComponent<PlayerInput>();
 
         Locomotion = new LocomotionStateMachine(this);
-        // Action     = new ActionStateMachine(this);
+        Action     = new ActionStateMachine(this);
     }
 
     void Start()
     {
         Locomotion.ChangeState(Locomotion.IdleState);
-        // Action.ChangeState(Action.NullState);
+        Action.ChangeState(Action.ActionNullState);
     }
 
     void Update()
     {
         Locomotion.Update();
-        // Action.Update();
+        Action.Update();
     }
 
     void OnAnimatorMove()
@@ -45,13 +52,20 @@ public class PlayerController : MonoBehaviour
         transform.position += Animator.deltaPosition;
     }
 
-    // 动画 → FSM 路由：根据枚举找到对应状态
+    // 动画 → FSM 路由：根据枚举找 到对应状态
     public void OnAnimationTranslateEvent(AnimationEnterBehaviour.AnimationEnterState targetState)
     {
+        LastAnimEnterState = targetState; 
         switch (targetState)
         {
-            case AnimationEnterBehaviour.AnimationEnterState.Dash:
+            case AnimationEnterBehaviour.AnimationEnterState.DashFront:
                 Locomotion.OnAnimationTranslateEvent(Locomotion.DashingState);
+                break;
+            case  AnimationEnterBehaviour.AnimationEnterState.DashBack:
+                Locomotion.OnAnimationTranslateEvent(Locomotion.DashingState);
+                break;
+            case  AnimationEnterBehaviour.AnimationEnterState.Atk:
+                Action.OnAnimationTranslateEvent(Action.ComboState);
                 break;
             // 以后新增动画驱动状态在这加 case
         }
@@ -60,6 +74,7 @@ public class PlayerController : MonoBehaviour
     public void OnAnimationExitEvent()
     {
         Locomotion.OnAnimationExitEvent();
+        Action.OnAnimationExitEvent();
     }
 
 

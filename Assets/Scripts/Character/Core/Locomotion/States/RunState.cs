@@ -13,24 +13,19 @@ public class RunState : LocomotionState
 
     protected override void AddInputCallbacks()
     {
+        base.AddInputCallbacks();
         Owner.PlayerInput.actions["Player/Move"].canceled += OnMoveCanceled;
-        Owner.PlayerInput.actions["Player/Dash"].started += OnSprintStarted;
     }
 
     protected override void RemoveInputCallbacks()
     {
+        base.RemoveInputCallbacks();
         Owner.PlayerInput.actions["Player/Move"].canceled -= OnMoveCanceled;
-        Owner.PlayerInput.actions["Player/Dash"].started  -= OnSprintStarted;
     }
 
     private void OnMoveCanceled(InputAction.CallbackContext ctx)
     {
         Sm.ChangeState(Sm.IdleState);
-    }
-
-    private void OnSprintStarted(InputAction.CallbackContext ctx)
-    {
-        Sm.ChangeState(Sm.SprintState);
     }
 
     protected override float GetTargetSpeed()
