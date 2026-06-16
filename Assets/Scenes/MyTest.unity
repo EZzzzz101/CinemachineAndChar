@@ -154,6 +154,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   SpeedSmoothTime: 0.15
   rotationSpeed: 10
+  _inputWindowStart: 0.6
 --- !u!114 &327858749
 MonoBehaviour:
   m_ObjectHideFlags: 0
