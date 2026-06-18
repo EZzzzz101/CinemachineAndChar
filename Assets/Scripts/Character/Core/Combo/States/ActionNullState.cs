@@ -4,38 +4,34 @@ using UnityEngine.InputSystem;
 /// <summary>
 /// 动作空状态 — 没在攻击时待在这里，接收 Fire 输入进入 Combo
 /// </summary>
-public class ActionNullState : IState
+public class ActionNullState : PlayerComboState
 {
-    protected readonly ActionStateMachine Sm;
-    protected readonly PlayerController Owner;
 
-    public ActionNullState(ActionStateMachine sm)
+    public ActionNullState(ActionStateMachine Asm):base(Asm){}
+
+    public override void Enter()
     {
-        Sm = sm;
-        Owner = sm.Owner;
+        base.Enter();
     }
 
-    public void Enter()
+    public override  void Exit()
     {
-        Owner.PlayerInput.actions["Player/Fire"].started += OnFireStarted;
+        base.Exit();
     }
 
-    public void Exit()
+    public override  void Update() { }
+
+    public override  void OnAnimationTranslateEvent(IState newState)
     {
-        Owner.PlayerInput.actions["Player/Fire"].started -= OnFireStarted;
+        Asm.ChangeState(newState);  // 动画事件：切到 ATKState
     }
 
-    public void Update() { }
+    public override  void OnAnimationExitEvent() { }
 
-    public void OnAnimationTranslateEvent(IState newState)
+    protected override void OnFireStarted(InputAction.CallbackContext ctx)
     {
-        Sm.ChangeState(newState);  // 动画事件：切到 Combo
+        ResuableData.comboIndex = 0;    // ← 重置
+        base.OnFireStarted(ctx);        // 播第一段
     }
 
-    public void OnAnimationExitEvent() { }
-
-    private void OnFireStarted(InputAction.CallbackContext ctx)
-    {
-        Owner.Animator.CrossFadeInFixedTime("Anbi_Normal_1", 0.111f);
-    }
 }
