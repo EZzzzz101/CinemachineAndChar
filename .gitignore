@@ -35,6 +35,11 @@ ehthumbs.db
 Thumbs.db
 Desktop.ini
 
+# LLM model files
+*.gguf
+Server/venv/
+Server/.cache/
+
 # Claude local config
 .claude/
 
