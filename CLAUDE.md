@@ -43,11 +43,12 @@ PlayerController (顶层 MonoBehaviour)
 
 - [x] FSM 基础框架
 - [x] Idle ↔ Run 输入驱动切换
+- [x] ActionStateMachine（攻击/Combo）
+- [x] AnimationExitBehaviour 创建
+- [x] PlayerController 路由方法
+- [x] Bangboo 宠物 AI 系统（LLM 对话 + 跟随 + 头顶气泡）
 - [ ] Run/Sprint 拆分（Move.canceled 提取到 MovingState 基类）
 - [ ] Dash 状态（动画驱动，Run→Dash动画→Sprint）
-- [ ] ActionStateMachine（攻击/Combo）
-- [ ] AnimationExitBehaviour 创建
-- [ ] PlayerController 路由方法
 - [ ] EventBus 待 UI 连接时使用
 
 ## 设计约定
