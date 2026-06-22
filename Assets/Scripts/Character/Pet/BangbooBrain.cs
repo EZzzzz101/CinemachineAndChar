@@ -46,7 +46,10 @@ public class BangbooBrain : MonoBehaviour
         _llmClient     = GetComponent<LLMClient>();
 
         if (_llmClient != null)
+        {
+            _llmClient.OnThinkingStarted += EnterThinkingMode;
             _llmClient.OnResponseReceived += HandleLLMResponse;
+        }
 
         if (_speechBubble != null)
             _speechBubble.OnAutoHidden += ExitChatMode;
@@ -109,6 +112,14 @@ public class BangbooBrain : MonoBehaviour
         }
     }
 
+    // ─────────────── 思考状态 ───────────────
+
+    /// <summary>LLM 请求已发出，显示思考动画</summary>
+    private void EnterThinkingMode()
+    {
+        _speechBubble?.ShowThinking();
+    }
+
     // ─────────────── Chat 叠加态 ───────────────
 
     /// <summary>进入聊天模式（不打断当前移动状态）</summary>
@@ -145,24 +156,37 @@ public class BangbooBrain : MonoBehaviour
 
     private void HandleLLMResponse(bool success, string rawContent)
     {
+        // 无论结果如何，先停止思考动画
+        _speechBubble?.StopThinking();
+
         if (!success)
         {
             Debug.LogError($"[BangbooBrain] LLM 请求失败: {rawContent}");
             return;
         }
 
-        if (!ResponseParser.TryParse(rawContent, out string type, out string content))
+        if (!ResponseParser.TryParse(rawContent, out string type, out string content, out string reply))
         {
             Debug.LogWarning($"[BangbooBrain] 解析 LLM 响应失败: {rawContent}");
             return;
         }
 
-        Debug.Log($"[BangbooBrain] LLM → type={type}, content={content}");
+        Debug.Log($"[BangbooBrain] LLM → type={type}, content={content}, reply={reply}");
+
+        // 记录对话历史
+        if (type == "chat")
+        {
+            PromptBuilder.CompleteHistory(content);
+        }
+        else if (!string.IsNullOrEmpty(reply))
+        {
+            PromptBuilder.CompleteHistory(reply);
+        }
 
         switch (type)
         {
             case "action":
-                HandleAction(content);
+                HandleAction(content, reply);
                 break;
             case "chat":
                 EnterChatMode(content);
@@ -170,7 +194,7 @@ public class BangbooBrain : MonoBehaviour
         }
     }
 
-    private void HandleAction(string action)
+    private void HandleAction(string action, string reply)
     {
         switch (action.ToLower())
         {
@@ -181,12 +205,21 @@ public class BangbooBrain : MonoBehaviour
                 _followEnabled = true;
                 break;
         }
+
+        // 显示 AI 生成的口语回复
+        if (!string.IsNullOrEmpty(reply))
+        {
+            _speechBubble?.Show(reply);
+        }
     }
 
     void OnDestroy()
     {
         if (_llmClient != null)
+        {
+            _llmClient.OnThinkingStarted -= EnterThinkingMode;
             _llmClient.OnResponseReceived -= HandleLLMResponse;
+        }
         if (_speechBubble != null)
             _speechBubble.OnAutoHidden -= ExitChatMode;
     }

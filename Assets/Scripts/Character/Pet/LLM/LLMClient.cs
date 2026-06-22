@@ -20,6 +20,9 @@ public class LLMClient : MonoBehaviour
     private float _lastRequestTime = -99f;
     private bool  _isRequestInFlight;
 
+    /// <summary>请求发出时触发（接收到用户输入，开始等待 LLM）</summary>
+    public event Action OnThinkingStarted;
+
     /// <summary>bool = 是否成功, string = 响应原文或错误信息</summary>
     public event Action<bool, string> OnResponseReceived;
 
@@ -43,6 +46,7 @@ public class LLMClient : MonoBehaviour
         string prompt = PromptBuilder.Build(userText);
         _lastRequestTime = Time.time;
         _isRequestInFlight = true;
+        OnThinkingStarted?.Invoke();
         StartCoroutine(SendCoroutine(prompt));
     }
 

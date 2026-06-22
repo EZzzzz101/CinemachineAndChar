@@ -23,9 +23,13 @@ public class SpeechBubble : MonoBehaviour
     private Image _background;
     private RectTransform _bgRect;
     private Coroutine _hideCoroutine;
+    private Coroutine _thinkCoroutine;
     private Transform _cameraTransform;
 
     public event Action OnAutoHidden;
+
+    /// <summary>是否正在显示思考动画</summary>
+    public bool IsThinking => _thinkCoroutine != null;
 
     void Awake()
     {
@@ -103,6 +107,7 @@ public class SpeechBubble : MonoBehaviour
 
     public void Show(string message)
     {
+        StopThinking(); // 停止思考动画（若正在显示 "..."）
         if (_text != null) _text.text = message;
         if (_canvas != null) _canvas.enabled = true;
 
@@ -131,6 +136,40 @@ public class SpeechBubble : MonoBehaviour
         {
             StopCoroutine(_hideCoroutine);
             _hideCoroutine = null;
+        }
+        StopThinking();
+    }
+
+    /// <summary>显示思考动画（轮流三点），开始循环直到 StopThinking 被调用</summary>
+    public void ShowThinking(float dotInterval = 0.4f)
+    {
+        StopThinking(); // 停止之前的（如果有）
+        _canvas.enabled = true;
+        _thinkCoroutine = StartCoroutine(ThinkingRoutine(dotInterval));
+    }
+
+    /// <summary>停止思考动画并隐藏气泡</summary>
+    public void StopThinking()
+    {
+        if (_thinkCoroutine != null)
+        {
+            StopCoroutine(_thinkCoroutine);
+            _thinkCoroutine = null;
+        }
+        if (_canvas != null) _canvas.enabled = false;
+    }
+
+    /// <summary>循环显示 ".", "..", "...", 更新背景大小</summary>
+    private IEnumerator ThinkingRoutine(float interval)
+    {
+        string[] dots = { ".", "..", "..." };
+        int index = 0;
+        while (true)
+        {
+            if (_text != null) _text.text = dots[index];
+            StartCoroutine(UpdateBackgroundSize());
+            index = (index + 1) % dots.Length;
+            yield return new WaitForSeconds(interval);
         }
     }
 

@@ -12,16 +12,18 @@ public static class ResponseParser
     {
         public string type;
         public string content;
+        public string reply;  // action 类型的口语回复
     }
 
     /// <summary>
-    /// 尝试从 LLM 原始输出中提取 type 和 content
+    /// 尝试从 LLM 原始输出中提取 type、content、reply
     /// </summary>
     /// <returns>true 表示解析成功</returns>
-    public static bool TryParse(string rawJson, out string type, out string content)
+    public static bool TryParse(string rawJson, out string type, out string content, out string reply)
     {
-        type = null;
+        type    = null;
         content = null;
+        reply   = null;
 
         if (string.IsNullOrWhiteSpace(rawJson)) return false;
 
@@ -35,6 +37,7 @@ public static class ResponseParser
             {
                 type    = resp.type;
                 content = resp.content;
+                reply   = resp.reply;
                 return true;
             }
         }
@@ -45,11 +48,14 @@ public static class ResponseParser
             @"""type""\s*:\s*""(action|chat)""", RegexOptions.IgnoreCase);
         var contentMatch = Regex.Match(rawJson,
             @"""content""\s*:\s*""([^""]*)""");
+        var replyMatch = Regex.Match(rawJson,
+            @"""reply""\s*:\s*""([^""]*)""");
 
         if (typeMatch.Success && contentMatch.Success)
         {
             type    = typeMatch.Groups[1].Value.ToLower();
             content = contentMatch.Groups[1].Value;
+            reply   = replyMatch.Success ? replyMatch.Groups[1].Value : null;
             return true;
         }
 
