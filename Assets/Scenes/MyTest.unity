@@ -760,7 +760,7 @@ MonoBehaviour:
   _font: {fileID: 11400000, guid: 8725fd86c86766140b27037d35a8dbd9, type: 2}
   _fontSize: 14
   _maxWidth: 150
-  _offsetY: 1.8
+  _offsetY: 1.5
   _autoHideDelay: 3
   _rotationSmooth: 5
 --- !u!1 &963194225
