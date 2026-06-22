@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class ActionStateMachine : StateMachine
@@ -10,10 +9,10 @@ public class ActionStateMachine : StateMachine
     public ActionNullState ActionNullState{get;}
     public ATKingState ComboState {get;}
     public ComboResuableData ResuableData{get;}
-    public ActionStateMachine(PlayerController owner)
+    public ActionStateMachine(PlayerController owner,ComboConfigSO config)
     {
         Owner = owner;
-        ResuableData=new ComboResuableData();
+        ResuableData=new ComboResuableData{comboConfig=config};
         ComboState = new ATKingState(this);
         ActionNullState=new ActionNullState(this);
     }

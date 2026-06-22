@@ -52,6 +52,6 @@ public class PlayerComboState : IState
 
     protected virtual void OnFireStarted(InputAction.CallbackContext ctx)
     {
-        Owner.Animator.CrossFadeInFixedTime(ResuableData.comboAnims[ResuableData.comboIndex], 0.111f);
+        Owner.Animator.CrossFadeInFixedTime(ResuableData.CurrentAnimationName, 0.111f);
     }
 }

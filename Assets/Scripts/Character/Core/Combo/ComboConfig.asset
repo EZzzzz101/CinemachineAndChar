@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fae8d62f6139b78468ccc8e0be626b66, type: 3}
+  m_Name: ComboConfig
+  m_EditorClassIdentifier: 
+  comboName: "\u5B89\u6BD4Combo"
+  steps:
+  - animStateName: Anbi_Normal_1
+    inputWindowStart: 0.649
+    attackSound: {fileID: 8300000, guid: 8dd590bb7a3f66e46a3b2c08023b2af1, type: 3}
+    hitVfxPrefab: {fileID: 0}
+  - animStateName: Anbi_Normal_2
+    inputWindowStart: 0.55
+    attackSound: {fileID: 8300000, guid: f6b7d84faf3f2e24590394e6228d3417, type: 3}
+    hitVfxPrefab: {fileID: 0}
+  - animStateName: Anbi_Normal_3
+    inputWindowStart: 0.608
+    attackSound: {fileID: 8300000, guid: 003aa5abacf93a94089bd8c2ef28fff1, type: 3}
+    hitVfxPrefab: {fileID: 0}
+  - animStateName: Anbi_Normal_4
+    inputWindowStart: 0.7
+    attackSound: {fileID: 8300000, guid: 1b64cc9091420f94e8595fbf90572fb1, type: 3}
+    hitVfxPrefab: {fileID: 0}
+  - animStateName: Anbi_Normal_5
+    inputWindowStart: 0.7
+    attackSound: {fileID: 8300000, guid: 6aa89f48868b7ce49b0a21e880fcb68a, type: 3}
+    hitVfxPrefab: {fileID: 0}

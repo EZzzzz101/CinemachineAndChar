@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class DashingState : LocomotionState
@@ -9,6 +7,7 @@ public class DashingState : LocomotionState
     public override void Enter()
     {
         base.Enter();
+        CharacterAudio.Instance.PlayDodgeSound(Owner.LastAnimEnterState);
         Debug.Log($"[DashingState] Enter via: {Owner.LastAnimEnterState}");
     }
 
