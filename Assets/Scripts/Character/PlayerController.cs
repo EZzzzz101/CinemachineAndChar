@@ -9,10 +9,6 @@ public class PlayerController : MonoBehaviour
     [Header("配置")]
     public float SpeedSmoothTime=0.2f;
     [SerializeField] private float rotationSpeed = 10f;
-    
-    [Header("Combo动画预输入比")]
-    [Range(0,1)]
-    public float _inputWindowStart = 0.7f;  // 动画播到 70% 才接受预输入
 
     public Animator          Animator      { get; private set; }
     public MoveInputMY         MoveInput     { get; private set; }
@@ -20,6 +16,9 @@ public class PlayerController : MonoBehaviour
 
     public LocomotionStateMachine Locomotion { get; private set; }
     public ActionStateMachine     Action     { get; private set; }
+
+    public ComboConfigSO comboConfigSO;
+
 
     //动画枚举动作
     public AnimationEnterBehaviour.AnimationEnterState LastAnimEnterState { get; private set; }
@@ -32,7 +31,7 @@ public class PlayerController : MonoBehaviour
         PlayerInput = GetComponent<PlayerInput>();
 
         Locomotion = new LocomotionStateMachine(this);
-        Action     = new ActionStateMachine(this);
+        Action     = new ActionStateMachine(this,comboConfigSO);
     }
 
     void Start()
@@ -52,10 +51,10 @@ public class PlayerController : MonoBehaviour
         transform.position += Animator.deltaPosition;
     }
 
-    // 动画 → FSM 路由：根据枚举找 到对应状态
+    // 动画进入 → FSM 路由
     public void OnAnimationTranslateEvent(AnimationEnterBehaviour.AnimationEnterState targetState)
     {
-        LastAnimEnterState = targetState; 
+        LastAnimEnterState = targetState;
         switch (targetState)
         {
             case AnimationEnterBehaviour.AnimationEnterState.DashFront:
@@ -71,10 +70,18 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    public void OnAnimationExitEvent()
+    // 动画退出 → FSM 路由（只通知对应状态机）
+    public void OnAnimationExitEvent(AnimationExitBehaviour.AnimExitState exitState)
     {
-        Locomotion.OnAnimationExitEvent();
-        Action.OnAnimationExitEvent();
+        switch (exitState)
+        {
+            case AnimationExitBehaviour.AnimExitState.Dash:
+                Locomotion.OnAnimationExitEvent();
+                break;
+            case AnimationExitBehaviour.AnimExitState.Atk:
+                Action.OnAnimationExitEvent();
+                break;
+        }
     }
 
 

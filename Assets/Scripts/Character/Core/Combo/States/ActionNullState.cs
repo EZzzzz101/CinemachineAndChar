@@ -6,12 +6,13 @@ using UnityEngine.InputSystem;
 /// </summary>
 public class ActionNullState : PlayerComboState
 {
-
+    private bool _isEntering;//是否进入下个状态
     public ActionNullState(ActionStateMachine Asm):base(Asm){}
 
     public override void Enter()
     {
         base.Enter();
+        _isEntering=false;
     }
 
     public override  void Exit()
@@ -30,8 +31,12 @@ public class ActionNullState : PlayerComboState
 
     protected override void OnFireStarted(InputAction.CallbackContext ctx)
     {
+        if(_isEntering) return;
+
+        _isEntering=true;
         ResuableData.comboIndex = 0;    // ← 重置
-        base.OnFireStarted(ctx);        // 播第一段
+        base.OnFireStarted(ctx);        // 播第一段动画
+        CharacterAudio.Instance.PlayComboSound(ResuableData.CurrentStep.attackSound);
     }
 
 }
