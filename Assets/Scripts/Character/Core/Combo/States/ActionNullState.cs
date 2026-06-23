@@ -37,6 +37,7 @@ public class ActionNullState : PlayerComboState
         ResuableData.comboIndex = 0;    // ← 重置
         base.OnFireStarted(ctx);        // 播第一段动画
         CharacterAudio.Instance.PlayComboSound(ResuableData.CurrentStep.attackSound);
+        CharacterAudio.Instance.PlayComboVoice(ResuableData.CurrentStep.voiceClips);
     }
 
 }

@@ -9,6 +9,7 @@ public class LocomotionStateMachine : StateMachine
     public RunState           RunState           { get; }
     public SprintState        SprintState        { get; }
     public DashingState      DashingState         {get;}
+    public TurnBackState  TurnBackState  {get;}
     // public MovementNullState  MovementNullState  { get; }
 
     public LocomotionStateMachine(PlayerController owner)
@@ -18,6 +19,7 @@ public class LocomotionStateMachine : StateMachine
         RunState          = new RunState(this);
         SprintState       = new SprintState(this);
         DashingState=new DashingState(this);
+        TurnBackState =new TurnBackState(this);
         // MovementNullState = new MovementNullState(this);
     }
 }

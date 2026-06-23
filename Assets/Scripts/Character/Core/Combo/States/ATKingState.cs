@@ -62,5 +62,6 @@ public class ATKingState : PlayerComboState
         _hasAdvancedCombo = true;     // ← 标记"刚切了"
         Owner.Animator.CrossFadeInFixedTime(ResuableData.CurrentAnimationName,0.1f);
         CharacterAudio.Instance.PlayComboSound(ResuableData.CurrentStep.attackSound);
+        CharacterAudio.Instance.PlayComboVoice(ResuableData.CurrentStep.voiceClips);
     }
 }

@@ -14,17 +14,13 @@ public class CharacterVFX : MonoBehaviour
     {
         public string name;
         public GameObject prefab;
+        public Transform spawnPoint;          // 该特效的父节点
         public Vector3 rotationOffset;
         public Vector3 positionOffset;
     }
 
     [Header("特效映射表")]
     [SerializeField] private VFXEntry[] _vfxEntries;
-
-    [Header("生成位置")]
-    [SerializeField] private Transform _vfxSpawnPoint;    // 武器骨骼等，空则用自身
-
-    private Transform SpawnPoint => _vfxSpawnPoint != null ? _vfxSpawnPoint : transform;
 
     void Awake()
     {
@@ -51,9 +47,11 @@ public class CharacterVFX : MonoBehaviour
     {
         var entry = GetEntry(name);
         if (entry?.prefab == null) return;
-        var pos = SpawnPoint.position + SpawnPoint.rotation * entry.Value.positionOffset;
-        var rot = SpawnPoint.rotation * Quaternion.Euler(entry.Value.rotationOffset);
-        SpawnAndAutoDestroy(entry.Value.prefab, pos, rot);
+
+        var sp = entry.Value.spawnPoint != null ? entry.Value.spawnPoint : transform;
+        var pos = sp.position + sp.rotation * entry.Value.positionOffset;
+        var rot = sp.rotation * Quaternion.Euler(entry.Value.rotationOffset);
+        SpawnAndAutoDestroy(entry.Value.prefab, pos, rot, sp);
     }
 
     /// <summary>
@@ -61,7 +59,7 @@ public class CharacterVFX : MonoBehaviour
     /// </summary>
     public void PlayComboVFX(GameObject prefab)
     {
-        SpawnAndAutoDestroy(prefab, SpawnPoint.position, SpawnPoint.rotation);
+        SpawnAndAutoDestroy(prefab, transform.position, transform.rotation, transform);
     }
 
     // ===== 内部 =====
@@ -77,10 +75,10 @@ public class CharacterVFX : MonoBehaviour
         return null;
     }
 
-    private void SpawnAndAutoDestroy(GameObject prefab, Vector3 pos, Quaternion rot)
+    private void SpawnAndAutoDestroy(GameObject prefab, Vector3 pos, Quaternion rot, Transform parent)
     {
         if (prefab == null) return;
-        var go = Instantiate(prefab, pos, rot, SpawnPoint);
+        var go = Instantiate(prefab, pos, rot, parent);
         Destroy(go, 2f);
     }
 }

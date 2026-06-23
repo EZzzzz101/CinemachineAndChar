@@ -52,15 +52,11 @@ public abstract class LocomotionState : IState
     protected virtual float GetTargetSpeed() => 0f;
     
     public virtual void Update()
-    {   
-        float targetSpeed =GetTargetSpeed();
+    {
+        float targetSpeed = GetTargetSpeed();
 
-         _currentSpeed = Mathf.SmoothDamp(
-            _currentSpeed, targetSpeed,
-            ref _speedVelocity, Owner.SpeedSmoothTime
-        );
-        // 驱动动画
-        Owner.Animator.SetFloat("Movement", _currentSpeed);
+        // Animator 内置阻尼，比 Mathf.SmoothDamp 更丝滑，不影响 root motion
+        Owner.Animator.SetFloat("Movement", targetSpeed, Owner.SpeedSmoothTime, Time.deltaTime);
         // 转向
         Owner.HandleRotation();
     }

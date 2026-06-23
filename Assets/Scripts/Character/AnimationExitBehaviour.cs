@@ -6,6 +6,7 @@ public class AnimationExitBehaviour : StateMachineBehaviour
     {
         Dash,
         Atk,
+        TurnBack
     }
 
     [SerializeField] private AnimExitState _exitState;

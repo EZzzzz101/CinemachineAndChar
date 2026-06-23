@@ -15,6 +15,7 @@ public class ComboStepData
 
     [Header("音效（可空）")]
     public AudioClip attackSound;               // 攻击音效
+    public AudioClip[] voiceClips;              // 角色喊声（随机）
 
     [Header("特效（可空，预留接口）")]
     public GameObject hitVfxPrefab;             // 受击特效预制体

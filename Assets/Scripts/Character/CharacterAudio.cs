@@ -2,31 +2,13 @@ using UnityEngine;
 
 /// <summary>
 /// 角色音效管理（单例）— Animation Event 接收端 + 代码直调
-/// 挂在角色 GameObject 上，使用自身 AudioSource 替代 PlayClipAtPoint
+/// 挂在角色 GameObject 上，数据从 CharacterDataSO 读取
 /// </summary>
 public class CharacterAudio : MonoBehaviour
 {
     public static CharacterAudio Instance { get; private set; }
 
-    [Header("脚步声")]
-    [SerializeField] private AudioClip[] _footstepClips;
-    [SerializeField] private AudioClip[] _footBackClips;
-    [SerializeField] [Range(0, 1)] private float _footSpatialBlend = 0.5f;
-
-    [Header("攻击音效")]
-    [SerializeField] private AudioClip _attackWhoosh;
-    [SerializeField] private AudioClip _attackHit;
-    [SerializeField] private AudioClip _weaponBackSound;     // 收刀
-    [SerializeField] private AudioClip _weaponEndSound;      // 入鞘
-    [SerializeField] [Range(0, 1)] private float _atkSpatialBlend = 0.7f;
-
-    [Header("闪避音效")]
-    [SerializeField] private AudioClip _dashFrontSound;
-    [SerializeField] private AudioClip _dashBackSound;
-    [SerializeField] [Range(0, 1)] private float _dodgeSpatialBlend = 0.7f;
-
-    [Header("受击")]
-    [SerializeField] private AudioClip _hurtVoice;
+    [SerializeField] private CharacterDataSO _data;
 
     private AudioSource _audioSource;
 
@@ -52,32 +34,32 @@ public class CharacterAudio : MonoBehaviour
 
     public void PlayFootSound()
     {
-        PlayRandom(_footstepClips, _footSpatialBlend);
+        PlayRandom(_data.audioData.footstepClips, _data.audioData.footSpatialBlend);
     }
 
     public void PlayFootBackSound()
     {
-        PlayRandom(_footBackClips, _footSpatialBlend);
+        PlayRandom(_data.audioData.footBackClips, _data.audioData.footSpatialBlend);
     }
 
     public void PlayWhooshSound()
     {
-        PlayClip(_attackWhoosh, _atkSpatialBlend);
+        PlayClip(_data.audioData.attackWhoosh, _data.audioData.atkSpatialBlend);
     }
 
     public void PlayHitSound()
     {
-        PlayClip(_attackHit, _atkSpatialBlend);
+        PlayClip(_data.audioData.attackHit, _data.audioData.atkSpatialBlend);
     }
 
     public void PlayWeaponBackSound()
     {
-        PlayClip(_weaponBackSound, _atkSpatialBlend);
+        PlayClip(_data.audioData.weaponBackSound, _data.audioData.atkSpatialBlend);
     }
 
     public void PlayWeaponEndSound()
     {
-        PlayClip(_weaponEndSound, _atkSpatialBlend);
+        PlayClip(_data.audioData.weaponEndSound, _data.audioData.atkSpatialBlend);
     }
 
     /// <summary>
@@ -85,19 +67,28 @@ public class CharacterAudio : MonoBehaviour
     /// </summary>
     public void PlayComboSound(AudioClip clip)
     {
-        PlayClip(clip, _atkSpatialBlend);
+        PlayClip(clip, _data.audioData.atkSpatialBlend);
+    }
+
+    /// <summary>
+    /// Combo 角色喊声 — ComboNext() 代码直调，随机
+    /// </summary>
+    public void PlayComboVoice(AudioClip[] clips)
+    {
+        PlayRandom(clips, 0.5f);
     }
 
     public void PlayDodgeSound(AnimationEnterBehaviour.AnimationEnterState dashDir)
     {
+        var d = _data.audioData;
         var clip = dashDir == AnimationEnterBehaviour.AnimationEnterState.DashFront
-            ? _dashFrontSound : _dashBackSound;
-        PlayClip(clip, _dodgeSpatialBlend);
+            ? d.dashFrontSound : d.dashBackSound;
+        PlayClip(clip, d.dodgeSpatialBlend);
     }
 
     public void PlayHurtVoice()
     {
-        PlayClip(_hurtVoice, 0.5f);
+        PlayClip(_data.audioData.hurtVoice, 0.5f);
     }
 
     // ===== 内部 =====
