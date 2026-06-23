@@ -63,6 +63,9 @@ public class PlayerController : MonoBehaviour
             case  AnimationEnterBehaviour.AnimationEnterState.DashBack:
                 Locomotion.OnAnimationTranslateEvent(Locomotion.DashingState);
                 break;
+            case AnimationEnterBehaviour.AnimationEnterState.TurnBack:
+                Locomotion.OnAnimationTranslateEvent(Locomotion.TurnBackState);
+                break;
             case  AnimationEnterBehaviour.AnimationEnterState.Atk:
                 Action.OnAnimationTranslateEvent(Action.ComboState);
                 break;
@@ -78,9 +81,13 @@ public class PlayerController : MonoBehaviour
             case AnimationExitBehaviour.AnimExitState.Dash:
                 Locomotion.OnAnimationExitEvent();
                 break;
+            case AnimationExitBehaviour.AnimExitState.TurnBack:
+                Locomotion.OnAnimationExitEvent();
+                break;
             case AnimationExitBehaviour.AnimExitState.Atk:
                 Action.OnAnimationExitEvent();
                 break;
+
         }
     }
 
@@ -91,10 +98,7 @@ public class PlayerController : MonoBehaviour
         Vector2 input = MoveInput.MoveValue;
         if (input.magnitude < 0.1f) return;
 
-        Transform cam = Camera.main.transform;
-        Vector3 forward = cam.forward; forward.y = 0;
-        Vector3 right   = cam.right;   right.y = 0;
-        Vector3 moveDir = (forward * input.y + right * input.x).normalized;
+        Vector3 moveDir = CameraManager.Instance.GetMoveDir(input);
 
         transform.rotation = Quaternion.Slerp(
             transform.rotation, Quaternion.LookRotation(moveDir),

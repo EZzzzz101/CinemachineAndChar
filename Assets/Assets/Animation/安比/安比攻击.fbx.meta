@@ -89,7 +89,7 @@ ModelImporter:
       events:
       - time: 0.0822654
         functionName: PlayVFX
-        data: Anby_05_1
+        data: AnBi_05_1
         objectReferenceParameter: {instanceID: 0}
         floatParameter: 0
         intParameter: 0
@@ -103,7 +103,7 @@ ModelImporter:
         messageOptions: 0
       - time: 0.34923628
         functionName: PlayVFX
-        data: Anby_05_2
+        data: AnBi_05_2
         objectReferenceParameter: {instanceID: 0}
         floatParameter: 0
         intParameter: 0
@@ -1235,8 +1235,7 @@ ModelImporter:
     hasTranslationDoF: 0
     hasExtraRoot: 0
     skeletonHasParents: 1
-  lastHumanDescriptionAvatarSource: {fileID: 9000000, guid: 006266add89b9994f9cceb2ad8c76fff,
-    type: 3}
+  lastHumanDescriptionAvatarSource: {fileID: 9000000, guid: 006266add89b9994f9cceb2ad8c76fff, type: 3}
   autoGenerateAvatarMappingIfUnspecified: 1
   animationType: 2
   humanoidOversampling: 1

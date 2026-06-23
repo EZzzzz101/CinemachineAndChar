@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: db8c8e7ce52527e4da731718894310e2, type: 3}
+  m_Name: AnBiCharacterAudio
+  m_EditorClassIdentifier: 
+  footstepClips:
+  - {fileID: 8300000, guid: a7d39bb78dd35ed438aa29d107294902, type: 3}
+  - {fileID: 8300000, guid: 2e3cdcff2932f5845bbf2354c0b92df9, type: 3}
+  - {fileID: 8300000, guid: 14ea1e45d5c4df6418452bab767a79d8, type: 3}
+  - {fileID: 8300000, guid: 0db33cd015aaf614da7a67d8ca772eac, type: 3}
+  - {fileID: 8300000, guid: 6d157c9495dba3a44a2e8ebc74f3e5fe, type: 3}
+  - {fileID: 8300000, guid: 65a01bf2bf0133249bf8d76bfc1785d3, type: 3}
+  - {fileID: 8300000, guid: a11786c3647ce5448acffeebd20cecf2, type: 3}
+  - {fileID: 8300000, guid: 06154e23c13a3df4bb3752b39abfc7ac, type: 3}
+  - {fileID: 8300000, guid: 4233c39f8b03fe64e9f5fe2a84450abb, type: 3}
+  footBackClips:
+  - {fileID: 8300000, guid: 1f2148c7b6d65ef489de620385639f7a, type: 3}
+  - {fileID: 8300000, guid: 8986bc9f36fbdbb47b601da0eaa7dc34, type: 3}
+  footSpatialBlend: 0.236
+  attackWhoosh: {fileID: 0}
+  attackHit: {fileID: 0}
+  weaponBackSound: {fileID: 8300000, guid: e6e7f097429cc1b4182fbbc1291182b4, type: 3}
+  weaponEndSound: {fileID: 8300000, guid: 2eb0e25f8b7e9ec40a17a8a8d9f8a069, type: 3}
+  atkSpatialBlend: 0.7
+  dashFrontSound: {fileID: 8300000, guid: 1b292d51434f0624482dfefda493f788, type: 3}
+  dashBackSound: {fileID: 8300000, guid: 4fe7ab52a66467542b7c634975304f46, type: 3}
+  dodgeSpatialBlend: 0.7
+  hurtVoice: {fileID: 0}

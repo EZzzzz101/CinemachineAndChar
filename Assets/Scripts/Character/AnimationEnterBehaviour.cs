@@ -9,6 +9,8 @@ public class AnimationEnterBehaviour : StateMachineBehaviour
         DashBack,
 
         Atk,
+
+        TurnBack
     }
     [SerializeField] private AnimationEnterState _targetState;
 

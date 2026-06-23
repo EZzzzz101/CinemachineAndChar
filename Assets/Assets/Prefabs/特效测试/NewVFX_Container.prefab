@@ -165,7 +165,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6887725030846046253}
   m_Layer: 7
-  m_Name: 'NewVFX_Container '
+  m_Name: NewVFX_Container
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
