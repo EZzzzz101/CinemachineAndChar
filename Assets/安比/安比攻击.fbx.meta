@@ -89,7 +89,7 @@ ModelImporter:
       events:
       - time: 0.0822654
         functionName: PlayVFX
-        data: Anby_05_1
+        data: AnBi_05_1
         objectReferenceParameter: {instanceID: 0}
         floatParameter: 0
         intParameter: 0
@@ -103,7 +103,7 @@ ModelImporter:
         messageOptions: 0
       - time: 0.34923628
         functionName: PlayVFX
-        data: Anby_05_2
+        data: AnBi_05_2
         objectReferenceParameter: {instanceID: 0}
         floatParameter: 0
         intParameter: 0
