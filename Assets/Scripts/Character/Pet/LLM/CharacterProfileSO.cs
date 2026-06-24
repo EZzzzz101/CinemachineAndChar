@@ -137,23 +137,104 @@ public class CharacterProfileSO : ScriptableObject
         try
         {
             var gen = JsonUtility.FromJson<ProfileGenResponse>(json);
-            if (gen == null) return;
-
-            characterName      = gen.characterName ?? characterName;
-            personality        = gen.personality ?? personality;
-            tone               = gen.tone ?? tone;
-            if (gen.maxChatLength > 0)  maxChatLength  = gen.maxChatLength;
-            if (gen.maxReplyLength > 0) maxReplyLength = gen.maxReplyLength;
-            if (!string.IsNullOrEmpty(gen.actionDescriptions))
-                actionDescriptions = gen.actionDescriptions;
-            if (gen.fewShotExamples != null && gen.fewShotExamples.Length > 0)
-                fewShotExamples = System.Array.ConvertAll(gen.fewShotExamples,
-                    e => new FewShotExample { user = e.user, assistant = e.assistant });
+            if (gen != null)
+            {
+                ApplyProfile(gen);
+                return;
+            }
         }
         catch (System.Exception ex)
         {
-            Debug.LogWarning($"[CharacterProfileSO] 解析 LLM 生成的 profile 失败: {ex.Message}");
+            Debug.LogWarning($"[CharacterProfileSO] JSON 主解析失败: {ex.Message}，尝试正则降级...");
         }
+
+        // ── 降级：正则逐字段提取（LLM 输出不规范时兜底）──
+        TryPopulateFallback(json);
+    }
+
+    private void ApplyProfile(ProfileGenResponse gen)
+    {
+        characterName      = gen.characterName ?? characterName;
+        personality        = gen.personality ?? personality;
+        tone               = gen.tone ?? tone;
+        if (gen.maxChatLength > 0)  maxChatLength  = gen.maxChatLength;
+        if (gen.maxReplyLength > 0) maxReplyLength = gen.maxReplyLength;
+        if (!string.IsNullOrEmpty(gen.actionDescriptions))
+            actionDescriptions = gen.actionDescriptions;
+        if (gen.fewShotExamples != null && gen.fewShotExamples.Length > 0)
+            fewShotExamples = System.Array.ConvertAll(gen.fewShotExamples,
+                e => new FewShotExample { user = e.user, assistant = e.assistant });
+    }
+
+    private void TryPopulateFallback(string json)
+    {
+        int filled = 0;
+
+        // 简单字段 — 正则提取（支持引号内有特殊字符）
+        var nameMatch = System.Text.RegularExpressions.Regex.Match(json,
+            "\"characterName\"\\s*:\\s*\"([^\"]*)\"");
+        if (nameMatch.Success) { characterName = nameMatch.Groups[1].Value; filled++; }
+
+        var persMatch = System.Text.RegularExpressions.Regex.Match(json,
+            "\"personality\"\\s*:\\s*\"((?:[^\"\\\\]|\\\\.)*)\"",
+            System.Text.RegularExpressions.RegexOptions.Singleline);
+        if (persMatch.Success) { personality = UnescapeJson(persMatch.Groups[1].Value); filled++; }
+
+        var toneMatch = System.Text.RegularExpressions.Regex.Match(json,
+            "\"tone\"\\s*:\\s*\"([^\"]*)\"");
+        if (toneMatch.Success) { tone = toneMatch.Groups[1].Value; filled++; }
+
+        var maxChat = System.Text.RegularExpressions.Regex.Match(json,
+            "\"maxChatLength\"\\s*:\\s*(\\d+)");
+        if (maxChat.Success && int.TryParse(maxChat.Groups[1].Value, out int mcl) && mcl > 0)
+        { maxChatLength = mcl; filled++; }
+
+        var maxReply = System.Text.RegularExpressions.Regex.Match(json,
+            "\"maxReplyLength\"\\s*:\\s*(\\d+)");
+        if (maxReply.Success && int.TryParse(maxReply.Groups[1].Value, out int mrl) && mrl > 0)
+        { maxReplyLength = mrl; filled++; }
+
+        var actMatch = System.Text.RegularExpressions.Regex.Match(json,
+            "\"actionDescriptions\"\\s*:\\s*\"((?:[^\"\\\\]|\\\\.)*)\"",
+            System.Text.RegularExpressions.RegexOptions.Singleline);
+        if (actMatch.Success) { actionDescriptions = UnescapeJson(actMatch.Groups[1].Value); filled++; }
+
+        // ── fewShotExamples — 逐个提取 user/assistant pair ──
+        var exampleBlock = System.Text.RegularExpressions.Regex.Match(json,
+            "\"fewShotExamples\"\\s*:\\s*\\[(.+)\\]",
+            System.Text.RegularExpressions.RegexOptions.Singleline);
+        if (exampleBlock.Success)
+        {
+            var pairs = System.Text.RegularExpressions.Regex.Matches(exampleBlock.Groups[1].Value,
+                "\"user\"\\s*:\\s*\"([^\"]*)\"\\s*,\\s*\"assistant\"\\s*:\\s*\"((?:[^\"\\\\]|\\\\.)*)\"",
+                System.Text.RegularExpressions.RegexOptions.Singleline);
+            if (pairs.Count > 0)
+            {
+                fewShotExamples = new FewShotExample[pairs.Count];
+                for (int i = 0; i < pairs.Count; i++)
+                {
+                    fewShotExamples[i] = new FewShotExample
+                    {
+                        user      = pairs[i].Groups[1].Value,
+                        assistant = UnescapeJson(pairs[i].Groups[2].Value)
+                    };
+                }
+                filled++;
+            }
+        }
+
+        Debug.Log(filled > 0
+            ? $"[CharacterProfileSO] 正则降级解析完成，填充了 {filled} 个字段（LLM 原始 JSON 不规范）"
+            : "[CharacterProfileSO] 正则降级也未提取到任何字段，请检查 LLM 输出");
+    }
+
+    private static string UnescapeJson(string s)
+    {
+        return s.Replace("\\\"", "\"")
+                .Replace("\\n", "\n")
+                .Replace("\\r", "\r")
+                .Replace("\\t", "\t")
+                .Replace("\\\\", "\\");
     }
 
     /// <summary>LLM 返回的 profile JSON 反序列化容器</summary>

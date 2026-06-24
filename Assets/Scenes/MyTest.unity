@@ -948,7 +948,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 97be4552d13fd2b4e880125e1c6bf011, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _characterProfile: {fileID: 0}
+  _characterProfile: {fileID: 11400000, guid: 77856d33a56b42a499277e1eb9fabbd5, type: 2}
   _target: {fileID: 327858752}
   _startFollowDistance: 3
   _stopFollowDistance: 1.5
