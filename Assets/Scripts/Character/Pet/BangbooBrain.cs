@@ -6,6 +6,10 @@ using UnityEngine;
 /// </summary>
 public class BangbooBrain : MonoBehaviour
 {
+    [Header("LLM 角色配置")]
+    [Tooltip("换不同 .asset 即可切换角色（邦布/妮可/...）")]
+    [SerializeField] private CharacterProfileSO _characterProfile;
+
     [Header("跟随设置")]
     [SerializeField] private Transform _target;
     [Tooltip("玩家离开超过此距离，开始追")]
@@ -26,7 +30,7 @@ public class BangbooBrain : MonoBehaviour
     private bool _isChatting;
     private bool _lastPreChatFollow;  // 进入聊天前是否在跟随
 
-    private static readonly int FlowerParam = Animator.StringToHash("Flower");
+    private static readonly int FollowParam = Animator.StringToHash("Follow");
     private static readonly int ChatParam   = Animator.StringToHash("Chat");
 
     /// <summary>外部开关跟随（LLM action 调用）</summary>
@@ -44,6 +48,10 @@ public class BangbooBrain : MonoBehaviour
         _animator      = GetComponent<Animator>();
         _speechBubble  = GetComponentInChildren<SpeechBubble>();
         _llmClient     = GetComponent<LLMClient>();
+
+        // 初始化角色配置（未挂载时 PromptBuilder 使用内置邦布默认）
+        if (_characterProfile != null)
+            PromptBuilder.SetProfile(_characterProfile);
 
         if (_llmClient != null)
         {
@@ -76,12 +84,12 @@ public class BangbooBrain : MonoBehaviour
             if (!_isMoving && _followEnabled && distance > _startFollowDistance)
             {
                 _isMoving = true;
-                _animator.SetBool(FlowerParam, true);
+                _animator.SetBool(FollowParam, true);
             }
             else if (_isMoving && (!_followEnabled || distance <= _stopFollowDistance))
             {
                 _isMoving = false;
-                _animator.SetBool(FlowerParam, false);
+                _animator.SetBool(FollowParam, false);
             }
         }
 
@@ -149,7 +157,7 @@ public class BangbooBrain : MonoBehaviour
 
         // 恢复移动状态
         _isMoving = _lastPreChatFollow;
-        _animator.SetBool(FlowerParam, _isMoving);
+        _animator.SetBool(FollowParam, _isMoving);
     }
 
     // ─────────────── LLM 响应处理 ───────────────

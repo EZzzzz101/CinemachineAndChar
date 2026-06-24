@@ -15,6 +15,7 @@ LM_STUDIO_URL = "http://127.0.0.1:1234/v1/chat/completions"
 # ── 请求/响应模型（接口不变，Unity 无需改） ──
 class LLMRequest(BaseModel):
     prompt: str
+    max_tokens: int = 128  # 可选，默认 128（profile 生成建议传 512+）
 
 class LLMResponse(BaseModel):
     content: str
@@ -47,7 +48,7 @@ async def llm_endpoint(req: LLMRequest):
     async with httpx.AsyncClient(timeout=30.0) as client:
         resp = await client.post(LM_STUDIO_URL, json={
             "messages": messages,
-            "max_tokens": 128,
+            "max_tokens": req.max_tokens,
             "temperature": 0.7,
             "stop": ["用户：", "User:", "</s>"],
         })

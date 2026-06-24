@@ -2,6 +2,7 @@ using System.Collections.Generic;
 
 /// <summary>
 /// 构建发送给 LLM 的 prompt，强制 JSON 输出，含少样本示例和对话历史
+/// 通过 CharacterProfileSO 切换不同角色（邦布、妮可等）
 /// </summary>
 public static class PromptBuilder
 {
@@ -15,26 +16,46 @@ public static class PromptBuilder
     /// <summary>当前等待 LLM 回复的用户输入</summary>
     private static string _pendingUserText;
 
-    private const string SystemPrompt =
-        "你是一只可爱的兔子宠物伴侣（Bangboo）。只返回纯 JSON，不要任何额外文字。\n" +
-        "你有两种响应类型：\n" +
-        "1. 动作指令：{\"type\":\"action\",\"content\":\"stop\",\"reply\":\"你的口语回复\"}\n" +
-        "   - content: stop（停下/别动/等着）或 follow（跟着/过来/走吧）\n" +
-        "   - reply: 用中文回复一句话，10 字以内，可爱活泼，表示你已执行动作\n" +
-        "2. 闲聊回复：{\"type\":\"chat\",\"content\":\"你的回复内容\"}\n" +
-        "   - 回复用中文，30 字以内，语气可爱活泼\n" +
-        "如果无法确定意图，默认用 chat 类型回复。\n\n" +
-        "示例对话：\n" +
-        "用户：你好呀\n" +
-        "助手：{\"type\":\"chat\",\"content\":\"嗨嗨！你来啦～今天想和我玩什么呀？\"}\n" +
-        "用户：你叫什么名字\n" +
-        "助手：{\"type\":\"chat\",\"content\":\"我是邦布！你的小伙伴，嘿嘿～\"}\n" +
-        "用户：停下来\n" +
-        "助手：{\"type\":\"action\",\"content\":\"stop\",\"reply\":\"好呀，我乖乖等着！\"}\n" +
-        "用户：过来吧\n" +
-        "助手：{\"type\":\"action\",\"content\":\"follow\",\"reply\":\"来啦来啦～等等我呀！\"}\n" +
-        "用户：今天天气真好\n" +
-        "助手：{\"type\":\"chat\",\"content\":\"是呀是呀！阳光暖暖的，好想出去蹦跶～\"}";
+    /// <summary>当前角色配置（未设置时用内置邦布默认）</summary>
+    private static CharacterProfileSO _profile;
+
+    /// <summary>设置角色配置（一般在 Awake/Start 调用一次即可）</summary>
+    public static void SetProfile(CharacterProfileSO profile)
+    {
+        _profile = profile;
+    }
+
+    /// <summary>获取当前系统提示词（由角色配置动态生成）</summary>
+    public static string SystemPrompt
+    {
+        get
+        {
+            if (_profile != null)
+                return _profile.BuildSystemPrompt();
+
+            // 内置默认（邦布）—— 没有 SO 也能跑
+            return
+                "你是一只可爱的兔子宠物伴侣（Bangboo）。只返回纯 JSON，不要任何额外文字。\n" +
+                "你有两种响应类型：\n" +
+                "1. 动作指令：{\"type\":\"action\",\"content\":\"stop\",\"reply\":\"你的口语回复\"}\n" +
+                "   - content: stop（停下/别动/等着）或 follow（跟着/过来/走吧）\n" +
+                "   - reply: 用中文回复一句话，10 字以内，可爱活泼，表示你已执行动作\n" +
+                "2. 闲聊回复：{\"type\":\"chat\",\"content\":\"你的回复内容\"}\n" +
+                "   - 回复用中文，30 字以内，语气可爱活泼\n" +
+                "如果无法确定意图，默认用 chat 类型回复。\n\n" +
+                "示例对话：\n" +
+                "用户：你好呀\n" +
+                "助手：{\"type\":\"chat\",\"content\":\"嗨嗨！你来啦～今天想和我玩什么呀？\"}\n" +
+                "用户：你叫什么名字\n" +
+                "助手：{\"type\":\"chat\",\"content\":\"我是邦布！你的小伙伴，嘿嘿～\"}\n" +
+                "用户：停下来\n" +
+                "助手：{\"type\":\"action\",\"content\":\"stop\",\"reply\":\"好呀，我乖乖等着！\"}\n" +
+                "用户：过来吧\n" +
+                "助手：{\"type\":\"action\",\"content\":\"follow\",\"reply\":\"来啦来啦～等等我呀！\"}\n" +
+                "用户：今天天气真好\n" +
+                "助手：{\"type\":\"chat\",\"content\":\"是呀是呀！阳光暖暖的，好想出去蹦跶～\"}";
+        }
+    }
 
     /// <summary>记录一轮对话</summary>
     public static void AddToHistory(string userText, string assistantResponse)
@@ -74,7 +95,7 @@ public static class PromptBuilder
             result += $"\n\n用户：{user}\n助手：{assistant}";
         }
 
-        result += $"\n\n用户：{userText}\n助手：";
+        result += $"\n\n用户：{userText}\n（先判断是否有动作意图，有则必须用 action）\n助手：";
         return result;
     }
 }

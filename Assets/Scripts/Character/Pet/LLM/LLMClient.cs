@@ -76,6 +76,7 @@ public class LLMClient : MonoBehaviour
             // 解析 {"content": "..."}
             try
             {
+                //反序列化JSON->c#
                 var wrapper = JsonUtility.FromJson<ResponseWrapper>(responseText);
                 OnResponseReceived?.Invoke(true, wrapper.content);
             }
