@@ -24,7 +24,10 @@ public class ActionNullState : PlayerComboState
 
     public override  void OnAnimationTranslateEvent(IState newState)
     {
-        Asm.ChangeState(newState);  // 动画事件：切到 ATKState
+        // 防循环：只有玩家主动按了攻击（_isEntering=true）才切 ATKState
+        // 防止 Animator Controller 的过渡线意外触发 ATK 导致死循环
+        if (!_isEntering) return;
+        Asm.ChangeState(newState);
     }
 
     public override  void OnAnimationExitEvent() { }
@@ -34,8 +37,15 @@ public class ActionNullState : PlayerComboState
         if(_isEntering) return;
 
         _isEntering=true;
-        ResuableData.comboIndex = 0;    // ← 重置
-        base.OnFireStarted(ctx);        // 播第一段动画
+
+        // 锁定态：先面向敌人再闪身
+        Owner.FaceEnemy();
+        Owner.FlashToEnemy();
+
+        ResuableData.comboIndex = 0;          // 起手重置段号
+        ResuableData.currentATKIndex = 0;     // 起手重置击数
+        ResuableData.canLinkCombo = true;     // 重置连招许可
+        base.OnFireStarted(ctx);            // 播第一段动画
         CharacterAudio.Instance.PlayComboSound(ResuableData.CurrentStep.attackSound);
         CharacterAudio.Instance.PlayComboVoice(ResuableData.CurrentStep.voiceClips);
     }

@@ -19,4 +19,9 @@ public class ComboStepData
 
     [Header("特效（可空，预留接口）")]
     public GameObject hitVfxPrefab;             // 受击特效预制体
+
+    [Header("震屏")]
+    public float[] shakeForceList;   // 每段多击力度    // 震屏力度（0=不震）
+    public float[] hitPauseList;  // 顿帧时长（0=不卡）
+    [Range(0f, 1f)] public float hitPauseScale = 0.05f;     // 顿帧缩放
 }

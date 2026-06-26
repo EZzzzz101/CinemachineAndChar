@@ -21,6 +21,9 @@ MonoBehaviour:
     - {fileID: 8300000, guid: 96d6cac7aa3300b449f4389abfaa9110, type: 3}
     - {fileID: 8300000, guid: 9d2cba0049a938344b1ecf7ba5d1b748, type: 3}
     hitVfxPrefab: {fileID: 0}
+    shakeForceList: []
+    hitPauseList: []
+    hitPauseScale: 0.05
   - animStateName: Anbi_Normal_2
     inputWindowStart: 0.55
     attackSound: {fileID: 8300000, guid: f6b7d84faf3f2e24590394e6228d3417, type: 3}
@@ -29,6 +32,10 @@ MonoBehaviour:
     - {fileID: 8300000, guid: 9d2cba0049a938344b1ecf7ba5d1b748, type: 3}
     - {fileID: 8300000, guid: 58a8e17b02c497d49ab52daf7d303508, type: 3}
     hitVfxPrefab: {fileID: 0}
+    shakeForceList:
+    - 0.15
+    hitPauseList: []
+    hitPauseScale: 0.05
   - animStateName: Anbi_Normal_3
     inputWindowStart: 0.608
     attackSound: {fileID: 8300000, guid: 003aa5abacf93a94089bd8c2ef28fff1, type: 3}
@@ -37,6 +44,9 @@ MonoBehaviour:
     - {fileID: 8300000, guid: 67962eeb9da990d4880a13891fe5c269, type: 3}
     - {fileID: 8300000, guid: 4e106c77aaf89954ea2dece7534cbf1a, type: 3}
     hitVfxPrefab: {fileID: 0}
+    shakeForceList: []
+    hitPauseList: []
+    hitPauseScale: 0.05
   - animStateName: Anbi_Normal_4
     inputWindowStart: 0.7
     attackSound: {fileID: 8300000, guid: 1b64cc9091420f94e8595fbf90572fb1, type: 3}
@@ -46,6 +56,12 @@ MonoBehaviour:
     - {fileID: 8300000, guid: 4e106c77aaf89954ea2dece7534cbf1a, type: 3}
     - {fileID: 8300000, guid: 03ce7510829862a48bff2d43ea4c2a8c, type: 3}
     hitVfxPrefab: {fileID: 0}
+    shakeForceList:
+    - 0
+    - 0
+    - 0.3
+    hitPauseList: []
+    hitPauseScale: 0.05
   - animStateName: Anbi_Normal_5
     inputWindowStart: 0.7
     attackSound: {fileID: 8300000, guid: 6aa89f48868b7ce49b0a21e880fcb68a, type: 3}
@@ -54,3 +70,8 @@ MonoBehaviour:
     - {fileID: 8300000, guid: 4e106c77aaf89954ea2dece7534cbf1a, type: 3}
     - {fileID: 8300000, guid: e53c9bdd76fe4544cb78a5b9a781aa20, type: 3}
     hitVfxPrefab: {fileID: 0}
+    shakeForceList:
+    - 0
+    - 0.2
+    hitPauseList: []
+    hitPauseScale: 0.05

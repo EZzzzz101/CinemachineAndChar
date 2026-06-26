@@ -10,6 +10,10 @@ public class PlayerController : MonoBehaviour
     public float SpeedSmoothTime=0.2f;
     [SerializeField] private float rotationSpeed = 10f;
 
+    [Header("锁定战斗")]
+    [SerializeField] private float _flashMaxDist = 3f;      // 闪身最大距离
+    [SerializeField] private float _flashTargetDist = 1.5f; // 闪身后离敌人多远
+
     public Animator          Animator      { get; private set; }
     public MoveInputMY         MoveInput     { get; private set; }
     public PlayerInput       PlayerInput   { get; private set; }
@@ -92,7 +96,40 @@ public class PlayerController : MonoBehaviour
     }
 
 
-    //角色转向
+    // ===== 锁定战斗: 闪身 + 面向 =====
+
+    /// <summary>锁定态：瞬间面向锁定敌人</summary>
+    public void FaceEnemy()
+    {
+        if (!LockOnManager.HasInstance || !LockOnManager.Instance.IsLockedOn) return;
+
+        Vector3 dir = LockOnManager.Instance.CurrentTarget.GetLockOnPosition() - transform.position;
+        dir.y = 0;
+        if (dir.magnitude < 0.01f) return;
+
+        transform.rotation = Quaternion.LookRotation(dir);
+    }
+
+    /// <summary>锁定态：够近就闪到敌人正前方，太远只面向不闪</summary>
+    public void FlashToEnemy()
+    {
+        if (!LockOnManager.HasInstance || !LockOnManager.Instance.IsLockedOn) return;
+
+        var target = LockOnManager.Instance.CurrentTarget;
+        Vector3 toTarget = target.GetLockOnPosition() - transform.position;
+        toTarget.y = 0;
+        float dist = toTarget.magnitude;
+
+        if (dist > _flashMaxDist) return; // 太远不闪，原地打
+
+        // 闪到敌人正前方
+        Vector3 flashPos = target.GetLockOnPosition() - toTarget.normalized * _flashTargetDist;
+        flashPos.y = transform.position.y;
+        transform.position = flashPos;
+    }
+
+    // ===== 角色转向 =====
+
     public void HandleRotation()
     {
         Vector2 input = MoveInput.MoveValue;
@@ -105,4 +142,40 @@ public class PlayerController : MonoBehaviour
             Time.deltaTime * rotationSpeed
         );
     }
+
+     #region 连招动画事件
+     /// <summary>
+     /// 打开预输入窗口
+     /// </summary>
+        public void EnablePreInput()
+        {
+            Action.ComboState.EnablePreInput();
+        }
+        /// <summary>
+        /// 攻击后摇结束，可以闪避/做其他动作
+        /// </summary>
+        public void CancelAttackColdTime()
+        { 
+            Action.ComboState.CancelAttackColdTime();
+        }
+        /// <summary>
+        /// 禁止连招
+        /// </summary>
+        public void DisableLinkCombo()
+        { 
+            Action.ComboState.DisableLinkCombo();
+        }
+        /// <summary>
+        /// 允许移动打断
+        /// </summary>
+        public void EnableMoveInterrupt()
+        {
+             Action.ComboState.EnableMoveInterrupt();
+        }
+     
+        public void ATK()
+        {
+             Action.ComboState.ATK();
+        }
+    #endregion
 }

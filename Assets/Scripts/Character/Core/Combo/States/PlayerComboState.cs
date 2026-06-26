@@ -50,6 +50,7 @@ public class PlayerComboState : IState
         Owner.PlayerInput.actions["Player/Fire"].started -= OnFireStarted;
     }
 
+    //鼠标左键攻击方法
     protected virtual void OnFireStarted(InputAction.CallbackContext ctx)
     {
         Owner.Animator.CrossFadeInFixedTime(ResuableData.CurrentAnimationName, 0.111f);
