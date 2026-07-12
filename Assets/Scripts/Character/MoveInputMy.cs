@@ -23,7 +23,7 @@ public class MoveInputMY : MonoBehaviour
     }
 
     void Update()
-    {
+    { 
         MoveValue = _moveAction.ReadValue<Vector2>();
     }
 }

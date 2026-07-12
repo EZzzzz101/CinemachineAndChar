@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 namespace AI.BehaviourTree
@@ -54,7 +53,7 @@ namespace AI.BehaviourTree
             Blackboard?.Clear();
         }
 
-#region 从SO构建行为树
+	#region 从SO构建行为树
         public void BuildTree()
         {
              if (_treeAsset == null)
@@ -101,14 +100,12 @@ namespace AI.BehaviourTree
                 RootNode = root;
             }
             Debug.Log($"[BT] {gameObject.name}: 构建完成，共 {_nodeMap.Count} 个节点");
-        }     
-#endregion  
+        }
+	#endregion
 
         /// <summary>
         /// 根据 TypeName 反射创建节点实例，并反序列化参数
         /// </summary>
-        /// <param name="entry">SO单行数据</param>
-        /// <returns></returns>
         private BTNode CreateNode(BehaviorTreeSO.NodeEntry entry)
         {
             if(string.IsNullOrEmpty(entry.TypeName))
@@ -151,61 +148,109 @@ namespace AI.BehaviourTree
             // BTAction / BTCondition 是叶子，不接受子节点，忽略
         }
 
-#region 测试
-    // 加在 BehaviorTreeRunner 里
+	#region 测试 — 怪物AI：动画驱动（Root Motion 位移）
+	    // 树结构对照：
+	    //
+	    // Repeater(无限) [                              ← 顶层死循环
+	    //     Selector [                                ← 优先级决策
+	    //         ─── 分支1：已在范围 → 停步 ───
+	    //         Sequence [
+	    //             BTHasTarget
+	    //             BTIsTargetInRange(1.5m)           ← 走到1.5m内了
+	    //             BTSetAnimatorBool(false)          ← 停动画，站住
+	    //             BTWait(0.3s)
+	    //         ]
+	    //         ─── 分支2：有目标 → 追击 ───
+	    //         Sequence [
+	    //             BTFindNearestTarget(15m)           ← 发现玩家 → 写入黑板
+	    //             BTFaceTarget                       ← 转向，面朝玩家
+	    //             BTSetAnimatorBool(true)            ← 播走路动画！Root Motion 推位置
+	    //             BTWait(0.2s)                       ← 走0.2秒再重新判断
+	    //         ]
+	    //         ─── 分支3：没目标 → 发呆 ───
+	    //         Sequence [
+	    //             BTSetAnimatorBool(false)           ← 站住
+	    //             BTWait(0.5s)
+	    //         ]
+	    //     ]
+	    // ]
+	    //
+	    // 关键：没有 BTMoveTowards 代码位移 — 移动靠动画 clip 的 Root Motion
 
-    [ContextMenu("创建测试行为树")]
-    private void CreateTestTree()
-    {
-        // 1. 创建 SO 资产
-        var treeAsset = ScriptableObject.CreateInstance<BehaviorTreeSO>();
-        treeAsset.RootNodeId = "1";
+	    [ContextMenu("创建怪物行为树(动画驱动)")]
+	    private void CreateTestTree()
+	    {
+	        var treeAsset = ScriptableObject.CreateInstance<BehaviorTreeSO>();
+	        treeAsset.RootNodeId = "1";
 
-        // 2. 手动填节点列表
-        treeAsset.SetNodes(new List<BehaviorTreeSO.NodeEntry>
-        {
-            // 根节点：Sequence
-            new BehaviorTreeSO.NodeEntry
-            {
-                Id = "1",
-                TypeName = typeof(BTSequence).FullName,
-                Position = Vector2.zero,
-                JsonData = "",
-                ChildIds = new List<string> { "2", "3", "4" }
-            },
-            // 子节点1：DebugLog("开始")
-            new BehaviorTreeSO.NodeEntry
-            {
-                Id = "2",
-                TypeName = typeof(BTDebugLog).FullName,
-                Position = new Vector2(100, 0),
-                JsonData = "{\"Message\":\"开始执行\"}",
-                ChildIds = new List<string>()
-            },
-            // 子节点2：Wait(2秒)
-            new BehaviorTreeSO.NodeEntry
-            {
-                Id = "3",
-                TypeName = typeof(BTWait).FullName,
-                Position = new Vector2(100, 100),
-                JsonData = "{\"Duration\":2.0}",
-                ChildIds = new List<string>()
-            },
-            // 子节点3：DebugLog("2秒后输出")
-            new BehaviorTreeSO.NodeEntry
-            {
-                Id = "4",
-                TypeName = typeof(BTDebugLog).FullName,
-                Position = new Vector2(100, 200),
-                JsonData = "{\"Message\":\"2秒后输出这条\"}",
-                ChildIds = new List<string>()
-            }
-        });
+	        treeAsset.SetNodes(new List<BehaviorTreeSO.NodeEntry>
+	        {
+	            new BehaviorTreeSO.NodeEntry {
+	                Id = "1", TypeName = typeof(BTSelector).FullName,
+	                Position = Vector2.zero, JsonData = "",
+	                ChildIds = new List<string> { "2", "5", "8" }
+	            },
+	            new BehaviorTreeSO.NodeEntry {
+	                Id = "2", TypeName = typeof(BTSequence).FullName,
+	                Position = new Vector2(150, -80), JsonData = "",
+	                ChildIds = new List<string> { "3", "4", "0a" }
+	            },
+	            new BehaviorTreeSO.NodeEntry {
+	                Id = "3", TypeName = typeof(BTHasTarget).FullName,
+	                Position = new Vector2(300, -110), JsonData = "",
+	                ChildIds = new List<string>()
+	            },
+	            new BehaviorTreeSO.NodeEntry {
+	                Id = "4", TypeName = typeof(BTIsTargetInRange).FullName,
+	                Position = new Vector2(300, -80),
+	                JsonData = "{\"Range\":1.5,\"TargetKey\":\"target\"}",
+	                ChildIds = new List<string>()
+	            },
+	            new BehaviorTreeSO.NodeEntry {
+	                Id = "0a", TypeName = typeof(BTSetAnimatorBool).FullName,
+	                Position = new Vector2(300, -50),
+	                JsonData = "{\"ParameterName\":\"IsMoving\",\"Value\":false}",
+	                ChildIds = new List<string>()
+	            },
+	            new BehaviorTreeSO.NodeEntry {
+	                Id = "5", TypeName = typeof(BTSequence).FullName,
+	                Position = new Vector2(150, 0), JsonData = "",
+	                ChildIds = new List<string> { "6", "7", "0b" }
+	            },
+	            new BehaviorTreeSO.NodeEntry {
+	                Id = "6", TypeName = typeof(BTFindNearestTarget).FullName,
+	                Position = new Vector2(300, 20),
+	                JsonData = "{\"MaxRange\":15.0,\"TargetTeam\":0,\"TargetKey\":\"target\"}",
+	                ChildIds = new List<string>()
+	            },
+	            new BehaviorTreeSO.NodeEntry {
+	                Id = "7", TypeName = typeof(BTFaceTarget).FullName,
+	                Position = new Vector2(300, 50),
+	                JsonData = "{\"RotateSpeed\":720.0,\"TargetKey\":\"target\",\"AngleThreshold\":5.0}",
+	                ChildIds = new List<string>()
+	            },
+	            new BehaviorTreeSO.NodeEntry {
+	                Id = "0b", TypeName = typeof(BTSetAnimatorBool).FullName,
+	                Position = new Vector2(300, 80),
+	                JsonData = "{\"ParameterName\":\"IsMoving\",\"Value\":true}",
+	                ChildIds = new List<string>()
+	            },
+	            new BehaviorTreeSO.NodeEntry {
+	                Id = "8", TypeName = typeof(BTSequence).FullName,
+	                Position = new Vector2(150, 80), JsonData = "",
+	                ChildIds = new List<string> { "0c" }
+	            },
+	            new BehaviorTreeSO.NodeEntry {
+	                Id = "0c", TypeName = typeof(BTSetAnimatorBool).FullName,
+	                Position = new Vector2(300, 130),
+	                JsonData = "{\"ParameterName\":\"IsMoving\",\"Value\":false}",
+	                ChildIds = new List<string>()
+	            }
+	        });
 
-        // 3. 赋值给自己
-        _treeAsset = treeAsset;
-        Debug.Log("[BT] 测试行为树已创建，点击 Play 运行");
+	        _treeAsset = treeAsset;
+	        Debug.Log("[BT] 怪物行为树已创建（11节点，动画驱动，无Wait无Repeater）");
+	    }
+	#endregion
     }
-#endregion
-    }   
 }

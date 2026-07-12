@@ -15,7 +15,6 @@ public class LockOnManager : Singleton<LockOnManager>
     [SerializeField] private float _lockViewAngle = 60f;
     [SerializeField] private float _loseRange = 20f;
     [SerializeField] private float _loseAngle = 90f;
-    [SerializeField] private string _enemyTag = "Enemy";
     [SerializeField] private float _blendTime = 0.25f;
 
     [Header("引用（可空，运行时会自动查找 / 创建）")]
@@ -228,25 +227,37 @@ public class LockOnManager : Singleton<LockOnManager>
         }
     }
 
-    // ==================== 目标搜索 ====================
+    // ==================== 目标搜索（数据源已迁到 TargetManager）====================
 
     LockOnTarget FindNearestTarget()
     {
         if (_playerTransform == null || _freeCam == null) return null;
 
-        // 从相机位置和朝向检测（屏幕中心法）
         var cam = _freeCam.transform;
-        var allTargets = LockOnTarget.ActiveTargets;
+
+        if (!TargetManager.HasInstance)
+        {
+            Debug.LogWarning("[LockOn] TargetManager 不存在");
+            return null;
+        }
+
+        var allTargets = TargetManager.Instance.AllTargets;
         Debug.Log($"[LockOn] 搜寻目标: 共 {allTargets.Count} 个");
 
         LockOnTarget best = null;
         float bestScore = float.MaxValue;
 
-        foreach (var target in allTargets)
+        foreach (var targetable in allTargets)
         {
-            if (!target.CompareTag(_enemyTag))
+            if (targetable == null) continue;
+
+            // 必须同时挂 LockOnTarget 才能拿锁定位移点
+            var target = targetable.GetComponent<LockOnTarget>();
+            if (target == null) continue;
+
+            if (targetable.Team != Team.Enemy)
             {
-                Debug.Log($"[LockOn] 跳过 {target.name} (tag:{target.tag} ≠ {_enemyTag})");
+                Debug.Log($"[LockOn] 跳过 {targetable.name} (Team:{targetable.Team} != Enemy)");
                 continue;
             }
 
@@ -254,7 +265,6 @@ public class LockOnManager : Singleton<LockOnManager>
             float dist = toTarget.magnitude;
             if (dist > _lockRange) continue;
 
-            // 相机视野内？（屏幕中心优先）
             float angle = Vector3.Angle(cam.forward, toTarget.normalized);
             if (angle > _lockViewAngle) continue;
 
