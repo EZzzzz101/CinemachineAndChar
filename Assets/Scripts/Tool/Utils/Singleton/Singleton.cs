@@ -46,7 +46,7 @@ namespace SingletonTool
                 _instance = (T)this;
                 DontDestroyOnLoad(gameObject);
             }
-            else
+            else if (_instance != this)
             {
                 Destroy(gameObject);
             }

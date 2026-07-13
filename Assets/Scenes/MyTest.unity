@@ -695,6 +695,87 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 5629890766874559961, guid: 63f6075ea141912498c15de17d79c6ed, type: 3}
   m_PrefabInstance: {fileID: 993126192}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &412147172
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 975d84f2e887dc442a39bdead032320a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _nodes:
+  - Id: 1
+    TypeName: AI.BehaviourTree.BTSelector
+    Position: {x: 0, y: 0}
+    JsonData: 
+    ChildIds:
+    - 2
+    - 5
+    - 8
+  - Id: 2
+    TypeName: AI.BehaviourTree.BTSequence
+    Position: {x: 150, y: -80}
+    JsonData: 
+    ChildIds:
+    - 3
+    - 4
+    - 0a
+  - Id: 3
+    TypeName: AI.BehaviourTree.BTHasTarget
+    Position: {x: 300, y: -110}
+    JsonData: 
+    ChildIds: []
+  - Id: 4
+    TypeName: AI.BehaviourTree.BTIsTargetInRange
+    Position: {x: 300, y: -80}
+    JsonData: '{"Range":1.5,"TargetKey":"target"}'
+    ChildIds: []
+  - Id: 0a
+    TypeName: AI.BehaviourTree.BTSetAnimatorBool
+    Position: {x: 300, y: -50}
+    JsonData: '{"ParameterName":"IsMoving","Value":false}'
+    ChildIds: []
+  - Id: 5
+    TypeName: AI.BehaviourTree.BTSequence
+    Position: {x: 150, y: 0}
+    JsonData: 
+    ChildIds:
+    - 6
+    - 7
+    - 0b
+  - Id: 6
+    TypeName: AI.BehaviourTree.BTFindNearestTarget
+    Position: {x: 300, y: 20}
+    JsonData: '{"MaxRange":15.0,"TargetTeam":0,"TargetKey":"target"}'
+    ChildIds: []
+  - Id: 7
+    TypeName: AI.BehaviourTree.BTFaceTarget
+    Position: {x: 300, y: 50}
+    JsonData: '{"RotateSpeed":720.0,"TargetKey":"target","AngleThreshold":5.0}'
+    ChildIds: []
+  - Id: 0b
+    TypeName: AI.BehaviourTree.BTSetAnimatorBool
+    Position: {x: 300, y: 80}
+    JsonData: '{"ParameterName":"IsMoving","Value":true}'
+    ChildIds: []
+  - Id: 8
+    TypeName: AI.BehaviourTree.BTSequence
+    Position: {x: 150, y: 80}
+    JsonData: 
+    ChildIds:
+    - 0c
+  - Id: 0c
+    TypeName: AI.BehaviourTree.BTSetAnimatorBool
+    Position: {x: 300, y: 130}
+    JsonData: '{"ParameterName":"IsMoving","Value":false}'
+    ChildIds: []
+  _rootNodeId: 1
+  _blackboardAsset: {fileID: 0}
+  Description: 
 --- !u!1 &428243192
 GameObject:
   m_ObjectHideFlags: 0
@@ -866,19 +947,6 @@ CharacterController:
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &627293883
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 627293876}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 430beb9da649a584ba409b5d012d2035, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  lockOnPointOffset: {x: 0, y: 1, z: 0}
 --- !u!114 &627293884
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -904,9 +972,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 37da042e17c1f054ea5539563ab63d58, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _treeAsset: {fileID: 2113116565}
+  _treeAsset: {fileID: 412147172}
   _tickInterval: 0.1
   _tickEveryFrame: 0
+--- !u!114 &627293888
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 627293876}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 74523850a7d565c4e8923533ab81ed29, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &627434373
 GameObject:
   m_ObjectHideFlags: 3
@@ -2090,7 +2170,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5866666021909216657, guid: f5255da99f6af944b907e552b710ca49, type: 3}
       propertyPath: m_ApplyRootMotion
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -2107,10 +2187,10 @@ PrefabInstance:
       addedObject: {fileID: 627293884}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: f5255da99f6af944b907e552b710ca49, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 627293883}
+      addedObject: {fileID: 627293885}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: f5255da99f6af944b907e552b710ca49, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 627293885}
+      addedObject: {fileID: 627293888}
   m_SourcePrefab: {fileID: 100100000, guid: f5255da99f6af944b907e552b710ca49, type: 3}
 --- !u!1001 &1160043875
 PrefabInstance:
@@ -3378,69 +3458,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1549179083}
   m_LocalEulerAnglesHint: {x: 5.715, y: 182.335, z: -92.045}
---- !u!114 &2113116565
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 975d84f2e887dc442a39bdead032320a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _nodes:
-  - Id: 1
-    TypeName: AI.BehaviourTree.BTSelector
-    Position: {x: 0, y: 0}
-    JsonData: 
-    ChildIds:
-    - 2
-    - 6
-  - Id: 2
-    TypeName: AI.BehaviourTree.BTSequence
-    Position: {x: 150, y: -80}
-    JsonData: 
-    ChildIds:
-    - 3
-    - 4
-    - 5
-  - Id: 3
-    TypeName: AI.BehaviourTree.BTFindNearestTarget
-    Position: {x: 300, y: -120}
-    JsonData: '{"MaxRange":15.0,"TargetTeam":0,"TargetKey":"target"}'
-    ChildIds: []
-  - Id: 4
-    TypeName: AI.BehaviourTree.BTFaceTarget
-    Position: {x: 300, y: -80}
-    JsonData: '{"RotateSpeed":720.0,"TargetKey":"target","AngleThreshold":5.0}'
-    ChildIds: []
-  - Id: 5
-    TypeName: AI.BehaviourTree.BTMoveTowards
-    Position: {x: 300, y: -40}
-    JsonData: '{"Speed":3.0,"TargetKey":"target","StopDistance":1.5}'
-    ChildIds: []
-  - Id: 6
-    TypeName: AI.BehaviourTree.BTSequence
-    Position: {x: 150, y: 80}
-    JsonData: 
-    ChildIds:
-    - 7
-    - 8
-  - Id: 7
-    TypeName: AI.BehaviourTree.BTSetAnimatorBool
-    Position: {x: 300, y: 60}
-    JsonData: '{"ParameterName":"IsMoving","Value":false}'
-    ChildIds: []
-  - Id: 8
-    TypeName: AI.BehaviourTree.BTWait
-    Position: {x: 300, y: 120}
-    JsonData: '{"Duration":0.5}'
-    ChildIds: []
-  _rootNodeId: 1
-  _blackboardAsset: {fileID: 0}
-  Description: 
 --- !u!1 &2119773610
 GameObject:
   m_ObjectHideFlags: 0

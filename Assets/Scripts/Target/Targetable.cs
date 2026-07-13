@@ -18,8 +18,9 @@ public class Targetable : MonoBehaviour
 
     void OnEnable()
     {
-        if (TargetManager.HasInstance)
-            TargetManager.Instance.Register(this);
+        // 直接用 Instance（不存在会触发 Singleton 懒加载），避免 Awake 时序导致注册被跳过
+        TargetManager.Instance.Register(this);
+        Debug.Log($"[Targetable] OnEnable: {gameObject.name} Team={Team} 已注册");
     }
 
     void OnDisable()
