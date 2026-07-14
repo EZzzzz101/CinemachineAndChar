@@ -12,7 +12,36 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 975d84f2e887dc442a39bdead032320a, type: 3}
   m_Name: NewBehaviorTree
   m_EditorClassIdentifier: 
-  _nodes: []
-  _rootNodeId: 
+  _nodes:
+  - Id: b79b5727-d24e-436e-93ee-06c345ac7e4f
+    TypeName: AI.BehaviourTree.BTSequence
+    Position: {x: 104.8, y: 188.8}
+    JsonData: 
+    ChildIds:
+    - 5a825475-2c79-4aac-a18e-8ae7aa74961e
+  - Id: 5a825475-2c79-4aac-a18e-8ae7aa74961e
+    TypeName: AI.BehaviourTree.BTSelector
+    Position: {x: 250.4, y: 188.8}
+    JsonData: 
+    ChildIds:
+    - 2f9c9e36-b3eb-4e03-82b8-f298747a5910
+    - b3e6c3a5-f954-4566-baca-3c0ae8fdb2ef
+  - Id: 51d3d809-23d1-41e3-9f97-7301c0266712
+    TypeName: AI.BehaviourTree.BTSetAnimatorTrigger
+    Position: {x: 560, y: 292.80002}
+    JsonData: '{"TriggerName":""}'
+    ChildIds: []
+  - Id: 2f9c9e36-b3eb-4e03-82b8-f298747a5910
+    TypeName: AI.BehaviourTree.BTRepeater
+    Position: {x: 396, y: 292.80002}
+    JsonData: '{"RepeatCount":0}'
+    ChildIds:
+    - 51d3d809-23d1-41e3-9f97-7301c0266712
+  - Id: b3e6c3a5-f954-4566-baca-3c0ae8fdb2ef
+    TypeName: AI.BehaviourTree.BTFaceTarget
+    Position: {x: 560, y: 103.2}
+    JsonData: '{"RotateSpeed":0.0,"TargetKey":"","AngleThreshold":0.0}'
+    ChildIds: []
+  _rootNodeId: b79b5727-d24e-436e-93ee-06c345ac7e4f
   _blackboardAsset: {fileID: 0}
   Description: 
