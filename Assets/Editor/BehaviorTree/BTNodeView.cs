@@ -1,5 +1,6 @@
 using System;
 using System.Reflection;
+using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -21,6 +22,7 @@ namespace AI.BehaviourTree.Editor
     {
         public System.Type NodeType { get; private set; }
         public string NodeId { get; set; }
+        public string DisplayName { get; private set; }
         public Port InputPort { get; private set; }
         public Port OutputPort { get; private set; }
 
@@ -30,14 +32,22 @@ namespace AI.BehaviourTree.Editor
         /// <summary>参数数据的 C# 类型（如 typeof(WaitData)），null = 无参数</summary>
         public System.Type DataType { get; private set; }
 
+        /// <summary>节点描述文本</summary>
+        public string Description { get; private set; }
+
+        /// <summary>节点标题 Label，改标题时直接更新这个</summary>
+        private Label _nameLabel;
+
         /// <summary>节点被选中时触发，参数面板监听此事件</summary>
         public static event Action<BTNodeView> OnNodeSelected;
 
         public BTNodeView(System.Type nodeType, string nodeName, BTNodeCategory category,
-            bool hasInput = true)
+            string description = "", bool hasInput = true)
         {
             NodeType = nodeType;
             NodeId = System.Guid.NewGuid().ToString();
+            DisplayName = nodeName;
+            Description = description;
             Color color = GetColor(category);
 
             // ===== 初始化 Data 对象 =====
@@ -51,15 +61,15 @@ namespace AI.BehaviourTree.Editor
             titleContainer.style.backgroundColor = color;
 
             // ===== 大字 + 小字 =====
-            var nameLabel = new Label(nodeName);
-            nameLabel.style.color = new Color(0.9f, 0.9f, 0.9f);
-            nameLabel.style.fontSize = 14;
-            nameLabel.style.unityFontStyleAndWeight = FontStyle.Bold;
-            nameLabel.style.marginTop = 6;
-            nameLabel.style.marginLeft = 12;
-            nameLabel.style.marginRight = 12;
-            nameLabel.style.unityTextAlign = TextAnchor.MiddleCenter;
-            mainContainer.Add(nameLabel);
+            _nameLabel = new Label(nodeName);
+            _nameLabel.style.color = new Color(0.9f, 0.9f, 0.9f);
+            _nameLabel.style.fontSize = 14;
+            _nameLabel.style.unityFontStyleAndWeight = FontStyle.Bold;
+            _nameLabel.style.marginTop = 6;
+            _nameLabel.style.marginLeft = 12;
+            _nameLabel.style.marginRight = 12;
+            _nameLabel.style.unityTextAlign = TextAnchor.MiddleCenter;
+            mainContainer.Add(_nameLabel);
 
             var typeLabel = new Label(nodeType.Name);
             typeLabel.style.color = new Color(0.5f, 0.5f, 0.5f);
@@ -95,6 +105,9 @@ namespace AI.BehaviourTree.Editor
 
             RefreshExpandedState();
             RefreshPorts();
+
+            // ===== 双击节点 → 打开实现脚本 =====
+            RegisterCallback<MouseDownEvent>(OnDoubleClick);
         }
 
         /// <summary>从泛型基类中找出 Data 类型，如 BTWait→WaitData</summary>
@@ -120,10 +133,52 @@ namespace AI.BehaviourTree.Editor
             return null;  // 非泛型节点（如 BTInverter）
         }
 
+        /// <summary>修改节点显示名（同步更新标题和属性）</summary>
+        public void SetDisplayName(string newName)
+        {
+            DisplayName = newName;
+            if (_nameLabel != null)
+                _nameLabel.text = newName;
+        }
+
         public override void OnSelected()
         {
             base.OnSelected();
             OnNodeSelected?.Invoke(this);
+        }
+
+        private void OnDoubleClick(MouseDownEvent evt)
+        {
+            if (evt.clickCount >= 2)
+            {
+                OpenScript();
+                evt.StopPropagation();
+            }
+        }
+
+        /// <summary>在项目中搜索节点类型对应的脚本文件并打开</summary>
+        private void OpenScript()
+        {
+            string typeName = NodeType.Name;
+            //搜该名字MonoScript
+            var guids = AssetDatabase.FindAssets($"{typeName} t:MonoScript");
+
+            foreach (var guid in guids)
+            {
+                //把找到的 guid 转成项目路径
+                string path = AssetDatabase.GUIDToAssetPath(guid);
+                //加载这个路径的脚本文件
+                var script = AssetDatabase.LoadAssetAtPath<MonoScript>(path);
+                //确认脚本里定义的类是不是要找的
+                if (script != null && script.GetClass() == NodeType)
+                {
+                    //在 IDE 里打开它
+                    AssetDatabase.OpenAsset(script);
+                    return;
+                }
+            }
+
+            Debug.LogWarning($"[BT Editor] 找不到节点脚本: {NodeType.FullName}");
         }
 
         private static Color GetColor(BTNodeCategory category)

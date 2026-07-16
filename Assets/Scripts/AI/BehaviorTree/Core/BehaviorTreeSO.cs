@@ -37,6 +37,7 @@ namespace AI.BehaviourTree
             public Vector2 Position;       // 编辑器画布坐标
             public string JsonData;        // 节点参数（JSON）
             public List<string> ChildIds;  // 子节点 Id 列表（连线关系）
+            public string CustomName;      // 用户自定义节点名（空=用 [BTNode] 默认名）
         }
     }
 }

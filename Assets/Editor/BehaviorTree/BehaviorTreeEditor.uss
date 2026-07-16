@@ -1,0 +1,8 @@
+/* 行为树编辑器网格背景样式 */
+.gridBackground {
+    background-color: rgb(20, 20, 20);
+    unity-grid-line-color: rgb(56, 56, 56);
+    unity-grid-thick-line-color: rgb(76, 76, 76);
+    unity-grid-small-size: 20;
+    unity-grid-large-size: 100;
+}

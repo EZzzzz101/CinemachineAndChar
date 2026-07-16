@@ -91,6 +91,11 @@ namespace AI.BehaviourTree.Editor
             saveBtn.style.marginRight = 4;
             toolbar.Add(saveBtn);
 
+            var focusBtn = new Button(() => _graphView?.FocusOnRoot());
+            focusBtn.text = "定位根节点";
+            focusBtn.style.marginRight = 8;
+            toolbar.Add(focusBtn);
+
             rootVisualElement.Add(toolbar);
 
             // ===== 横向区域：画布 + 参数面板 =====

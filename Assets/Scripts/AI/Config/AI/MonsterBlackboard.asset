@@ -10,6 +10,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8c8bd311fa4e38b41b70ac93d57429cd, type: 3}
-  m_Name: NewBlackboard
+  m_Name: MonsterBlackboard
   m_EditorClassIdentifier: 
-  _keys: []
+  _keys:
+  - Name: target
+    Type: 6

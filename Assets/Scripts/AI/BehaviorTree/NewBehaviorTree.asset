@@ -13,35 +13,89 @@ MonoBehaviour:
   m_Name: NewBehaviorTree
   m_EditorClassIdentifier: 
   _nodes:
-  - Id: b79b5727-d24e-436e-93ee-06c345ac7e4f
-    TypeName: AI.BehaviourTree.BTSequence
-    Position: {x: 104.8, y: 188.8}
-    JsonData: 
-    ChildIds:
-    - 5a825475-2c79-4aac-a18e-8ae7aa74961e
   - Id: 5a825475-2c79-4aac-a18e-8ae7aa74961e
     TypeName: AI.BehaviourTree.BTSelector
-    Position: {x: 250.4, y: 188.8}
+    Position: {x: -531.2, y: -3068}
+    JsonData: 
+    ChildIds:
+    - a1a580e3-9945-4332-a046-188f5e99be90
+    - 5e5c3e62-b796-4702-91b1-42ec3cb8bde2
+    - 4966f620-59ee-4816-a0a4-57a660e4321d
+    CustomName: "\u9009\u62E9"
+  - Id: a1a580e3-9945-4332-a046-188f5e99be90
+    TypeName: AI.BehaviourTree.BTSequence
+    Position: {x: -246.4, y: -3292}
+    JsonData: 
+    ChildIds:
+    - 6e5c007c-6029-4944-be0f-e7bf84ff077e
+    - b04a4c38-543e-4ca1-9b5c-4de8d0d54596
+    - 5e34e5d2-3512-43f2-84c7-891511de34b0
+    CustomName: "\u80FD\u653B\u51FB\u5417"
+  - Id: 6e5c007c-6029-4944-be0f-e7bf84ff077e
+    TypeName: AI.BehaviourTree.BTHasTarget
+    Position: {x: 22.4, y: -3663.2}
+    JsonData: '{"TargetKey":""}'
+    ChildIds: []
+    CustomName: "\u6709\u76EE\u6807"
+  - Id: b04a4c38-543e-4ca1-9b5c-4de8d0d54596
+    TypeName: AI.BehaviourTree.BTIsTargetInRange
+    Position: {x: -7.2, y: -3504.8}
+    JsonData: '{"Range":2.5,"TargetKey":""}'
+    ChildIds: []
+    CustomName: "\u76EE\u6807\u5728\u8303\u56F4\u5185"
+  - Id: 5e5c3e62-b796-4702-91b1-42ec3cb8bde2
+    TypeName: AI.BehaviourTree.BTSequence
+    Position: {x: -245.6, y: -3041.5999}
+    JsonData: 
+    ChildIds:
+    - dadce98e-85ad-4d94-9857-da022b49ef74
+    - b3e6c3a5-f954-4566-baca-3c0ae8fdb2ef
+    - 2633ed8b-84d5-44ab-8cf8-5173d22d3c5c
+    CustomName: "\u8FFD\u51FB"
+  - Id: 5e34e5d2-3512-43f2-84c7-891511de34b0
+    TypeName: AI.BehaviourTree.BTSetAnimatorBool
+    Position: {x: 8, y: -3351.2}
+    JsonData: '{"ParameterName":"IsMoving","Value":false}'
+    ChildIds: []
+    CustomName: "\u653B\u51FB"
+  - Id: 4966f620-59ee-4816-a0a4-57a660e4321d
+    TypeName: AI.BehaviourTree.BTSequence
+    Position: {x: -225.6, y: -2704}
     JsonData: 
     ChildIds:
     - 2f9c9e36-b3eb-4e03-82b8-f298747a5910
-    - b3e6c3a5-f954-4566-baca-3c0ae8fdb2ef
-  - Id: 51d3d809-23d1-41e3-9f97-7301c0266712
-    TypeName: AI.BehaviourTree.BTSetAnimatorTrigger
-    Position: {x: 560, y: 292.80002}
-    JsonData: '{"TriggerName":""}'
-    ChildIds: []
+    CustomName: "\u5F85\u673A"
   - Id: 2f9c9e36-b3eb-4e03-82b8-f298747a5910
     TypeName: AI.BehaviourTree.BTRepeater
-    Position: {x: 396, y: 292.80002}
+    Position: {x: 23.2, y: -2660.8}
     JsonData: '{"RepeatCount":0}'
     ChildIds:
-    - 51d3d809-23d1-41e3-9f97-7301c0266712
+    - 113fcf2e-a78a-4fc7-bd9c-48c279ac067b
+    CustomName: "\u91CD\u590D\u6267\u884C"
+  - Id: 113fcf2e-a78a-4fc7-bd9c-48c279ac067b
+    TypeName: AI.BehaviourTree.BTSetAnimatorBool
+    Position: {x: 240, y: -2618.4}
+    JsonData: '{"ParameterName":"IsMoving","Value":false}'
+    ChildIds: []
+    CustomName: "\u8BBE\u7F6E\u52A8\u753BBool"
+  - Id: 2633ed8b-84d5-44ab-8cf8-5173d22d3c5c
+    TypeName: AI.BehaviourTree.BTSetAnimatorBool
+    Position: {x: 22.4, y: -2917.5999}
+    JsonData: '{"ParameterName":"IsMoving","Value":true}'
+    ChildIds: []
+    CustomName: "\u8BBE\u7F6E\u52A8\u753BBool"
   - Id: b3e6c3a5-f954-4566-baca-3c0ae8fdb2ef
     TypeName: AI.BehaviourTree.BTFaceTarget
-    Position: {x: 560, y: 103.2}
-    JsonData: '{"RotateSpeed":0.0,"TargetKey":"","AngleThreshold":0.0}'
+    Position: {x: 45.6, y: -3068}
+    JsonData: '{"RotateSpeed":1440.0,"TargetKey":"","AngleThreshold":5.0}'
     ChildIds: []
-  _rootNodeId: b79b5727-d24e-436e-93ee-06c345ac7e4f
+    CustomName: "\u9762\u5411\u76EE\u6807"
+  - Id: dadce98e-85ad-4d94-9857-da022b49ef74
+    TypeName: AI.BehaviourTree.BTFindNearestTarget
+    Position: {x: 37.6, y: -3206.4}
+    JsonData: '{"MaxRange":15.0,"TargetTeam":0,"TargetKey":""}'
+    ChildIds: []
+    CustomName: "\u5BFB\u627E\u76EE\u6807"
+  _rootNodeId: 5a825475-2c79-4aac-a18e-8ae7aa74961e
   _blackboardAsset: {fileID: 0}
   Description: 

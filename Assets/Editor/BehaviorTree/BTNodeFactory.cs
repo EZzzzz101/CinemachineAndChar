@@ -13,6 +13,7 @@ namespace AI.BehaviourTree.Editor
         public Type Type;
         public string Name;            // 中文显示名
         public string Category;        // 分类路径，如 "Action/时间"
+        public string Description;     // 描述文本
         public BTNodeCategory NodeCategory;
     }
 
@@ -48,6 +49,7 @@ namespace AI.BehaviourTree.Editor
                         Type = type,
                         Name = attr.Name,
                         Category = attr.Category,
+                        Description = attr.Description,
                         NodeCategory = GetNodeCategory(type)
                     });
                 }

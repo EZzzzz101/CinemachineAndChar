@@ -2,18 +2,28 @@ using UnityEngine;
 
 namespace AI.BehaviourTree
 {
+    // ========== 数据层 ==========
+    [System.Serializable]
+    public struct HasTargetData
+    {
+        [Tooltip("要检查的黑板键名，默认 target")]
+        public string TargetKey;
+    }
+
+    // ========== 逻辑层 ==========
     /// <summary>
-    /// 条件节点：检查 Blackboard 中是否存在 "target"
-    /// 不需要配置参数 → 直接继承 BTCondition<object>（空数据占位）
+    /// 条件节点：检查 Blackboard 中是否存在指定键
     /// </summary>
-    [BTNode("有目标?", "Condition/检测", "检查是否有锁定/追击目标")]
-    public class BTHasTarget : BTCondition<object>
+    [BTNode("有目标?", "Condition/检测", "检查黑板中是否存在指定键（默认 target）")]
+    public class BTHasTarget : BTCondition<HasTargetData>
     {
         protected override BTResult OnExecute(Blackboard bb)
         {
-            // 条件节点只做判断，立刻返回 Success 或 Failure
-            // 永远不返回 Running
-            return bb.Has("target")
+            string key = string.IsNullOrEmpty(Data.TargetKey)
+                ? "target"
+                : Data.TargetKey;
+
+            return bb.Has(key)
                 ? BTResult.Success
                 : BTResult.Failure;
         }

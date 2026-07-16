@@ -695,87 +695,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 5629890766874559961, guid: 63f6075ea141912498c15de17d79c6ed, type: 3}
   m_PrefabInstance: {fileID: 993126192}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &412147172
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 975d84f2e887dc442a39bdead032320a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _nodes:
-  - Id: 1
-    TypeName: AI.BehaviourTree.BTSelector
-    Position: {x: 0, y: 0}
-    JsonData: 
-    ChildIds:
-    - 2
-    - 5
-    - 8
-  - Id: 2
-    TypeName: AI.BehaviourTree.BTSequence
-    Position: {x: 150, y: -80}
-    JsonData: 
-    ChildIds:
-    - 3
-    - 4
-    - 0a
-  - Id: 3
-    TypeName: AI.BehaviourTree.BTHasTarget
-    Position: {x: 300, y: -110}
-    JsonData: 
-    ChildIds: []
-  - Id: 4
-    TypeName: AI.BehaviourTree.BTIsTargetInRange
-    Position: {x: 300, y: -80}
-    JsonData: '{"Range":1.5,"TargetKey":"target"}'
-    ChildIds: []
-  - Id: 0a
-    TypeName: AI.BehaviourTree.BTSetAnimatorBool
-    Position: {x: 300, y: -50}
-    JsonData: '{"ParameterName":"IsMoving","Value":false}'
-    ChildIds: []
-  - Id: 5
-    TypeName: AI.BehaviourTree.BTSequence
-    Position: {x: 150, y: 0}
-    JsonData: 
-    ChildIds:
-    - 6
-    - 7
-    - 0b
-  - Id: 6
-    TypeName: AI.BehaviourTree.BTFindNearestTarget
-    Position: {x: 300, y: 20}
-    JsonData: '{"MaxRange":15.0,"TargetTeam":0,"TargetKey":"target"}'
-    ChildIds: []
-  - Id: 7
-    TypeName: AI.BehaviourTree.BTFaceTarget
-    Position: {x: 300, y: 50}
-    JsonData: '{"RotateSpeed":720.0,"TargetKey":"target","AngleThreshold":5.0}'
-    ChildIds: []
-  - Id: 0b
-    TypeName: AI.BehaviourTree.BTSetAnimatorBool
-    Position: {x: 300, y: 80}
-    JsonData: '{"ParameterName":"IsMoving","Value":true}'
-    ChildIds: []
-  - Id: 8
-    TypeName: AI.BehaviourTree.BTSequence
-    Position: {x: 150, y: 80}
-    JsonData: 
-    ChildIds:
-    - 0c
-  - Id: 0c
-    TypeName: AI.BehaviourTree.BTSetAnimatorBool
-    Position: {x: 300, y: 130}
-    JsonData: '{"ParameterName":"IsMoving","Value":false}'
-    ChildIds: []
-  _rootNodeId: 1
-  _blackboardAsset: {fileID: 0}
-  Description: 
 --- !u!1 &428243192
 GameObject:
   m_ObjectHideFlags: 0
@@ -972,7 +891,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 37da042e17c1f054ea5539563ab63d58, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _treeAsset: {fileID: 412147172}
+  _treeAsset: {fileID: 11400000, guid: 6f4fafbb509cc104c898c4a57d93b347, type: 2}
   _tickInterval: 0.1
   _tickEveryFrame: 0
 --- !u!114 &627293888

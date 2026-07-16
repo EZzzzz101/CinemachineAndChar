@@ -30,13 +30,37 @@ namespace AI.BehaviourTree.Editor
             _currentNode = nodeView;
             Clear();
 
-            // 标题
+            // ===== 标题：节点参数 =====
             var title = new Label("节点参数");
             title.style.color = Color.white;
             title.style.fontSize = 14;
             title.style.unityFontStyleAndWeight = FontStyle.Bold;
-            title.style.marginBottom = 10;
+            title.style.marginBottom = 2;
             Add(title);
+
+            // ===== 节点名（可编辑，同步到画布） =====
+            var nameField = new TextField("名称");
+            nameField.value = nodeView.DisplayName;
+            nameField.style.marginBottom = 8;
+            nameField.RegisterValueChangedCallback(evt =>
+            {
+                nodeView.SetDisplayName(evt.newValue);
+                SetDirty();
+            });
+            Add(nameField);
+
+            // ===== 描述文本 =====
+            if (!string.IsNullOrEmpty(nodeView.Description))
+            {
+                var descLabel = new Label(nodeView.Description);
+                descLabel.style.color = new Color(0.5f, 0.5f, 0.5f);
+                descLabel.style.fontSize = 10;
+                descLabel.style.whiteSpace = WhiteSpace.Normal;
+                descLabel.style.marginBottom = 12;
+                descLabel.style.paddingLeft = 0;
+                descLabel.style.paddingRight = 0;
+                Add(descLabel);
+            }
 
             if (nodeView.DataType == null || nodeView.DataObject == null)
             {
@@ -83,6 +107,10 @@ namespace AI.BehaviourTree.Editor
             var label = new Label(ObjectNames.NicifyVariableName(field.Name));
             label.style.color = new Color(0.7f, 0.7f, 0.7f);
             label.style.fontSize = 10;
+            // 读 [Tooltip] 属性 → 鼠标悬停字段名时显示
+            var tooltipAttr = field.GetCustomAttribute<TooltipAttribute>();
+            if (tooltipAttr != null)
+                label.tooltip = tooltipAttr.tooltip;
             row.Add(label);
 
             // 输入控件 — 按类型选择
