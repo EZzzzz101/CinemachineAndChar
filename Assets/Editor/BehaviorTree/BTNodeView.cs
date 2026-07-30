@@ -12,7 +12,8 @@ namespace AI.BehaviourTree.Editor
         Composite,
         Decorator,
         Action,
-        Condition
+        Condition,
+        SubTree      // 白色文件夹节点，双击进入子视图
     }
 
     /// <summary>
@@ -41,6 +42,25 @@ namespace AI.BehaviourTree.Editor
         /// <summary>节点被选中时触发，参数面板监听此事件</summary>
         public static event Action<BTNodeView> OnNodeSelected;
 
+        // ===== 节点分类（用于决定外观和行为） =====
+        private BTNodeCategory _category;
+
+        /// <summary>双击文件夹节点时触发，由 GraphView 响应进入子视图</summary>
+        public static event System.Action<BTNodeView> OnSubTreeDoubleClick;
+
+        // ===== 运行时高亮 =====
+        private VisualElement _highlightBorder;
+
+        /// <summary>设为 true 时显示运行中高亮边框</summary>
+        public bool IsDebugActive
+        {
+            set
+            {
+                if (_highlightBorder != null)
+                    _highlightBorder.style.display = value ? DisplayStyle.Flex : DisplayStyle.None;
+            }
+        }
+
         public BTNodeView(System.Type nodeType, string nodeName, BTNodeCategory category,
             string description = "", bool hasInput = true)
         {
@@ -48,6 +68,7 @@ namespace AI.BehaviourTree.Editor
             NodeId = System.Guid.NewGuid().ToString();
             DisplayName = nodeName;
             Description = description;
+            _category = category;
             Color color = GetColor(category);
 
             // ===== 初始化 Data 对象 =====
@@ -78,6 +99,23 @@ namespace AI.BehaviourTree.Editor
             typeLabel.style.unityTextAlign = TextAnchor.MiddleCenter;
             mainContainer.Add(typeLabel);
 
+            // ===== 文件夹节点特殊标记 =====
+            if (category == BTNodeCategory.SubTree)
+            {
+                // 在右上角添加一个小文件夹图标（纯文字，保证渲染）
+                var folderIcon = new Label("[+]");
+                folderIcon.style.position = Position.Absolute;
+                folderIcon.style.right = 20;
+                folderIcon.style.top = 6;
+                folderIcon.style.fontSize = 12;
+                folderIcon.style.color = new Color(0.8f, 0.8f, 0.8f);
+                folderIcon.style.unityFontStyleAndWeight = FontStyle.Bold;
+                mainContainer.Add(folderIcon);
+
+                // 节点背景色略微调亮
+                style.backgroundColor = new Color(0.25f, 0.25f, 0.25f);
+            }
+
             // ===== Input 端口（左边） =====
             if (hasInput)
             {
@@ -88,7 +126,7 @@ namespace AI.BehaviourTree.Editor
             }
 
             // ===== Output 端口（右边） =====
-            if (category == BTNodeCategory.Composite)
+            if (category == BTNodeCategory.Composite || category == BTNodeCategory.SubTree)
             {
                 OutputPort = InstantiatePort(Orientation.Horizontal, Direction.Output,
                     Port.Capacity.Multi, typeof(bool));
@@ -105,6 +143,30 @@ namespace AI.BehaviourTree.Editor
 
             RefreshExpandedState();
             RefreshPorts();
+
+            // ===== 运行时高亮边框（默认隐藏） =====
+            _highlightBorder = new VisualElement();
+            _highlightBorder.name = "debug-highlight";
+            _highlightBorder.style.position = Position.Absolute;
+            _highlightBorder.style.left = -2;
+            _highlightBorder.style.right = -2;
+            _highlightBorder.style.top = -2;
+            _highlightBorder.style.bottom = -2;
+            _highlightBorder.style.borderLeftWidth = 3;
+            _highlightBorder.style.borderRightWidth = 3;
+            _highlightBorder.style.borderTopWidth = 3;
+            _highlightBorder.style.borderBottomWidth = 3;
+            _highlightBorder.style.borderLeftColor = new Color(0f, 0.8f, 1f);
+            _highlightBorder.style.borderRightColor = new Color(0f, 0.8f, 1f);
+            _highlightBorder.style.borderTopColor = new Color(0f, 0.8f, 1f);
+            _highlightBorder.style.borderBottomColor = new Color(0f, 0.8f, 1f);
+            _highlightBorder.style.borderTopLeftRadius = 6;
+            _highlightBorder.style.borderTopRightRadius = 6;
+            _highlightBorder.style.borderBottomLeftRadius = 6;
+            _highlightBorder.style.borderBottomRightRadius = 6;
+            _highlightBorder.style.display = DisplayStyle.None;
+            _highlightBorder.pickingMode = PickingMode.Ignore;
+            Add(_highlightBorder);
 
             // ===== 双击节点 → 打开实现脚本 =====
             RegisterCallback<MouseDownEvent>(OnDoubleClick);
@@ -151,7 +213,15 @@ namespace AI.BehaviourTree.Editor
         {
             if (evt.clickCount >= 2)
             {
-                OpenScript();
+                if (_category == BTNodeCategory.SubTree)
+                {
+                    // 文件夹节点 → 触发子图导航
+                    OnSubTreeDoubleClick?.Invoke(this);
+                }
+                else
+                {
+                    OpenScript();
+                }
                 evt.StopPropagation();
             }
         }
@@ -189,6 +259,7 @@ namespace AI.BehaviourTree.Editor
                 BTNodeCategory.Decorator => new Color(0.7f, 0.6f, 0.2f),
                 BTNodeCategory.Action    => new Color(0.3f, 0.7f, 0.4f),
                 BTNodeCategory.Condition => new Color(0.9f, 0.55f, 0.2f),
+                BTNodeCategory.SubTree   => new Color(0.9f, 0.9f, 0.9f), // 白色
                 _ => Color.gray
             };
         }

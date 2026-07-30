@@ -6,8 +6,6 @@ namespace AI.BehaviourTree
     [System.Serializable]
     public struct HasTargetData
     {
-        [Tooltip("要检查的黑板键名，默认 target")]
-        public string TargetKey;
     }
 
     // ========== 逻辑层 ==========
@@ -19,11 +17,7 @@ namespace AI.BehaviourTree
     {
         protected override BTResult OnExecute(Blackboard bb)
         {
-            string key = string.IsNullOrEmpty(Data.TargetKey)
-                ? "target"
-                : Data.TargetKey;
-
-            return bb.Has(key)
+            return bb.Has("target")
                 ? BTResult.Success
                 : BTResult.Failure;
         }

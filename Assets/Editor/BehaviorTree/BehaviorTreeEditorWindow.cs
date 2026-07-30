@@ -1,3 +1,4 @@
+using System.Linq;
 using UnityEditor;
 using UnityEditor.Callbacks;
 using UnityEngine;
@@ -12,7 +13,8 @@ namespace AI.BehaviourTree.Editor
     public class BehaviorTreeEditorWindow : EditorWindow
     {
         // 当前正在编辑的 BehaviorTreeSO 资产
-        private BehaviorTreeSO _treeAsset;
+        // SerializeField 确保域重载后不丢
+        [SerializeField] private BehaviorTreeSO _treeAsset;
 
         /// <summary>
         /// 双击 .asset 文件 → 自动打开编辑器窗口
@@ -65,6 +67,10 @@ namespace AI.BehaviourTree.Editor
         private BTInspectorView _inspectorView;
         private Label _assetLabel;
         private VisualElement _contentRow;  // 画布 + 面板 的横向容器
+        private VisualElement _breadcrumbBar;   // 子图导航面包屑
+
+        // —— Play 时高亮执行节点（像 Animator 窗口那样） ——
+        private double _lastDebugPoll;
 
         /// <summary>
         /// CreateGUI — 骨架：工具栏 + 横向区域（画布 | 参数面板）
@@ -98,6 +104,16 @@ namespace AI.BehaviourTree.Editor
 
             rootVisualElement.Add(toolbar);
 
+            // ===== 面包屑导航（文件夹钻取路径） =====
+            _breadcrumbBar = new VisualElement();
+            _breadcrumbBar.style.flexDirection = FlexDirection.Row;
+            _breadcrumbBar.style.height = 22;
+            _breadcrumbBar.style.backgroundColor = new Color(0.18f, 0.18f, 0.18f);
+            _breadcrumbBar.style.paddingLeft = 8;
+            _breadcrumbBar.style.paddingRight = 8;
+            _breadcrumbBar.style.alignItems = Align.Center;
+            rootVisualElement.Add(_breadcrumbBar);
+
             // ===== 横向区域：画布 + 参数面板 =====
             _contentRow = new VisualElement();
             _contentRow.style.flexDirection = FlexDirection.Row;
@@ -113,6 +129,23 @@ namespace AI.BehaviourTree.Editor
             {
                 _inspectorView.Show(nodeView);
             };
+
+            // Play 时自动高亮执行节点（像 Animator 窗口一样）
+            EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
+
+            // 面包屑在 graph view 创建后才有效，首次在 RefreshGraphArea 中触发
+            if (EditorApplication.isPlaying)
+                EditorApplication.update += OnEditorUpdate;
+
+            // 域重载后 _treeAsset 通过 SerializeField 恢复，需要重建画布
+            RefreshGraphArea();
+        }
+
+        private void OnDestroy()
+        {
+            EditorApplication.update -= OnEditorUpdate;
+            EditorApplication.playModeStateChanged -= OnPlayModeStateChanged;
+            _graphView?.Cleanup();
         }
 
         /// <summary>
@@ -125,7 +158,10 @@ namespace AI.BehaviourTree.Editor
 
             // 移除旧画布（保留参数面板）
             if (_graphView != null)
+            {
+                _graphView.Cleanup();
                 _contentRow.Remove(_graphView);
+            }
 
             // 更新标题
             if (_assetLabel != null)
@@ -138,7 +174,88 @@ namespace AI.BehaviourTree.Editor
             _graphView.style.flexGrow = 1f;
             _contentRow.Insert(0, _graphView);  // 画布在左，面板在右
 
+            // 导航变化时更新面包屑
+            _graphView.OnScopeChanged += UpdateBreadcrumb;
+
             _graphView.LoadFromSO(_treeAsset);
+
+            // 初始更新面包屑
+            UpdateBreadcrumb();
+        }
+
+        /// <summary>更新面包屑导航（从根到当前文件夹的路径）</summary>
+        private void UpdateBreadcrumb()
+        {
+            if (_breadcrumbBar == null || _graphView == null) return;
+
+            _breadcrumbBar.Clear();
+
+            var crumbs = _graphView.GetBreadcrumbs();
+            for (int i = 0; i < crumbs.Count; i++)
+            {
+                // 分隔符
+                if (i > 0)
+                {
+                    var sep = new Label(" ▸ ");
+                    sep.style.color = new Color(0.5f, 0.5f, 0.5f);
+                    sep.style.fontSize = 12;
+                    _breadcrumbBar.Add(sep);
+                }
+
+                var crumb = crumbs[i];
+                bool isLast = (i == crumbs.Count - 1);
+
+                if (isLast)
+                {
+                    // 当前所在位置（不可点击）
+                    var label = new Label(crumb.DisplayName);
+                    label.style.color = new Color(0.8f, 0.8f, 0.8f);
+                    label.style.fontSize = 12;
+                    label.style.unityFontStyleAndWeight = FontStyle.Bold;
+                    _breadcrumbBar.Add(label);
+                }
+                else
+                {
+                    // 可点击跳转的路径节点
+                    var btn = new Button(() =>
+                    {
+                        _graphView.ExitToFolder(crumb.FolderId);
+                    });
+                    btn.text = crumb.DisplayName;
+                    btn.style.fontSize = 12;
+                    btn.style.color = new Color(0.5f, 0.7f, 1f);
+                    btn.style.backgroundColor = Color.clear;
+                    btn.style.borderLeftWidth = 0;
+                    btn.style.borderRightWidth = 0;
+                    btn.style.borderTopWidth = 0;
+                    btn.style.borderBottomWidth = 0;
+                    btn.style.paddingLeft = 2;
+                    btn.style.paddingRight = 2;
+                    btn.style.marginLeft = 0;
+                    btn.style.marginRight = 0;
+                    btn.style.unityTextAlign = TextAnchor.MiddleCenter;
+                    _breadcrumbBar.Add(btn);
+                }
+            }
+
+            // 如果不在根视图，添加一个"返回"按钮
+            if (_graphView.IsInSubView)
+            {
+                var spacer = new VisualElement();
+                spacer.style.flexGrow = 1f;
+                _breadcrumbBar.Add(spacer);
+
+                var backBtn = new Button(() => _graphView.ExitFolder());
+                backBtn.text = "← 返回上级";
+                backBtn.style.fontSize = 11;
+                backBtn.style.color = new Color(0.8f, 0.6f, 0.3f);
+                backBtn.style.backgroundColor = Color.clear;
+                backBtn.style.borderLeftWidth = 0;
+                backBtn.style.borderRightWidth = 0;
+                backBtn.style.borderTopWidth = 0;
+                backBtn.style.borderBottomWidth = 0;
+                _breadcrumbBar.Add(backBtn);
+            }
         }
 
         private void Save()
@@ -149,22 +266,54 @@ namespace AI.BehaviourTree.Editor
             Debug.Log($"[BT Editor] 已保存: {_treeAsset.name}");
         }
 
-        /// <summary>
-        /// 窗口关闭时 → 如果有未保存的修改 → 弹窗询问
-        /// </summary>
-        private void OnDisable()
+        // ===== 运行时高亮（像 Animator 窗口那样） =====
+
+        private void OnPlayModeStateChanged(PlayModeStateChange change)
         {
-            if (_graphView == null || !_graphView.IsDirty || _treeAsset == null)
-                return;
-
-            bool save = EditorUtility.DisplayDialog(
-                "未保存的更改",
-                $"是否保存对 \"{_treeAsset.name}\" 的更改？",
-                "保存",
-                "不保存");
-
-            if (save)
-                Save();
+            if (change == PlayModeStateChange.EnteredPlayMode)
+            {
+                RefreshGraphArea();  // 域重载后重建画布
+                EditorApplication.update += OnEditorUpdate;
+            }
+            else if (change == PlayModeStateChange.ExitingPlayMode)
+            {
+                EditorApplication.update -= OnEditorUpdate;
+                ClearDebugHighlights();
+            }
         }
+
+        private void OnEditorUpdate()
+        {
+            if (_graphView == null || _treeAsset == null) return;
+
+            // 0.05 秒刷新一次（约 20fps），足够灵敏又省性能
+            double now = EditorApplication.timeSinceStartup;
+            if (now - _lastDebugPoll < 0.05) return;
+            _lastDebugPoll = now;
+
+            // 找场景中使用同一棵树且正在运行的 Runner
+            var runner = FindObjectOfType<BehaviorTreeRunner>();
+            if (runner == null || runner.TreeAsset != _treeAsset || !Application.IsPlaying(runner))
+            {
+                ClearDebugHighlights();
+                return;
+            }
+
+            var activeIds = runner.GetRunningNodeIds();
+
+            var allNodeViews = _graphView.nodes.ToList().OfType<BTNodeView>().ToList();
+            foreach (var nodeView in allNodeViews)
+                nodeView.IsDebugActive = activeIds.Contains(nodeView.NodeId);
+        }
+
+        private void ClearDebugHighlights()
+        {
+            if (_graphView == null) return;
+            var allNodeViews = _graphView.nodes.ToList().OfType<BTNodeView>().ToList();
+            foreach (var nodeView in allNodeViews)
+                nodeView.IsDebugActive = false;
+        }
+
+        // 不弹保存框，用户自己点"保存"按钮才保存
     }
 }

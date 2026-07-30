@@ -22,6 +22,39 @@ namespace AI.BehaviourTree
         //对外暴露的行为树SO
         public BehaviorTreeSO TreeAsset =>_treeAsset;
 
+        // ===== 运行时调试 =====
+        /// <summary>
+        /// 获取当前执行路径上的所有节点 GUID（编辑器高亮用，像 Animator 那样常亮）
+        /// 只包含返回 Running 的节点 + 它们的父链，不包含一帧内完成（Success/Failure）的节点
+        /// </summary>
+        public System.Collections.Generic.HashSet<string> GetRunningNodeIds()
+        {
+            var ids = new System.Collections.Generic.HashSet<string>();
+            if (_nodeMap == null) return ids;
+
+            // 第一遍：收集所有 IsRunning 的节点（跨帧持续运行的叶子/中间节点）
+            var runningNodes = new List<BTNode>();
+            foreach (var kvp in _nodeMap)
+            {
+                if (kvp.Value.IsRunning)
+                    runningNodes.Add(kvp.Value);
+            }
+
+            // 第二遍：沿父链向上回溯，把完整的执行路径也加入高亮
+            foreach (var node in runningNodes)
+            {
+                var current = node;
+                while (current != null)
+                {
+                    if (!string.IsNullOrEmpty(current.Guid))
+                        ids.Add(current.Guid);
+                    current = current.Parent;
+                }
+            }
+
+            return ids;
+        }
+
         private Dictionary<string,BTNode> _nodeMap;
         private float _tickTimer;
 
@@ -139,6 +172,8 @@ namespace AI.BehaviourTree
         /// </summary>
         private void WireChild(BTNode parent,BTNode child)
         {
+            child.Parent = parent;   // 建立父引用，编辑器用父链回溯高亮路径
+
             //组合节点
             if (parent is BTComposite composite)
                 composite.AddChild(child);
