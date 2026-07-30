@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace AI.BehaviourTree
 {
@@ -35,6 +36,24 @@ namespace AI.BehaviourTree
             // 递归重置所有子节点
             foreach (var child in Children)
                 child.ResetNode();
+        }
+    }
+
+    /// <summary>
+    /// 泛型组合节点基类 — 有配置参数的组合节点继承这个
+    /// 带 T Data + 自动序列化/反序列化
+    /// </summary>
+    public abstract class BTComposite<T> : BTComposite where T : new()
+    {
+        public T Data = new T();
+
+        public string SerializeData() =>
+            JsonUtility.ToJson(Data);
+
+        public void DeserializeData(string json)
+        {
+            if (!string.IsNullOrEmpty(json))
+                Data = JsonUtility.FromJson<T>(json) ?? new T();
         }
     }
 }

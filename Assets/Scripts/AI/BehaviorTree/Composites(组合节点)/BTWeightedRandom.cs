@@ -1,42 +1,36 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace AI.BehaviourTree
 {
     /// <summary>
+    /// 加权随机数据
+    /// </summary>
+    [System.Serializable]
+    public class WeightedRandomData
+    {
+        [System.Serializable]
+        public class WeightEntry
+        {
+            [Tooltip("对应子节点的名字")]
+            public string Label;
+            [Tooltip("权重百分比 0~100，0=自动计算（最后一个0自动补全到100）")]
+            public float Weight;
+        }
+
+        public List<WeightEntry> Entries = new();
+    }
+
+    /// <summary>
     /// 组合节点：加权随机选一个子节点执行
     ///
-    /// 用法：每个子节点对应一个权重，权重越高被选中的概率越大
-    /// 选中的子节点执行完后返回其结果（Success/Failure）
-    ///
-    /// JSON 格式: {"Weights":[1,3,5,2]}
-    /// 数组顺序对应 Children 列表顺序
+    /// 用法：每个子节点配一个百分比，最后一项设 0 自动计算（100 - 前面之和）
+    /// Weight=0 表示自动计算
     /// </summary>
-    [BTNode("加权随机", "Composite", "按权重随机选一个子节点执行")]
-    public class BTWeightedRandom : BTComposite
+    [BTNode("加权随机", "Composite", "按百分比随机选一个子节点执行，Weight=0自动计算")]
+    public class BTWeightedRandom : BTComposite<WeightedRandomData>
     {
-        public float[] Weights = System.Array.Empty<float>();
-
         private int _selectedIndex = -1;
-
-        // ===== 序列化 =====
-        public string SerializeData()
-        {
-            return JsonUtility.ToJson(new WeightData { Weights = Weights });
-        }
-
-        public void DeserializeData(string json)
-        {
-            if (string.IsNullOrEmpty(json)) return;
-            var data = JsonUtility.FromJson<WeightData>(json);
-            if (data.Weights != null && data.Weights.Length > 0)
-                Weights = data.Weights;
-        }
-
-        [System.Serializable]
-        private struct WeightData
-        {
-            public float[] Weights;
-        }
 
         // ===== 逻辑 =====
         protected override BTResult OnExecute(Blackboard bb)
@@ -63,28 +57,43 @@ namespace AI.BehaviourTree
 
         private int PickWeightedRandom()
         {
-            if (Weights == null || Weights.Length == 0)
+            var entries = Data.Entries;
+
+            // 1. 解析百分比，最后一个 0 自动补全
+            float[] percentages = new float[Children.Count];
+            float sum = 0f;
+            int autoIndex = -1;
+
+            for (int i = 0; i < Children.Count; i++)
             {
-                // 没设权重 → 平均随机
-                return Random.Range(0, Children.Count);
+                if (entries != null && i < entries.Count && entries[i].Weight > 0f)
+                {
+                    percentages[i] = entries[i].Weight;
+                    sum += percentages[i];
+                }
+                else
+                {
+                    autoIndex = i;  // 找到最后一个 0 的作为自动计算位
+                }
             }
 
-            // 权重数量不够 → 剩下的平均分
-            float total = 0f;
-            int count = Mathf.Min(Weights.Length, Children.Count);
-            for (int i = 0; i < count; i++)
-                total += Mathf.Max(0f, Weights[i]);
+            // 如果有自动位，补全到 100
+            if (autoIndex >= 0 && sum < 100f)
+            {
+                percentages[autoIndex] = Mathf.Max(0f, 100f - sum);
+                sum = 100f;
+            }
 
-            // 剩余子节点给默认权重 1
-            total += Mathf.Max(0, Children.Count - count);
+            if (sum <= 0f)
+                return Random.Range(0, Children.Count);
 
-            float r = Random.Range(0f, total);
+            // 2. 随机抽取
+            float r = Random.Range(0f, sum);
             float cumulative = 0f;
 
             for (int i = 0; i < Children.Count; i++)
             {
-                float w = (i < Weights.Length) ? Mathf.Max(0f, Weights[i]) : 1f;
-                cumulative += w;
+                cumulative += percentages[i];
                 if (r < cumulative)
                     return i;
             }

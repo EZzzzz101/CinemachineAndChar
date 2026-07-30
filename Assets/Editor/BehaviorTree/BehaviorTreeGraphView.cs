@@ -90,11 +90,28 @@ namespace AI.BehaviourTree.Editor
             });
 
             // ========== 监听画布变化 ==========
-            graphViewChanged += _ => { IsDirty = true; return _; };
+            graphViewChanged += changes => { MarkDirty(); OnGraphChanged?.Invoke(); return changes; };
 
             // ========== 双击文件夹 → 进入子视图 ==========
             BTNodeView.OnSubTreeDoubleClick += EnterFolder;
         }
+
+        /// <summary>标记为有修改</summary>
+        public void MarkDirty()
+        {
+            if (_isLoading) return;
+            IsDirty = true;
+            OnDirty?.Invoke();
+        }
+
+        /// <summary>状态变脏时触发（EditorWindow 用来更新 hasUnsavedChanges）</summary>
+        public event Action OnDirty;
+
+        /// <summary>画布结构变化时触发（连线变动等，用于刷新 Inspector）</summary>
+        public event Action OnGraphChanged;
+
+        /// <summary>是否正在从 SO 加载（加载中不标记脏）</summary>
+        private bool _isLoading;
 
         /// <summary>移除静态事件订阅，在 EditorWindow.OnDestroy 或移除 GraphView 时调用</summary>
         public void Cleanup()
@@ -676,6 +693,8 @@ namespace AI.BehaviourTree.Editor
         /// </summary>
         public void LoadFromSO(BehaviorTreeSO so)
         {
+            _isLoading = true;  // 加载中不触发自动保存
+
             // 清空
             DeleteElements(graphElements.ToList());
 
@@ -725,6 +744,8 @@ namespace AI.BehaviourTree.Editor
                     AddElement(edge);
                 }
             }
+
+            _isLoading = false;  // 加载完成
         }
 
         #endregion

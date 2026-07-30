@@ -15,3 +15,7 @@ MonoBehaviour:
   _keys:
   - Name: target
     Type: 6
+  - Name: _hpRatio
+    Type: 1
+  - Name: _timeSincePlayerAttack
+    Type: 1

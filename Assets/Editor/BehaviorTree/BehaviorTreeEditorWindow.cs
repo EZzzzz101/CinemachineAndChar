@@ -177,6 +177,12 @@ namespace AI.BehaviourTree.Editor
             // 导航变化时更新面包屑
             _graphView.OnScopeChanged += UpdateBreadcrumb;
 
+            // 标记未保存
+            _graphView.OnDirty += () => hasUnsavedChanges = true;
+
+            // 画布结构变化时刷新 WeightedRandom 的参数面板
+            _graphView.OnGraphChanged += RefreshWeightedRandomInspector;
+
             _graphView.LoadFromSO(_treeAsset);
 
             // 初始更新面包屑
@@ -258,12 +264,33 @@ namespace AI.BehaviourTree.Editor
             }
         }
 
+        /// <summary>连线变动时刷新 WeightedRandom 的参数面板</summary>
+        private void RefreshWeightedRandomInspector()
+        {
+            if (_graphView == null) return;
+            var selected = _graphView.selection.OfType<BTNodeView>().FirstOrDefault();
+            if (selected != null && selected.NodeType?.FullName == "AI.BehaviourTree.BTWeightedRandom")
+            {
+                // 触发重新选中，同步子节点到 Entries
+                BTNodeView.SelectNode(selected);
+            }
+        }
+
+        /// <summary>手动保存 / SaveChanges 时调用</summary>
         private void Save()
         {
             if (_treeAsset == null || _graphView == null) return;
             _graphView.SaveToSO(_treeAsset);
             AssetDatabase.SaveAssets();
+            hasUnsavedChanges = false;
             Debug.Log($"[BT Editor] 已保存: {_treeAsset.name}");
+        }
+
+        /// <summary>Unity 在关闭窗口 / 按 Ctrl+S 时自动调用此方法</summary>
+        public override void SaveChanges()
+        {
+            base.SaveChanges();
+            Save();
         }
 
         // ===== 运行时高亮（像 Animator 窗口那样） =====

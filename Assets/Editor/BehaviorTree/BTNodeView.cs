@@ -42,6 +42,9 @@ namespace AI.BehaviourTree.Editor
         /// <summary>节点被选中时触发，参数面板监听此事件</summary>
         public static event Action<BTNodeView> OnNodeSelected;
 
+        /// <summary>让外部触发节点选中事件（刷新 Inspector）</summary>
+        public static void SelectNode(BTNodeView node) => OnNodeSelected?.Invoke(node);
+
         // ===== 节点分类（用于决定外观和行为） =====
         private BTNodeCategory _category;
 
@@ -182,7 +185,7 @@ namespace AI.BehaviourTree.Editor
                 {
                     var def = baseType.GetGenericTypeDefinition();
                     if (def == typeof(BTAction<>) || def == typeof(BTCondition<>) ||
-                        def == typeof(BTDecorator<>))
+                        def == typeof(BTDecorator<>) || def == typeof(BTComposite<>))
                     {
                         var t = baseType.GetGenericArguments()[0];
                         // object 是占位类型，表示没有实际参数
