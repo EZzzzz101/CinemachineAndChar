@@ -9,9 +9,6 @@ namespace AI.BehaviourTree
         [Tooltip("旋转速度（度/秒），默认 720")]
         public float RotateSpeed;
 
-        [Tooltip("黑板中目标 Transform 的键名")]
-        public string TargetKey;
-
         [Tooltip("角度差低于此值视为已面向（度），默认 5")]
         public float AngleThreshold;
     }
@@ -33,12 +30,8 @@ namespace AI.BehaviourTree
             if (self == null)
                 return BTResult.Failure;
 
-            // 2. 取目标 Transform
-            string key = string.IsNullOrEmpty(Data.TargetKey)
-                ? "target"
-                : Data.TargetKey;
-
-            Transform target = bb.Get<Transform>(key);
+            // 2. 从黑板读目标（固定键名 "target"）
+            Transform target = bb.Get<Transform>("target");
             if (target == null)
                 return BTResult.Failure;
 

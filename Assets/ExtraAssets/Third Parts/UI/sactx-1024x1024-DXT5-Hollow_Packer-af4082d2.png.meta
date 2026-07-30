@@ -3,7 +3,7 @@ guid: ed3bc77b6e891b74e84f2775203bd57d
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
-  serializedVersion: 12
+  serializedVersion: 13
   mipmaps:
     mipMapMode: 0
     enableMipMap: 0
@@ -106,20 +106,385 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: WebGL
+    maxTextureSize: 1024
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
-    sprites: []
+    sprites:
+    - serializedVersion: 2
+      name: sactx-1024x1024-DXT5-Hollow_Packer-af4082d2_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 943
+        width: 520
+        height: 81
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 109cb24b98b797840adf7ce757b7d011
+      internalID: 1724560625
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: sactx-1024x1024-DXT5-Hollow_Packer-af4082d2_1
+      rect:
+        serializedVersion: 2
+        x: 525
+        y: 692
+        width: 189
+        height: 189
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: dd65a264e159e1742ad225a47856c4f8
+      internalID: 1458553218
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: sactx-1024x1024-DXT5-Hollow_Packer-af4082d2_2
+      rect:
+        serializedVersion: 2
+        x: 719
+        y: 683
+        width: 189
+        height: 189
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4ba994996cb1e4944ad50dbe80335e39
+      internalID: 1662679630
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: sactx-1024x1024-DXT5-Hollow_Packer-af4082d2_3
+      rect:
+        serializedVersion: 2
+        x: 2
+        y: 466
+        width: 234
+        height: 234
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 39823484ff8648b49a3ea96f89e9b780
+      internalID: 180757973
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: sactx-1024x1024-DXT5-Hollow_Packer-af4082d2_4
+      rect:
+        serializedVersion: 2
+        x: 242
+        y: 466
+        width: 225
+        height: 225
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3e18228e906673a448bb714a1c1be4b7
+      internalID: -1191292597
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: sactx-1024x1024-DXT5-Hollow_Packer-af4082d2_5
+      rect:
+        serializedVersion: 2
+        x: 470
+        y: 483
+        width: 207
+        height: 206
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 93de4486b11130246b85c6db7ed0a7e4
+      internalID: 1427668087
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: sactx-1024x1024-DXT5-Hollow_Packer-af4082d2_6
+      rect:
+        serializedVersion: 2
+        x: 713
+        y: 482
+        width: 207
+        height: 198
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8ad2764091d3b5e478783f2b572b792a
+      internalID: -1495726873
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: sactx-1024x1024-DXT5-Hollow_Packer-af4082d2_7
+      rect:
+        serializedVersion: 2
+        x: 2
+        y: 224
+        width: 236
+        height: 236
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 601735fedac753b488c9fa6bf93bab4d
+      internalID: -991698852
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: sactx-1024x1024-DXT5-Hollow_Packer-af4082d2_8
+      rect:
+        serializedVersion: 2
+        x: 244
+        y: 225
+        width: 234
+        height: 234
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b2d73884942f17d4eb43177edb3ff637
+      internalID: -1761725843
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: sactx-1024x1024-DXT5-Hollow_Packer-af4082d2_9
+      rect:
+        serializedVersion: 2
+        x: 484
+        y: 246
+        width: 234
+        height: 234
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 71070b2516fdbc14e98259779b258016
+      internalID: 1108737173
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: sactx-1024x1024-DXT5-Hollow_Packer-af4082d2_10
+      rect:
+        serializedVersion: 2
+        x: 724
+        y: 245
+        width: 234
+        height: 234
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1be418b35f1427048a4ec60436cfaf37
+      internalID: -1336306141
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: sactx-1024x1024-DXT5-Hollow_Packer-af4082d2_11
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 569
+        height: 221
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b3d91219ad249d546ac907f43019e845
+      internalID: -1480168
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: sactx-1024x1024-DXT5-Hollow_Packer-af4082d2_12
+      rect:
+        serializedVersion: 2
+        x: 572
+        y: 2
+        width: 238
+        height: 237
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 69a9f5d1dbdc40d4690e1ada75a7aaad
+      internalID: 1019546442
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: sactx-1024x1024-DXT5-Hollow_Packer-af4082d2_13
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 860
+        width: 522
+        height: 83
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 184de37cec007a0458fa96710f567ce1
+      internalID: 1972640394
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: sactx-1024x1024-DXT5-Hollow_Packer-af4082d2_14
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 782
+        width: 520
+        height: 80
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6261ee957f92c6140897a3e45973290c
+      internalID: -1638954348
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: sactx-1024x1024-DXT5-Hollow_Packer-af4082d2_15
+      rect:
+        serializedVersion: 2
+        x: 3
+        y: 705
+        width: 522
+        height: 78
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 048f49ad694d4da40a96b9162965d5bc
+      internalID: 1986431220
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: b532d17a4f92ac949805c9bf52e669d1
     internalID: 0
     vertices: []
     indices: 
     edges: []
     weights: []
     secondaryTextures: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      sactx-1024x1024-DXT5-Hollow_Packer-af4082d2_0: 1724560625
+      sactx-1024x1024-DXT5-Hollow_Packer-af4082d2_1: 1458553218
+      sactx-1024x1024-DXT5-Hollow_Packer-af4082d2_10: -1336306141
+      sactx-1024x1024-DXT5-Hollow_Packer-af4082d2_11: -1480168
+      sactx-1024x1024-DXT5-Hollow_Packer-af4082d2_12: 1019546442
+      sactx-1024x1024-DXT5-Hollow_Packer-af4082d2_13: 1972640394
+      sactx-1024x1024-DXT5-Hollow_Packer-af4082d2_14: -1638954348
+      sactx-1024x1024-DXT5-Hollow_Packer-af4082d2_15: 1986431220
+      sactx-1024x1024-DXT5-Hollow_Packer-af4082d2_2: 1662679630
+      sactx-1024x1024-DXT5-Hollow_Packer-af4082d2_3: 180757973
+      sactx-1024x1024-DXT5-Hollow_Packer-af4082d2_4: -1191292597
+      sactx-1024x1024-DXT5-Hollow_Packer-af4082d2_5: 1427668087
+      sactx-1024x1024-DXT5-Hollow_Packer-af4082d2_6: -1495726873
+      sactx-1024x1024-DXT5-Hollow_Packer-af4082d2_7: -991698852
+      sactx-1024x1024-DXT5-Hollow_Packer-af4082d2_8: -1761725843
+      sactx-1024x1024-DXT5-Hollow_Packer-af4082d2_9: 1108737173
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

@@ -9,9 +9,6 @@ namespace AI.BehaviourTree
         [Tooltip("移动速度（米/秒）")]
         public float Speed;
 
-        [Tooltip("黑板中目标 Transform 的键名")]
-        public string TargetKey;
-
         [Tooltip("到达此距离内停止移动")]
         public float StopDistance;
     }
@@ -29,7 +26,7 @@ namespace AI.BehaviourTree
         public override void OnEnter(Blackboard bb)
         {
             _lastTickTime = Time.time;
-            Transform target = GetTarget(bb);
+            Transform target = bb.Get<Transform>("target");
             float dist = target != null
                 ? Vector3.Distance(bb.Get<Transform>("_transform").position, target.position)
                 : 0f;
@@ -39,7 +36,7 @@ namespace AI.BehaviourTree
         protected override BTResult OnExecute(Blackboard bb)
         {
             Transform self = bb.Get<Transform>("_transform");
-            Transform target = GetTarget(bb);
+            Transform target = bb.Get<Transform>("target");
 
             if (self == null || target == null)
                 return BTResult.Failure;
@@ -69,12 +66,6 @@ namespace AI.BehaviourTree
             );
 
             return BTResult.Running;
-        }
-
-        private Transform GetTarget(Blackboard bb)
-        {
-            string key = string.IsNullOrEmpty(Data.TargetKey) ? "target" : Data.TargetKey;
-            return bb.Get<Transform>(key);
         }
     }
 }

@@ -11,7 +11,7 @@ public static class EventBus
 {
     private static readonly Dictionary<string, List<Delegate>> _listeners = new();
 
-    // ===== 泛型版（推荐） =====
+    // ===== 泛型版 =====
 
     public static void Subscribe<T>(string eventName, Action<T> callback)
     {
@@ -54,7 +54,7 @@ public static class EventBus
         Emit<object>(eventName, null);
     }
 
-    /// <summary>清空所有监听（场景切换时调用）</summary>
+    /// <summary>清空所有监（场景切换时调用）</summary>
     public static void Clear()
     {
         _listeners.Clear();

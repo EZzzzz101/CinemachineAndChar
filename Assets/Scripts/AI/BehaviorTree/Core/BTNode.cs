@@ -1,3 +1,4 @@
+using UnityEngine;
 
 namespace AI.BehaviourTree
 {
@@ -16,12 +17,19 @@ namespace AI.BehaviourTree
         public string Guid {get;internal set;}
         private bool _wasRunning;
 
+        /// <summary>当前是否处于 Running 状态（编辑器高亮用）</summary>
+        public bool IsRunning { get; private set; }
+
+        /// <summary>父节点引用（运行时由 WireChild 设置，编辑器高亮回溯路径用）</summary>
+        public BTNode Parent { get; set; }
+
         public BTResult Execute(Blackboard bb)
         {
             if(!_wasRunning)
-                OnEnter(bb);   
-            BTResult result =OnExecute(bb); //子类实现
+                OnEnter(bb);
+            BTResult result = OnExecute(bb); //子类实现
             _wasRunning=(result==BTResult.Running);
+            IsRunning = _wasRunning;  // 持续跟踪，供编辑器读取
             if(!_wasRunning)
                 OnExit(bb);   //结束(成功或失败)
 
@@ -33,7 +41,7 @@ namespace AI.BehaviourTree
         public virtual void OnEnter(Blackboard bb){}
         public virtual void OnExit(Blackboard bb){}
 
-        public virtual void ResetNode(){ _wasRunning = false;}
+        public virtual void ResetNode(){ _wasRunning = false; IsRunning = false;}
     }
 
 }

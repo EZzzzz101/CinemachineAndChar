@@ -11,9 +11,6 @@ namespace AI.BehaviourTree
 
         [Tooltip("只搜索这个阵营的目标")]
         public Team TargetTeam;
-
-        [Tooltip("找到后写入黑板的键名，默认 target")]
-        public string TargetKey;
     }
 
     // ========== 逻辑层 ==========
@@ -36,24 +33,20 @@ namespace AI.BehaviourTree
             if (self == null)
                 return BTResult.Failure;
 
-            string key = string.IsNullOrEmpty(Data.TargetKey)
-                ? "target"
-                : Data.TargetKey;
-
             float maxRange = Data.MaxRange > 0f ? Data.MaxRange : 15f;
 
             Targetable found = TargetManager.Instance.FindNearest(
                 self.position,
                 maxRange,
                 Data.TargetTeam,
-                bb.Get<GameObject>("_owner")   // 排除自己
+                bb.Get<GameObject>("_owner")
             );
 
             if (found != null)
             {
-                bb.Set(key, found.transform);
+                bb.Set("target", found.transform);
                 Debug.Log($"[BT] BTFindNearestTarget: 找到目标 {found.name} "
-                          + $"(阵营:{found.Team}, 已在黑板写入 \"{key}\")");
+                          + $"(阵营:{found.Team})");
                 return BTResult.Success;
             }
 

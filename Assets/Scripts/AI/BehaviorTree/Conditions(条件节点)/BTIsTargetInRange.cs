@@ -10,9 +10,6 @@ namespace AI.BehaviourTree
     {
         [Tooltip("检测半径（米）")]
         public float Range;
-
-        [Tooltip("黑板中目标 Transform 的键名")]
-        public string TargetKey;
     }
 
     // ========== 逻辑层 ==========
@@ -24,18 +21,13 @@ namespace AI.BehaviourTree
     {
         protected override BTResult OnExecute(Blackboard bb)
         {
-            // 1. 从黑板取目标 Transform
-            //    如果 TargetKey 为空，默认用 "target"
-            string key = string.IsNullOrEmpty(Data.TargetKey)
-                ? "target"
-                : Data.TargetKey;
+            // 从黑板读目标（固定键名 "target"）
+            if (!bb.Has("target"))
+                return BTResult.Failure;
 
-            if (!bb.Has(key))
-                return BTResult.Failure;   // 没有目标 → 失败
-
-            Transform target = bb.Get<Transform>(key);
+            Transform target = bb.Get<Transform>("target");
             if (target == null)
-                return BTResult.Failure;   // Transform 被销毁了 → 失败
+                return BTResult.Failure;
 
             // 2. 从黑板取自己的 Transform
             Transform self = bb.Get<Transform>("_transform");

@@ -61,6 +61,9 @@ namespace AI.BehaviourTree.Editor
 
         private static BTNodeCategory GetNodeCategory(Type type)
         {
+            // BTSubTree 是特殊文件夹节点，先于 BTComposite 判断
+            if (typeof(BTSubTree).IsAssignableFrom(type))
+                return BTNodeCategory.SubTree;
             if (typeof(BTComposite).IsAssignableFrom(type))
                 return BTNodeCategory.Composite;
             if (typeof(BTDecorator).IsAssignableFrom(type))

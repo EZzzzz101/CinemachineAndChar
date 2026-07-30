@@ -3,49 +3,39 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// UI 总控 — 面板用类型做 key 缓存，懒加载
-/// 面板继承 UIView 自动注册，不需要手动调 Register
+/// UI 总控 — View 用类型做 key 缓存，懒加载
+/// View 继承 UIView 自动注册，不需要手动调 Register
+/// 
 /// </summary>
 public class UIManager : GameModule<UIManager>
 {
-    private readonly Dictionary<Type, IUIView> _panels = new();
-    private Transform _root;
-    private Canvas _canvas;
+    [Header("场景引用")]
+    [SerializeField] private Transform _root;
+    [SerializeField] private Canvas _canvas;
 
-    /// <summary>UI Canvas 根节点</summary>
+    private readonly Dictionary<Type, IUIView> _views = new();
+
     public Canvas RootCanvas => _canvas;
-    /// <summary>UI 根级 Transform（面板挂在这个下面）</summary>
     public Transform RootTransform => _root;
 
     protected override void OnInit()
     {
-        // 子物体：UI Root — 挂 Canvas 组件
-        var rootGO = new GameObject("UICanvas");
-        rootGO.transform.SetParent(transform, false);
-
-        _canvas = rootGO.AddComponent<Canvas>();
-        rootGO.AddComponent<UnityEngine.UI.CanvasScaler>();
-        rootGO.AddComponent<UnityEngine.UI.GraphicRaycaster>();
-        _canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-
-        _root = rootGO.transform;
-
         Debug.Log("[UIManager] 初始化完成");
     }
 
-    public void Register(IUIView panel)
+    public void Register(IUIView view)
     {
-        _panels[panel.GetType()] = panel;
+        _views[view.GetType()] = view;
     }
 
     public T Open<T>() where T : IUIView
     {
         var type = typeof(T);
 
-        if (_panels.TryGetValue(type, out var panel))
+        if (_views.TryGetValue(type, out var view))
         {
-            panel.Show();
-            return (T)panel;
+            view.Show();
+            return (T)view;
         }
 
         var prefab = Resources.Load<GameObject>($"UI/Panels/{type.Name}");
@@ -61,14 +51,14 @@ public class UIManager : GameModule<UIManager>
 
     public void Close<T>() where T : IUIView
     {
-        if (_panels.TryGetValue(typeof(T), out var panel))
-            panel.Hide();
+        if (_views.TryGetValue(typeof(T), out var view))
+            view.Hide();
     }
 
     public T Get<T>() where T : IUIView
     {
-        if (_panels.TryGetValue(typeof(T), out var panel))
-            return (T)panel;
+        if (_views.TryGetValue(typeof(T), out var view))
+            return (T)view;
         return default;
     }
 }

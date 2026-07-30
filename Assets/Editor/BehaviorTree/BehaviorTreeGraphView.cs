@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
@@ -26,6 +27,20 @@ namespace AI.BehaviourTree.Editor
 
         // 根节点 ID（从 SO 加载时记录）
         private string _rootNodeId;
+
+        // ===== 子图导航（文件夹节点钻取） =====
+        private string _currentFolderId;               // 当前所在文件夹 ID，null=根视图
+        private readonly Stack<FolderViewState> _folderStack = new();
+
+        private struct FolderViewState
+        {
+            public string FolderId;
+            public Vector3 ViewPosition;
+            public Vector3 ViewScale;
+        }
+
+        /// <summary>导航发生变化时触发（用于更新面包屑）</summary>
+        public event Action OnScopeChanged;
 
         public BehaviorTreeGraphView()
         {
@@ -76,6 +91,15 @@ namespace AI.BehaviourTree.Editor
 
             // ========== 监听画布变化 ==========
             graphViewChanged += _ => { IsDirty = true; return _; };
+
+            // ========== 双击文件夹 → 进入子视图 ==========
+            BTNodeView.OnSubTreeDoubleClick += EnterFolder;
+        }
+
+        /// <summary>移除静态事件订阅，在 EditorWindow.OnDestroy 或移除 GraphView 时调用</summary>
+        public void Cleanup()
+        {
+            BTNodeView.OnSubTreeDoubleClick -= EnterFolder;
         }
 
         // ========== 复制选中节点到剪贴板 ==========
@@ -225,6 +249,243 @@ namespace AI.BehaviourTree.Editor
             // 选中根节点
             ClearSelection();
             AddToSelection(root);
+        }
+
+        // ========== 子图导航（文件夹钻取） ==========
+
+        /// <summary>双击文件夹节点时调用 — 进入子视图</summary>
+        public void EnterFolder(BTNodeView folderNode)
+        {
+            // 保存当前视图状态
+            _folderStack.Push(new FolderViewState
+            {
+                FolderId = _currentFolderId,
+                ViewPosition = viewTransform.position,
+                ViewScale = viewTransform.scale
+            });
+
+            _currentFolderId = folderNode.NodeId;
+            ApplyScopeVisibility();
+            FocusOnFolder(folderNode);
+
+            // 选中文件夹节点自身，方便查看参数
+            ClearSelection();
+            AddToSelection(folderNode);
+
+            OnScopeChanged?.Invoke();
+        }
+
+        /// <summary>返回上一层视图</summary>
+        public void ExitFolder()
+        {
+            if (_folderStack.Count == 0) return;
+
+            var prev = _folderStack.Pop();
+            _currentFolderId = prev.FolderId;
+            viewTransform.position = prev.ViewPosition;
+            viewTransform.scale = prev.ViewScale;
+
+            ApplyScopeVisibility();
+
+            OnScopeChanged?.Invoke();
+        }
+
+        /// <summary>返回到根视图</summary>
+        public void ExitToRoot()
+        {
+            if (_folderStack.Count == 0 && string.IsNullOrEmpty(_currentFolderId)) return;
+
+            // 如果当前在根视图，不需要操作
+            if (string.IsNullOrEmpty(_currentFolderId)) return;
+
+            // 清空栈并回到根
+            _folderStack.Clear();
+            _currentFolderId = null;
+
+            // 回到根视图的保存位置（如果没有保存过，用 FocusOnRoot）
+            FocusOnRoot();
+
+            ApplyScopeVisibility();
+            OnScopeChanged?.Invoke();
+        }
+
+        /// <summary>回到指定层级的文件夹</summary>
+        public void ExitToFolder(string folderId)
+        {
+            // 如果是当前视图，不做操作
+            if (_currentFolderId == folderId) return;
+
+            // 如果回到根
+            if (string.IsNullOrEmpty(folderId))
+            {
+                ExitToRoot();
+                return;
+            }
+
+            // 倒栈直到找到目标文件夹
+            bool found = false;
+            while (_folderStack.Count > 0)
+            {
+                var prev = _folderStack.Pop();
+                if (prev.FolderId == folderId || _currentFolderId == folderId)
+                {
+                    found = true;
+                    _currentFolderId = prev.FolderId;
+                    viewTransform.position = prev.ViewPosition;
+                    viewTransform.scale = prev.ViewScale;
+                    break;
+                }
+                _currentFolderId = prev.FolderId;
+            }
+
+            if (!found) return;
+            ApplyScopeVisibility();
+            OnScopeChanged?.Invoke();
+        }
+
+        /// <summary>获取从根到当前文件夹的路径（用于面包屑）</summary>
+        public List<FolderBreadcrumb> GetBreadcrumbs()
+        {
+            var list = new List<FolderBreadcrumb>();
+
+            // 根目录
+            list.Add(new FolderBreadcrumb { FolderId = null, DisplayName = "根目录" });
+
+            if (_folderStack.Count == 0 && string.IsNullOrEmpty(_currentFolderId))
+                return list;
+
+            // 重建路径：从栈底（最早进入）到栈顶（最近进入）+ 当前文件夹
+            var stackArray = _folderStack.ToArray();
+            // stackArray[0] = 栈顶（最新），stackArray[^1] = 栈底（最早）
+            var pathIds = new List<string>();
+            for (int i = stackArray.Length - 1; i >= 0; i--)
+                pathIds.Add(stackArray[i].FolderId);
+            if (!string.IsNullOrEmpty(_currentFolderId))
+                pathIds.Add(_currentFolderId);
+
+            var allNodes = nodes.ToList().OfType<BTNodeView>().ToList();
+            foreach (var id in pathIds)
+            {
+                if (id == null) continue;
+                var node = allNodes.Find(n => n.NodeId == id);
+                list.Add(new FolderBreadcrumb
+                {
+                    FolderId = id,
+                    DisplayName = node != null ? node.DisplayName : "(未知)"
+                });
+            }
+
+            return list;
+        }
+
+        /// <summary>根据当前 _currentFolderId 显示/隐藏节点</summary>
+        private void ApplyScopeVisibility()
+        {
+            var allNodeViews = nodes.ToList().OfType<BTNodeView>().ToList();
+            var visibleIds = GetVisibleNodeIds(allNodeViews);
+
+            foreach (var node in allNodeViews)
+            {
+                bool visible = visibleIds.Contains(node.NodeId);
+                node.style.display = visible ? DisplayStyle.Flex : DisplayStyle.None;
+            }
+
+            // 隐藏连接到不可见节点的边
+            foreach (var edge in edges.ToList())
+            {
+                var inputNode = edge.input.node as BTNodeView;
+                var outputNode = edge.output.node as BTNodeView;
+                bool edgeVisible = (inputNode == null || visibleIds.Contains(inputNode.NodeId)) &&
+                                   (outputNode == null || visibleIds.Contains(outputNode.NodeId));
+                edge.style.display = edgeVisible ? DisplayStyle.Flex : DisplayStyle.None;
+            }
+        }
+
+        /// <summary>收集当前作用域下应显示的节点 ID 集合</summary>
+        private HashSet<string> GetVisibleNodeIds(List<BTNodeView> allNodeViews)
+        {
+            var ids = new HashSet<string>();
+
+            if (string.IsNullOrEmpty(_currentFolderId))
+            {
+                // 根视图：显示所有节点
+                foreach (var n in allNodeViews)
+                    ids.Add(n.NodeId);
+            }
+            else
+            {
+                // 文件夹视图：显示文件夹节点本身 + 所有子孙节点
+                ids.Add(_currentFolderId);
+                var folderNode = allNodeViews.Find(n => n.NodeId == _currentFolderId);
+                if (folderNode != null)
+                    CollectDescendants(folderNode, allNodeViews, ids);
+            }
+
+            return ids;
+        }
+
+        /// <summary>递归收集 OutputPort 下游的所有子孙节点</summary>
+        private static void CollectDescendants(BTNodeView parent, List<BTNodeView> allNodes, HashSet<string> ids)
+        {
+            if (parent.OutputPort == null) return;
+            foreach (var edge in parent.OutputPort.connections)
+            {
+                var child = edge.input.node as BTNodeView;
+                if (child != null && ids.Add(child.NodeId)) // Add 返回 true 表示之前不在集合里
+                {
+                    CollectDescendants(child, allNodes, ids); // 递归继续往下
+                }
+            }
+        }
+
+        /// <summary>定位视图到文件夹节点，并适当缩放</summary>
+        private void FocusOnFolder(BTNodeView folderNode)
+        {
+            var allNodeViews = nodes.ToList().OfType<BTNodeView>().ToList();
+            var visibleIds = GetVisibleNodeIds(allNodeViews);
+
+            // 计算所有可见节点的包围盒
+            var visibleNodes = allNodeViews.Where(n => visibleIds.Contains(n.NodeId)).ToList();
+            if (visibleNodes.Count == 0) return;
+
+            float minX = float.MaxValue, minY = float.MaxValue;
+            float maxX = float.MinValue, maxY = float.MinValue;
+            foreach (var n in visibleNodes)
+            {
+                var rect = n.GetPosition();
+                if (rect.x < minX) minX = rect.x;
+                if (rect.y < minY) minY = rect.y;
+                if (rect.xMax > maxX) maxX = rect.xMax;
+                if (rect.yMax > maxY) maxY = rect.yMax;
+            }
+
+            float width = maxX - minX + 100;
+            float height = maxY - minY + 100;
+
+            var viewRect = contentViewContainer.layout;
+            float scaleX = viewRect.width / width;
+            float scaleY = viewRect.height / height;
+            float scale = Mathf.Min(scaleX, scaleY, 1.0f); // 不放大，只缩小
+            scale = Mathf.Max(scale, 0.3f); // 最小 0.3
+
+            viewTransform.position = new Vector3(
+                -minX + (viewRect.width - width * scale) / (2f * scale),
+                -minY + (viewRect.height - height * scale) / (2f * scale),
+                0);
+            viewTransform.scale = new Vector3(scale, scale, 1);
+        }
+
+        /// <summary>当前是否在子视图中（非根视图）</summary>
+        public bool IsInSubView => !string.IsNullOrEmpty(_currentFolderId);
+
+        /// <summary>当前所在文件夹 ID</summary>
+        public string CurrentFolderId => _currentFolderId;
+
+        /// <summary>面包屑条目</summary>
+        public class FolderBreadcrumb
+        {
+            public string FolderId;
+            public string DisplayName;
         }
 
         /// <summary>
@@ -417,6 +678,10 @@ namespace AI.BehaviourTree.Editor
         {
             // 清空
             DeleteElements(graphElements.ToList());
+
+            // 重置子图导航状态
+            _folderStack.Clear();
+            _currentFolderId = null;
 
             _rootNodeId = so.RootNodeId;
             var nodeViewMap = new Dictionary<string, BTNodeView>();
