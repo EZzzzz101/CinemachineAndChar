@@ -104,14 +104,6 @@ MonoBehaviour:
     JsonData: '{"ParameterName":"IsMoving","Value":false}'
     ChildIds: []
     CustomName: "\u8BBE\u7F6E\u52A8\u753BBool"
-  - Id: 5a825475-2c79-4aac-a18e-8ae7aa74961e
-    TypeName: AI.BehaviourTree.BTSelector
-    Position: {x: -531.2, y: -3068}
-    JsonData: 
-    ChildIds:
-    - 1bbc414d-662e-4cf3-a6a3-56bd56046548
-    - 4966f620-59ee-4816-a0a4-57a660e4321d
-    CustomName: "\u9009\u62E9"
   - Id: 8b18bd3c-cb8a-468b-b348-48fda3181ea1
     TypeName: AI.BehaviourTree.BTIsTargetInRange
     Position: {x: 357.6, y: -3116}
@@ -138,6 +130,14 @@ MonoBehaviour:
     - 0b22c8f9-9812-4f6b-b61d-24b1b8156ffd
     - 07eb0f02-cc9d-4cc8-850c-7df3eec58f88
     CustomName: "\u52A0\u6743\u968F\u673A"
+  - Id: 5a825475-2c79-4aac-a18e-8ae7aa74961e
+    TypeName: AI.BehaviourTree.BTSelector
+    Position: {x: -531.2, y: -3068}
+    JsonData: 
+    ChildIds:
+    - 1bbc414d-662e-4cf3-a6a3-56bd56046548
+    - 4966f620-59ee-4816-a0a4-57a660e4321d
+    CustomName: "\u9009\u62E9"
   _rootNodeId: 5a825475-2c79-4aac-a18e-8ae7aa74961e
   _blackboardAsset: {fileID: 11400000, guid: c9e5f2bf5174f0c4bb13fad567d09f20, type: 2}
   Description: 
