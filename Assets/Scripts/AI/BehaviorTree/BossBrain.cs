@@ -19,10 +19,6 @@ public class BossBrain : MonoBehaviour
     [Tooltip("超过此比例 → Phase 1，低于 → Phase 2，以此类推")]
     public float[] PhaseThresholds = { 0.75f, 0.5f, 0.25f };
 
-    [Header("对峙参数")]
-    [Tooltip("玩家长时间不攻击超过此秒数，高概率进入对峙模式")]
-    public float ConfrontationDelay = 5f;
-
     private BehaviorTreeRunner _bt;
     private float _lastPlayerAttackTime;
 

@@ -57,7 +57,7 @@ Root (Selector)
 │    │    │    │    ├── [权重3] Attack_C
 │    │    │    │    ├── [权重2] Attack_B
 │    │    │    │    └── [权重1] Attack_A
-│    │    │    └── BTChaseTarget
+│    │    │    └── BTCaseTarget 
 │    │    │
 │    │    ├─── 【Phase2】Sequence (HP < 75%)
 │    │    │    ├── BTBlackboardCondition: _hpRatio < 0.75

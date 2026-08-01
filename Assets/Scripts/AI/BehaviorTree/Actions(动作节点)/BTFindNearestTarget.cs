@@ -45,15 +45,15 @@ namespace AI.BehaviourTree
             if (found != null)
             {
                 bb.Set("target", found.transform);
-                Debug.Log($"[BT] BTFindNearestTarget: 找到目标 {found.name} "
-                          + $"(阵营:{found.Team})");
+                Vector3 delta = found.transform.position - self.position;
+                Debug.Log($"[BT] 找到目标 {found.name} 距离:{delta.magnitude:F2}m"
+                          + $"(三轴差:{delta.x:F2},{delta.y:F2},{delta.z:F2})");
                 return BTResult.Success;
             }
 
-            // 调试：打印注册表中所有目标，帮助定位"为什么找不到"
+            // 调试：打印注册表总数，帮助定位"为什么找不到"
             int totalCount = TargetManager.Instance.AllTargets.Count;
-            Debug.Log($"[BT] BTFindNearestTarget: 未找到目标 "
-                      + $"(注册表共{totalCount}个, 搜索阵营:{Data.TargetTeam}, 范围:{maxRange}m, 我的位置:{self.position})");
+            //Debug.Log($"[BT] 未找到目标 (注册表{totalCount}个, 阵营:{Data.TargetTeam}, 范围:{maxRange}m)");
             return BTResult.Failure;
         }
     }
