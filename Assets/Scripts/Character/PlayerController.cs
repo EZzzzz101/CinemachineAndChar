@@ -14,6 +14,11 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float _flashMaxDist = 3f;      // 闪身最大距离
     [SerializeField] private float _flashTargetDist = 1.5f; // 闪身后离敌人多远
 
+    [Header("贴地")]
+    [SerializeField] private float _groundSnapSpeed = 2f;   // 无跳跃:每帧向下按压力度,把角色贴到地面
+
+    private CharacterController _controller;
+
     public Animator          Animator      { get; private set; }
     public MoveInputMY         MoveInput     { get; private set; }
     public PlayerInput       PlayerInput   { get; private set; }
@@ -33,6 +38,7 @@ public class PlayerController : MonoBehaviour
         Animator    = GetComponent<Animator>();
         MoveInput   = GetComponent<MoveInputMY>();
         PlayerInput = GetComponent<PlayerInput>();
+        _controller = GetComponent<CharacterController>();
 
         Locomotion = new LocomotionStateMachine(this);
         Action     = new ActionStateMachine(this,comboConfigSO);
@@ -52,7 +58,18 @@ public class PlayerController : MonoBehaviour
 
     void OnAnimatorMove()
     {
-        transform.position += Animator.deltaPosition;
+        // 每帧位移照旧累计,只是改经 CharacterController 施加:撞到墙会被挡住
+        Vector3 delta = Animator.deltaPosition;
+        if (_controller != null)
+        {
+            // 无跳跃:每帧轻微向下按压,让角色始终贴地(被地面碰撞体挡住即站立)
+            _controller.Move(delta + Vector3.down * _groundSnapSpeed * Time.deltaTime);
+        }
+        else
+        {
+            // 兜底:还没用「一键地面层+碰撞」跑过接线时,保持原来的纯位移行为
+            transform.position += delta;
+        }
     }
 
     // 动画进入 → FSM 路由
@@ -143,39 +160,4 @@ public class PlayerController : MonoBehaviour
         );
     }
 
-     #region 连招动画事件
-     /// <summary>
-     /// 打开预输入窗口
-     /// </summary>
-        public void EnablePreInput()
-        {
-            Action.ComboState.EnablePreInput();
-        }
-        /// <summary>
-        /// 攻击后摇结束，可以闪避/做其他动作
-        /// </summary>
-        public void CancelAttackColdTime()
-        { 
-            Action.ComboState.CancelAttackColdTime();
-        }
-        /// <summary>
-        /// 禁止连招
-        /// </summary>
-        public void DisableLinkCombo()
-        { 
-            Action.ComboState.DisableLinkCombo();
-        }
-        /// <summary>
-        /// 允许移动打断
-        /// </summary>
-        public void EnableMoveInterrupt()
-        {
-             Action.ComboState.EnableMoveInterrupt();
-        }
-     
-        public void ATK()
-        {
-             Action.ComboState.ATK();
-        }
-    #endregion
 }

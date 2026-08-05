@@ -7,9 +7,9 @@ using UnityEngine;
 /// 职责：
 ///   - 存 HP / MaxHP
 ///   - 每帧更新黑板：_hpRatio, _timeSincePlayerAttack
-///   - 提供 TakeDamage 接口（给玩家攻击调用）
+///   - 提供 TakeDamage 接口（给玩家攻击调用，实现 IDamageable 可被命中结算）
 /// </summary>
-public class BossBrain : MonoBehaviour
+public class BossBrain : MonoBehaviour, IDamageable
 {
     [Header("血量")]
     public float MaxHP = 100f;

@@ -13,22 +13,66 @@ MonoBehaviour:
   m_Name: NewBehaviorTree
   m_EditorClassIdentifier: 
   _nodes:
+  - Id: 07eb0f02-cc9d-4cc8-850c-7df3eec58f88
+    TypeName: AI.BehaviourTree.BTSetAnimatorBool
+    Position: {x: -510.4, y: -2080.8}
+    JsonData: '{"ParameterName":"","Value":false}'
+    ChildIds: []
+    CustomName: "\u79FB\u52A8\u5411\u73A9\u5BB6Bool"
+  - Id: 2633ed8b-84d5-44ab-8cf8-5173d22d3c5c
+    TypeName: AI.BehaviourTree.BTDash
+    Position: {x: -510.4, y: -2217.6}
+    JsonData: '{"BoolName":"dash","StateName":"Dash","MaxDuration":5.0}'
+    ChildIds: []
+    CustomName: "\u51B2\u523A"
+  - Id: 85e929dd-53e3-423f-bcd7-2a8971924f93
+    TypeName: AI.BehaviourTree.BTWeightedRandom
+    Position: {x: -783.2, y: -2163.2}
+    JsonData: "{\"Entries\":[{\"Label\":\"\u51B2\u523A\",\"Weight\":100.0},{\"Label\":\"\u79FB\u52A8\u5411\u73A9\u5BB6Bool\",\"Weight\":0.0}]}"
+    ChildIds:
+    - 2633ed8b-84d5-44ab-8cf8-5173d22d3c5c
+    - 07eb0f02-cc9d-4cc8-850c-7df3eec58f88
+    CustomName: "\u52A0\u6743\u968F\u673A"
+  - Id: ad5d87ea-57c0-4889-8bf0-3cbc1f7b3ae6
+    TypeName: AI.BehaviourTree.BTSequence
+    Position: {x: -1011.2, y: -2289.6}
+    JsonData: 
+    ChildIds:
+    - 8b18bd3c-cb8a-468b-b348-48fda3181ea1
+    - 85e929dd-53e3-423f-bcd7-2a8971924f93
+    CustomName: "\u8D34\u8FD1\u73A9\u5BB6"
+  - Id: 8b18bd3c-cb8a-468b-b348-48fda3181ea1
+    TypeName: AI.BehaviourTree.BTIsTargetInRange
+    Position: {x: -769.6, y: -2370.4001}
+    JsonData: '{"Range":30.0}'
+    ChildIds: []
+    CustomName: "\u76EE\u6807\u5728\u8303\u56F4\u5185"
+  - Id: a1a580e3-9945-4332-a046-188f5e99be90
+    TypeName: AI.BehaviourTree.BTSequence
+    Position: {x: -1029.6, y: -2621.6}
+    JsonData: 
+    ChildIds:
+    - b04a4c38-543e-4ca1-9b5c-4de8d0d54596
+    - fb8c6507-86b8-4730-9395-eb75a1b4389e
+    CustomName: "\u6218\u6597\u72B6\u6001"
+  - Id: 40af84a1-b9e4-4069-b4e6-0c7e2806ddef
+    TypeName: AI.BehaviourTree.BTSelector
+    Position: {x: -1273.6, y: -2456}
+    JsonData: 
+    ChildIds:
+    - a1a580e3-9945-4332-a046-188f5e99be90
+    - ad5d87ea-57c0-4889-8bf0-3cbc1f7b3ae6
+    CustomName: "\u9009\u62E9"
   - Id: 4966f620-59ee-4816-a0a4-57a660e4321d
     TypeName: AI.BehaviourTree.BTSequence
-    Position: {x: -226, y: -2704}
+    Position: {x: -1858.4, y: -2172.8}
     JsonData: 
     ChildIds:
     - 113fcf2e-a78a-4fc7-bd9c-48c279ac067b
     CustomName: "\u5F85\u673A"
-  - Id: 07eb0f02-cc9d-4cc8-850c-7df3eec58f88
-    TypeName: AI.BehaviourTree.BTSetAnimatorBool
-    Position: {x: 646, y: -2893}
-    JsonData: '{"ParameterName":"","Value":false}'
-    ChildIds: []
-    CustomName: "\u79FB\u52A8\u5411\u73A9\u5BB6Bool"
   - Id: 1bbc414d-662e-4cf3-a6a3-56bd56046548
     TypeName: AI.BehaviourTree.BTSequence
-    Position: {x: -321, y: -3154}
+    Position: {x: -1876, y: -2444}
     JsonData: 
     ChildIds:
     - 620201ec-3015-4ecb-b936-6f9036a85892
@@ -37,128 +81,98 @@ MonoBehaviour:
     - c0078603-6e36-4bfa-beba-3f7f582819aa
     - 40af84a1-b9e4-4069-b4e6-0c7e2806ddef
     CustomName: "\u6218\u6597\u72B6\u6001"
-  - Id: 620201ec-3015-4ecb-b936-6f9036a85892
-    TypeName: AI.BehaviourTree.BTFindNearestTarget
-    Position: {x: -53, y: -3748}
-    JsonData: '{"MaxRange":30.0,"TargetTeam":0}'
+  - Id: b04a4c38-543e-4ca1-9b5c-4de8d0d54596
+    TypeName: AI.BehaviourTree.BTIsTargetInRange
+    Position: {x: -749.6, y: -2922.4001}
+    JsonData: '{"Range":10.0}'
     ChildIds: []
-    CustomName: "\u5BFB\u627E\u76EE\u6807"
-  - Id: ecbc20df-03c1-4c3b-a924-09bed241420a
-    TypeName: AI.BehaviourTree.BTHasTarget
-    Position: {x: -38, y: -3577}
-    JsonData: '{}'
-    ChildIds: []
-    CustomName: "\u6709\u76EE\u6807?"
-  - Id: a0eebb0d-caa3-4caf-80d3-2fdc456304c1
-    TypeName: AI.BehaviourTree.BTSetAnimatorBool
-    Position: {x: -58, y: -3393}
-    JsonData: '{"ParameterName":"IsMoving","Value":true}'
-    ChildIds: []
-    CustomName: "\u8BBE\u7F6E\u52A8\u753BBool"
-  - Id: a1a580e3-9945-4332-a046-188f5e99be90
-    TypeName: AI.BehaviourTree.BTSequence
-    Position: {x: 133, y: -3393}
-    JsonData: 
-    ChildIds:
-    - b04a4c38-543e-4ca1-9b5c-4de8d0d54596
-    - fb8c6507-86b8-4730-9395-eb75a1b4389e
-    CustomName: "\u653B\u51FB\u72B6\u6001"
+    CustomName: "\u76EE\u6807\u5728\u8303\u56F4\u5185"
   - Id: fb8c6507-86b8-4730-9395-eb75a1b4389e
     TypeName: AI.BehaviourTree.BTSelector
-    Position: {x: 299, y: -3435}
+    Position: {x: -857.6, y: -2636}
     JsonData: 
     ChildIds:
-    - 53593695-c11a-44fa-8f65-3b51073d6f4d
     - 5e5c3e62-b796-4702-91b1-42ec3cb8bde2
+    - 53593695-c11a-44fa-8f65-3b51073d6f4d
     CustomName: "\u9009\u62E9"
+  - Id: 5e5c3e62-b796-4702-91b1-42ec3cb8bde2
+    TypeName: AI.BehaviourTree.BTSequence
+    Position: {x: -669.6, y: -2721.6}
+    JsonData: 
+    ChildIds:
+    - 719632e2-ff38-4811-be63-9ed158cc8515
+    - 996125ae-eeda-4d2e-ab70-bfb9e87f8575
+    CustomName: "\u5BF9\u5CD9\u515C\u5E95"
+  - Id: 996125ae-eeda-4d2e-ab70-bfb9e87f8575
+    TypeName: AI.BehaviourTree.BTStandoff
+    Position: {x: -508.8, y: -2637.6}
+    JsonData: '{"MinDuration":5.0,"MaxDuration":8.0,"ExitOnHit":true,"BackAwayDist":4.0,"KeepDist":8.0,"ReactInterval":0.0,"StateBoolName":"IsSolo"}'
+    ChildIds: []
+    CustomName: "\u5BF9\u5CD9"
   - Id: 53593695-c11a-44fa-8f65-3b51073d6f4d
     TypeName: AI.BehaviourTree.BTSequence
-    Position: {x: 490, y: -3534}
+    Position: {x: -669.6, y: -2534.4001}
     JsonData: 
     ChildIds:
     - ac57a474-4751-49c1-849d-761a4cc05e8a
     CustomName: "\u72C2\u66B4"
   - Id: ac57a474-4751-49c1-849d-761a4cc05e8a
     TypeName: AI.BehaviourTree.BTBlackboardCondition
-    Position: {x: 673, y: -3534}
+    Position: {x: -486.4, y: -2493.6}
     JsonData: '{"Key":"_hpRatio","Op":1,"Value":0.5}'
     ChildIds: []
     CustomName: "\u6570\u503C\u6761\u4EF6"
-  - Id: b04a4c38-543e-4ca1-9b5c-4de8d0d54596
-    TypeName: AI.BehaviourTree.BTIsTargetInRange
-    Position: {x: 407, y: -3735}
-    JsonData: '{"Range":10.0}'
-    ChildIds: []
-    CustomName: "\u76EE\u6807\u5728\u8303\u56F4\u5185"
-  - Id: 8b18bd3c-cb8a-468b-b348-48fda3181ea1
-    TypeName: AI.BehaviourTree.BTIsTargetInRange
-    Position: {x: 374, y: -3111}
-    JsonData: '{"Range":30.0}'
-    ChildIds: []
-    CustomName: "\u76EE\u6807\u5728\u8303\u56F4\u5185"
   - Id: 113fcf2e-a78a-4fc7-bd9c-48c279ac067b
     TypeName: AI.BehaviourTree.BTSetAnimatorBool
-    Position: {x: 11, y: -2704}
+    Position: {x: -1621.6, y: -2172.8}
     JsonData: '{"ParameterName":"IsMoving","Value":false}'
     ChildIds: []
     CustomName: "\u8BBE\u7F6E\u52A8\u753BBool"
-  - Id: 40af84a1-b9e4-4069-b4e6-0c7e2806ddef
-    TypeName: AI.BehaviourTree.BTSelector
-    Position: {x: -71, y: -3159}
-    JsonData: 
-    ChildIds:
-    - a1a580e3-9945-4332-a046-188f5e99be90
-    - ad5d87ea-57c0-4889-8bf0-3cbc1f7b3ae6
-    CustomName: "\u9009\u62E9"
-  - Id: ad5d87ea-57c0-4889-8bf0-3cbc1f7b3ae6
-    TypeName: AI.BehaviourTree.BTSequence
-    Position: {x: 133, y: -3030}
-    JsonData: 
-    ChildIds:
-    - 8b18bd3c-cb8a-468b-b348-48fda3181ea1
-    - 85e929dd-53e3-423f-bcd7-2a8971924f93
-    CustomName: "\u8D34\u8FD1\u73A9\u5BB6"
-  - Id: 85e929dd-53e3-423f-bcd7-2a8971924f93
-    TypeName: AI.BehaviourTree.BTWeightedRandom
-    Position: {x: 374, y: -2935}
-    JsonData: "{\"Entries\":[{\"Label\":\"\u51B2\u523A\",\"Weight\":100.0},{\"Label\":\"\u79FB\u52A8\u5411\u73A9\u5BB6Bool\",\"Weight\":0.0}]}"
-    ChildIds:
-    - 2633ed8b-84d5-44ab-8cf8-5173d22d3c5c
-    - 07eb0f02-cc9d-4cc8-850c-7df3eec58f88
-    CustomName: "\u52A0\u6743\u968F\u673A"
-  - Id: 2633ed8b-84d5-44ab-8cf8-5173d22d3c5c
-    TypeName: AI.BehaviourTree.BTDash
-    Position: {x: 646, y: -3030}
-    JsonData: '{"BoolName":"dash","StateName":"Dash","MaxDuration":5.0}'
-    ChildIds: []
-    CustomName: "\u51B2\u523A"
   - Id: c0078603-6e36-4bfa-beba-3f7f582819aa
     TypeName: AI.BehaviourTree.BTSetFaceTarget
-    Position: {x: -71, y: -3285}
+    Position: {x: -1292, y: -2620}
     JsonData: '{"Value":true}'
     ChildIds: []
     CustomName: "\u9762\u5411\u89D2\u8272"
+  - Id: ecbc20df-03c1-4c3b-a924-09bed241420a
+    TypeName: AI.BehaviourTree.BTHasTarget
+    Position: {x: -1287.2, y: -3001.6}
+    JsonData: '{}'
+    ChildIds: []
+    CustomName: "\u6709\u76EE\u6807?"
+  - Id: 620201ec-3015-4ecb-b936-6f9036a85892
+    TypeName: AI.BehaviourTree.BTFindNearestTarget
+    Position: {x: -1302.4, y: -3172.8}
+    JsonData: '{"MaxRange":30.0,"TargetTeam":0}'
+    ChildIds: []
+    CustomName: "\u5BFB\u627E\u76EE\u6807"
+  - Id: a0eebb0d-caa3-4caf-80d3-2fdc456304c1
+    TypeName: AI.BehaviourTree.BTSetAnimatorBool
+    Position: {x: -1308, y: -2858.4001}
+    JsonData: '{"ParameterName":"IsMoving","Value":true}'
+    ChildIds: []
+    CustomName: "\u8BBE\u7F6E\u52A8\u753BBool"
+  - Id: bb1dcac2-804b-4832-bac8-2ff8eae45b53
+    TypeName: AI.BehaviourTree.BTHitReaction
+    Position: {x: -1858.4, y: -2815.2}
+    JsonData: '{"StateName":"BeHit","MaxDuration":2.0}'
+    ChildIds: []
+    CustomName: "\u53D7\u51FB\u53CD\u5E94"
   - Id: 5a825475-2c79-4aac-a18e-8ae7aa74961e
     TypeName: AI.BehaviourTree.BTSelector
-    Position: {x: -531, y: -3068}
+    Position: {x: -2086.4, y: -2358.4001}
     JsonData: 
     ChildIds:
+    - bb1dcac2-804b-4832-bac8-2ff8eae45b53
     - 1bbc414d-662e-4cf3-a6a3-56bd56046548
     - 4966f620-59ee-4816-a0a4-57a660e4321d
     CustomName: "\u9009\u62E9"
-  - Id: 5e5c3e62-b796-4702-91b1-42ec3cb8bde2
-    TypeName: AI.BehaviourTree.BTSequence
-    Position: {x: 491, y: -3319}
-    JsonData: 
-    ChildIds:
-    - 47cd1e6a-067d-4b5d-8174-6f3646f3ea46
-    CustomName: "\u5BF9\u5CD9\u515C\u5E95"
-  - Id: 47cd1e6a-067d-4b5d-8174-6f3646f3ea46
-    TypeName: AI.BehaviourTree.BTSetAnimatorTrigger
-    Position: {x: 640, y: -3234}
-    JsonData: '{"TriggerName":"IsSolo"}'
+  - Id: 719632e2-ff38-4811-be63-9ed158cc8515
+    TypeName: AI.BehaviourTree.BTBlackboardCondition
+    Position: {x: -500.8, y: -2767.2}
+    JsonData: '{"Key":"_hpRatio","Op":2,"Value":0.0}'
     ChildIds: []
-    CustomName: "\u8BBE\u7F6E\u52A8\u753BTrigger"
+    CustomName: "\u6570\u503C\u6761\u4EF6"
   _rootNodeId: 5a825475-2c79-4aac-a18e-8ae7aa74961e
   _blackboardAsset: {fileID: 11400000, guid: c9e5f2bf5174f0c4bb13fad567d09f20, type: 2}
   Description: 

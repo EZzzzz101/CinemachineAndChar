@@ -13,6 +13,9 @@ MonoBehaviour:
   m_Name: AnBiComboConfig
   m_EditorClassIdentifier: 
   comboName: "\u5B89\u6BD4Combo"
+  enemyLayer:
+    serializedVersion: 2
+    m_Bits: 128
   steps:
   - animStateName: Anbi_Normal_1
     inputWindowStart: 0.649
@@ -24,6 +27,10 @@ MonoBehaviour:
     shakeForceList: []
     hitPauseList: []
     hitPauseScale: 0.05
+    damage: 10
+    attackRange: 2.5
+    attackAngle: 80
+    attackUpOffset: 1
   - animStateName: Anbi_Normal_2
     inputWindowStart: 0.55
     attackSound: {fileID: 8300000, guid: f6b7d84faf3f2e24590394e6228d3417, type: 3}
@@ -36,6 +43,10 @@ MonoBehaviour:
     - 0.15
     hitPauseList: []
     hitPauseScale: 0.05
+    damage: 10
+    attackRange: 2.5
+    attackAngle: 80
+    attackUpOffset: 1
   - animStateName: Anbi_Normal_3
     inputWindowStart: 0.608
     attackSound: {fileID: 8300000, guid: 003aa5abacf93a94089bd8c2ef28fff1, type: 3}
@@ -47,6 +58,10 @@ MonoBehaviour:
     shakeForceList: []
     hitPauseList: []
     hitPauseScale: 0.05
+    damage: 10
+    attackRange: 2.5
+    attackAngle: 80
+    attackUpOffset: 1
   - animStateName: Anbi_Normal_4
     inputWindowStart: 0.7
     attackSound: {fileID: 8300000, guid: 1b64cc9091420f94e8595fbf90572fb1, type: 3}
@@ -62,6 +77,10 @@ MonoBehaviour:
     - 0.3
     hitPauseList: []
     hitPauseScale: 0.05
+    damage: 10
+    attackRange: 2.5
+    attackAngle: 80
+    attackUpOffset: 1
   - animStateName: Anbi_Normal_5
     inputWindowStart: 0.7
     attackSound: {fileID: 8300000, guid: 6aa89f48868b7ce49b0a21e880fcb68a, type: 3}
@@ -75,3 +94,7 @@ MonoBehaviour:
     - 0.2
     hitPauseList: []
     hitPauseScale: 0.05
+    damage: 10
+    attackRange: 2.5
+    attackAngle: 80
+    attackUpOffset: 1

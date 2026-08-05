@@ -7,7 +7,7 @@ using UnityEngine;
 ///   行为树：bb["_faceTarget"] = true / false（用 BTSetFaceTarget 节点）
 ///   Motor  ：每帧 if(_faceTarget) 平滑旋转面向黑板中的 target
 /// </summary>
-public class BossMotor : MonoBehaviour
+public partial class BossMotor : MonoBehaviour
 {
     [Header("面向")]
     [Tooltip("旋转速度（度/秒），默认 720")]
@@ -21,11 +21,13 @@ public class BossMotor : MonoBehaviour
 
     private BehaviorTreeRunner _bt;
     private Transform _self;
+    private Animator _animator;
 
     void Awake()
     {
         _bt = GetComponent<BehaviorTreeRunner>();
         _self = transform;
+        _animator = GetComponent<Animator>();
     }
 
     void Update()
@@ -33,10 +35,10 @@ public class BossMotor : MonoBehaviour
         if (_bt?.Blackboard == null) return;
 
         var bb = _bt.Blackboard;
-        if (!bb.Get<bool>(FaceTargetKey))
-            return;
+        if (bb.Get<bool>(FaceTargetKey))
+            RotateToTarget(bb);
 
-        RotateToTarget(bb);
+        UpdateStandoff(bb);   // 对峙钩子（实现在对峙脚本 BTStandoff.cs 的 partial 段）
     }
 
     /// <summary>每帧平滑旋转面向黑板中的 target（只转水平面，Y 不变）</summary>

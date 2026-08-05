@@ -6,8 +6,14 @@ namespace AI.BehaviourTree
     [System.Serializable]
     public struct CooldownData
     {
-        [Tooltip("冷却时间（秒）")]
+        [Tooltip("固定冷却时间（秒），随机未启用时用")]
         public float CooldownTime;
+
+        [Tooltip("随机冷却下限(秒)。RandomMax>0 时启用随机冷却")]
+        public float RandomMin;
+
+        [Tooltip("随机冷却上限(秒)。>0 启用，每次成功取 [RandomMin, RandomMax] 随机值")]
+        public float RandomMax;
     }
 
     // ========== 逻辑层 ==========
@@ -19,6 +25,7 @@ namespace AI.BehaviourTree
     public class BTCooldown : BTDecorator<CooldownData>
     {
         private float _lastSuccessTime = float.MinValue;  // 上次子节点成功的时间戳
+        private float _currentCooldown;                    // 本次实际冷却时长（随机或固定）
 
         public override void OnEnter(Blackboard bb)
         {
@@ -32,15 +39,20 @@ namespace AI.BehaviourTree
                 return BTResult.Failure;
 
             // 冷却中 → 拒绝
-            if (Time.time - _lastSuccessTime < Data.CooldownTime)
+            if (Time.time - _lastSuccessTime < _currentCooldown)
                 return BTResult.Failure;
 
             // 放行 → 执行子节点
             BTResult result = Child.Execute(bb);
 
-            // 子节点成功了 → 记录时间，开始新一轮冷却
+            // 子节点成功了 → 记录时间，开始新一轮冷却（随机或固定）
             if (result == BTResult.Success)
+            {
                 _lastSuccessTime = Time.time;
+                _currentCooldown = Data.RandomMax > 0f
+                    ? Random.Range(Mathf.Max(Data.RandomMin, 0f), Data.RandomMax)
+                    : Data.CooldownTime;
+            }
 
             return result;   // Running / Failure 原样返回
         }
@@ -49,6 +61,7 @@ namespace AI.BehaviourTree
         {
             base.ResetNode();
             _lastSuccessTime = float.MinValue;
+            _currentCooldown = 0f;
         }
     }
 }
