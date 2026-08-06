@@ -42,6 +42,14 @@ namespace AI.BehaviourTree
         public virtual void OnExit(Blackboard bb){}
 
         public virtual void ResetNode(){ _wasRunning = false; IsRunning = false;}
+
+        /// <summary>递归中止正在运行的子树：先沿 Running 路径自底向上调 OnExit(bb)，再 ResetNode() 清状态</summary>
+        public virtual void Abort(Blackboard bb)
+        {
+            if (IsRunning)
+                OnExit(bb);
+            ResetNode();
+        }
     }
 
 }

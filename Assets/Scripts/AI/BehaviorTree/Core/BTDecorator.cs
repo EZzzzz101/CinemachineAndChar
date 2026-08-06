@@ -19,6 +19,15 @@ namespace AI.BehaviourTree
             base.ResetNode();
             Child?.ResetNode();
         }
+
+        public override void Abort(Blackboard bb)
+        {
+            if (IsRunning)
+                Child?.Abort(bb);
+            if (IsRunning)
+                OnExit(bb);
+            ResetNode();
+        }
     }
 
     /// <summary>

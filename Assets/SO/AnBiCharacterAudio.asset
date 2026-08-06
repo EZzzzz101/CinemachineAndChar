@@ -34,4 +34,7 @@ MonoBehaviour:
   dashFrontSound: {fileID: 8300000, guid: 1b292d51434f0624482dfefda493f788, type: 3}
   dashBackSound: {fileID: 8300000, guid: 4fe7ab52a66467542b7c634975304f46, type: 3}
   dodgeSpatialBlend: 0.7
-  hurtVoice: {fileID: 0}
+  hurtVoiceClips:
+  - {fileID: 8300000, guid: bdfec2086167d1742837fcfb5b1624ae, type: 3}
+  - {fileID: 8300000, guid: 3bc25ce6d6db27943a6303c6806c7d4c, type: 3}
+  - {fileID: 8300000, guid: f45561b4fc1d1ad4facef82d0598e9d0, type: 3}

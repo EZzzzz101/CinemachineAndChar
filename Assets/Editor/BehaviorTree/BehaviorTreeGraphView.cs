@@ -216,7 +216,7 @@ namespace AI.BehaviourTree.Editor
         // ========== 中键平移画布 ==========
         private void OnPanMouseDown(MouseDownEvent evt)
         {
-            if (evt.button == 2) // 中键
+            if (evt.button == 3) // 侧1键，暂存
             {
                 _panStart = evt.mousePosition;
                 _isPanning = true;
@@ -238,7 +238,7 @@ namespace AI.BehaviourTree.Editor
 
         private void OnPanMouseUp(MouseUpEvent evt)
         {
-            if (evt.button == 2 && _isPanning)
+            if (evt.button == 3 && _isPanning)
             {
                 _isPanning = false;
                 evt.StopPropagation();

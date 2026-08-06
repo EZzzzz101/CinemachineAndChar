@@ -4,32 +4,13 @@ using UnityEngine;
 /// 角色音效管理（单例）— Animation Event 接收端 + 代码直调
 /// 挂在角色 GameObject 上，数据从 CharacterDataSO 读取
 /// </summary>
-public class CharacterAudio : MonoBehaviour
+public class MonsterAudio : UnitAudio
 {
-    public static CharacterAudio Instance { get; private set; }
 
+    //(弃置项)
     [SerializeField] private CharacterDataSO _data;
 
-    private AudioSource _audioSource;
-
-    void Awake()
-    {
-        if (Instance != null)
-        {
-            Destroy(gameObject);
-            return;
-        }
-        Instance = this;
-        _audioSource = gameObject.AddComponent<AudioSource>();
-        _audioSource.playOnAwake = false;
-    }
-
-    void OnDestroy()
-    {
-        if (Instance == this)
-            Instance = null;
-    }
-
+    [SerializeField] private MonsterAttackConfigSO _attackConfigSO;
     // ===== 动画事件接收方法 =====
 
     public void PlayFootSound()
@@ -47,9 +28,20 @@ public class CharacterAudio : MonoBehaviour
         PlayClip(_data.audioData.attackWhoosh, _data.audioData.atkSpatialBlend);
     }
 
-    public void PlayHitSound()
+    /// <summary>
+    /// 命中音 — BTAttack 命中结算时调用，clip 来自 MonsterAttackStepData.hitSound
+    /// </summary>
+    public void PlayHitSound(AudioClip clip, float volume, float spatialBlend)
     {
-        PlayClip(_data.audioData.attackHit, _data.audioData.atkSpatialBlend);
+        PlayClip(clip, spatialBlend, volume);
+    }
+
+    /// <summary>
+    /// 挥空音 — BTAttack 每个命中点触发时调用（不论是否打中），clip 来自 MonsterAttackStepData.swingSound
+    /// </summary>
+    public void PlaySwingSound(AudioClip clip, float volume, float spatialBlend)
+    {
+        PlayClip(clip, spatialBlend, volume);
     }
 
     public void PlayWeaponBackSound()
@@ -67,7 +59,7 @@ public class CharacterAudio : MonoBehaviour
     /// </summary>
     public void PlayComboSound(AudioClip clip)
     {
-        PlayClip(clip, _data.audioData.atkSpatialBlend);
+        PlayClip(clip, 0.5f);
     }
 
     /// <summary>
@@ -88,21 +80,6 @@ public class CharacterAudio : MonoBehaviour
 
     public void PlayHurtVoice()
     {
-        PlayClip(_data.audioData.hurtVoice, 0.5f);
-    }
-
-    // ===== 内部 =====
-
-    private void PlayRandom(AudioClip[] clips, float spatialBlend)
-    {
-        if (clips == null || clips.Length == 0) return;
-        PlayClip(clips[Random.Range(0, clips.Length)], spatialBlend);
-    }
-
-    private void PlayClip(AudioClip clip, float spatialBlend)
-    {
-        if (clip == null) return;
-        _audioSource.spatialBlend = spatialBlend;
-        _audioSource.PlayOneShot(clip);
+        PlayRandom(_data.audioData.hurtVoiceClips, 0.5f);
     }
 }

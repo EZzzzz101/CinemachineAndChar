@@ -46,8 +46,8 @@ public class ActionNullState : PlayerComboState
         ResuableData.currentATKIndex = 0;     // 起手重置击数
         ResuableData.canLinkCombo = true;     // 重置连招许可
         base.OnFireStarted(ctx);            // 播第一段动画
-        CharacterAudio.Instance.PlayComboSound(ResuableData.CurrentStep.attackSound);
-        CharacterAudio.Instance.PlayComboVoice(ResuableData.CurrentStep.voiceClips);
+        Owner.PlayerAudio.PlayComboSound(ResuableData.CurrentStep.attackSound);
+        Owner.PlayerAudio.PlayComboVoice(ResuableData.CurrentStep.voiceClips);
     }
 
 }

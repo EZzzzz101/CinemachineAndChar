@@ -19,6 +19,7 @@ namespace AI.BehaviourTree
             _values["_owner"] = owner;
             _values["_transform"] = owner.transform;
             _values["_animator"] = owner.GetComponent<Animator>();
+            _values["_audio"] = owner.GetComponent<MonsterAudio>();
         }
 
         /// <summary>写值</summary>

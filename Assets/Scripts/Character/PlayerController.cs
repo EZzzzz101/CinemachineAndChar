@@ -4,11 +4,22 @@ using UnityEngine.InputSystem;
 /// <summary>
 /// 角色主控 — 持有两个状态机，是 Animator Event 的接收端
 /// </summary>
-public class PlayerController : MonoBehaviour
+public class PlayerController : MonoBehaviour, IDamageable
 {
     [Header("配置")]
     public float SpeedSmoothTime=0.2f;
     [SerializeField] private float rotationSpeed = 10f;
+
+    [Header("血量")]
+    public float MaxHP = 100f;
+    public float CurrentHP { get; private set; }
+
+    [Header("闪避无敌帧")]
+    [Tooltip("闪避开始后无敌持续的秒数")]
+    [SerializeField] private float _dodgeInvincibleTime = 0.4f;
+    public float DodgeInvincibleTime => _dodgeInvincibleTime;
+    /// <summary>闪避无敌帧中（受击免疫）。由 DashingState 开/关</summary>
+    public bool IsInvincible { get; set; }
 
     [Header("锁定战斗")]
     [SerializeField] private float _flashMaxDist = 3f;      // 闪身最大距离
@@ -26,6 +37,7 @@ public class PlayerController : MonoBehaviour
     public LocomotionStateMachine Locomotion { get; private set; }
     public ActionStateMachine     Action     { get; private set; }
 
+    public PlayerAudio     PlayerAudio     { get; private set; }
     public ComboConfigSO comboConfigSO;
 
 
@@ -39,6 +51,7 @@ public class PlayerController : MonoBehaviour
         MoveInput   = GetComponent<MoveInputMY>();
         PlayerInput = GetComponent<PlayerInput>();
         _controller = GetComponent<CharacterController>();
+        PlayerAudio = GetComponent<PlayerAudio>();
 
         Locomotion = new LocomotionStateMachine(this);
         Action     = new ActionStateMachine(this,comboConfigSO);
@@ -46,6 +59,7 @@ public class PlayerController : MonoBehaviour
 
     void Start()
     {
+        CurrentHP = MaxHP;
         Locomotion.ChangeState(Locomotion.IdleState);
         Action.ChangeState(Action.ActionNullState);
     }
@@ -108,8 +122,28 @@ public class PlayerController : MonoBehaviour
             case AnimationExitBehaviour.AnimExitState.Atk:
                 Action.OnAnimationExitEvent();
                 break;
+            case AnimationExitBehaviour.AnimExitState.Hit:
+                Action.OnAnimationExitEvent();
+                break;
 
         }
+    }
+
+
+    // ===== 受击 =====
+
+    /// <summary>受击（由怪物攻击触发）：扣血 + 打断移动 + 进受击硬直</summary>
+    public void TakeDamage(float damage, GameObject attacker)
+    {
+        // 闪避无敌帧：免疫伤害不进硬直
+        if (IsInvincible) return;
+
+        CurrentHP = Mathf.Max(0f, CurrentHP - damage);
+
+        // 受击打断移动/冲刺，避免动画与 FSM 失步
+        Locomotion.ChangeState(Locomotion.IdleState);
+        // 进受击硬直（若已在受击中则 Hit 重入，动画重播延续硬直）
+        Action.ChangeState(Action.HitState);
     }
 
 

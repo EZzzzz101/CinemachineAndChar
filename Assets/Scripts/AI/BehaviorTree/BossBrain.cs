@@ -19,6 +19,11 @@ public class BossBrain : MonoBehaviour, IDamageable
     [Tooltip("超过此比例 → Phase 1，低于 → Phase 2，以此类推")]
     public float[] PhaseThresholds = { 0.75f, 0.5f, 0.25f };
 
+    [Header("攻击配置")]
+    [Tooltip("每段攻击的伤害/时机/音效/特效，写入黑板供 BTAttack 节点读取")]
+    [SerializeField] private MonsterAttackConfigSO _attackConfig;
+    public MonsterAttackConfigSO AttackConfig => _attackConfig;
+
     private BehaviorTreeRunner _bt;
     private float _lastPlayerAttackTime;
 
@@ -38,6 +43,7 @@ public class BossBrain : MonoBehaviour, IDamageable
         // 等一帧让 BehaviorTreeRunner 初始化完黑板
         if (_bt != null && _bt.Blackboard != null)
         {
+            _bt.Blackboard.Set("_attackConfig", _attackConfig);   // BTAttack 节点读取
             WriteToBlackboard();
         }
     }

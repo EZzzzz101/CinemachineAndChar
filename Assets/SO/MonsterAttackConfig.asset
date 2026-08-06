@@ -1,0 +1,121 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b6978e9a72d949ace49e41e416af1490, type: 3}
+  m_Name: MonsterAttackConfig
+  m_EditorClassIdentifier: 
+  configName: BossAttack
+  targetLayer:
+    serializedVersion: 2
+    m_Bits: 64
+  steps:
+  - animStateName: Attcak1
+    hitTimes:
+    - 0.176
+    damage: 10
+    attackRange: 5
+    attackAngle: 80
+    attackUpOffset: 0.8
+    attackSound: {fileID: 8300000, guid: 8dd590bb7a3f66e46a3b2c08023b2af1, type: 3}
+    swingSound: {fileID: 0}
+    swingVolume: 1
+    swingSpatialBlend: 1
+    voiceClips: []
+    hitSound: {fileID: 8300000, guid: cadf52f9fc224e448bc3b4bf383f9947, type: 3}
+    hitVolume: 1
+    hitSpatialBlend: 1
+    hitVfxPrefab: {fileID: 4112965816803744093, guid: a1a379aa38c0b294883985840fcafabe, type: 3}
+  - animStateName: Attcak2
+    hitTimes:
+    - 0.168
+    - 0.4
+    damage: 10
+    attackRange: 5
+    attackAngle: 80
+    attackUpOffset: 1
+    attackSound: {fileID: 8300000, guid: 8dd590bb7a3f66e46a3b2c08023b2af1, type: 3}
+    swingSound: {fileID: 0}
+    swingVolume: 1
+    swingSpatialBlend: 1
+    voiceClips: []
+    hitSound: {fileID: 8300000, guid: ccceba05c41964c4cb826cc9a28aa7c6, type: 3}
+    hitVolume: 1
+    hitSpatialBlend: 1
+    hitVfxPrefab: {fileID: 4112965816803744093, guid: a1a379aa38c0b294883985840fcafabe, type: 3}
+  - animStateName: Attcak3
+    hitTimes:
+    - 0.108
+    - 0.18
+    - 0.3
+    damage: 10
+    attackRange: 5
+    attackAngle: 80
+    attackUpOffset: 1
+    attackSound: {fileID: 8300000, guid: 8dd590bb7a3f66e46a3b2c08023b2af1, type: 3}
+    swingSound: {fileID: 0}
+    swingVolume: 1
+    swingSpatialBlend: 1
+    voiceClips: []
+    hitSound: {fileID: 8300000, guid: 51938b2231cabae4db172c097d6e9d49, type: 3}
+    hitVolume: 1
+    hitSpatialBlend: 1
+    hitVfxPrefab: {fileID: 4112965816803744093, guid: a1a379aa38c0b294883985840fcafabe, type: 3}
+  - animStateName: Attcak4
+    hitTimes:
+    - 0.185
+    - 0.24
+    - 0.3
+    - 0.5
+    damage: 10
+    attackRange: 5
+    attackAngle: 80
+    attackUpOffset: 1
+    attackSound: {fileID: 8300000, guid: f6b7d84faf3f2e24590394e6228d3417, type: 3}
+    swingSound: {fileID: 0}
+    swingVolume: 1
+    swingSpatialBlend: 1
+    voiceClips: []
+    hitSound: {fileID: 8300000, guid: b2e2b8813c822cd4ea5627ef7fb9aaf4, type: 3}
+    hitVolume: 1
+    hitSpatialBlend: 1
+    hitVfxPrefab: {fileID: 4112965816803744093, guid: a1a379aa38c0b294883985840fcafabe, type: 3}
+  - animStateName: Attcak5
+    hitTimes:
+    - 0.12
+    damage: 10
+    attackRange: 5
+    attackAngle: 80
+    attackUpOffset: 1
+    attackSound: {fileID: 8300000, guid: f6b7d84faf3f2e24590394e6228d3417, type: 3}
+    swingSound: {fileID: 0}
+    swingVolume: 1
+    swingSpatialBlend: 1
+    voiceClips: []
+    hitSound: {fileID: 8300000, guid: 46e2075ea87092e4cb362a792636be08, type: 3}
+    hitVolume: 1
+    hitSpatialBlend: 1
+    hitVfxPrefab: {fileID: 4112965816803744093, guid: a1a379aa38c0b294883985840fcafabe, type: 3}
+  - animStateName: Attcak6
+    hitTimes:
+    - 0.1
+    damage: 10
+    attackRange: 5
+    attackAngle: 80
+    attackUpOffset: 1
+    attackSound: {fileID: 8300000, guid: 8dd590bb7a3f66e46a3b2c08023b2af1, type: 3}
+    swingSound: {fileID: 0}
+    swingVolume: 1
+    swingSpatialBlend: 1
+    voiceClips: []
+    hitSound: {fileID: 8300000, guid: 254125cdc58c47f48978ad46f8f797b6, type: 3}
+    hitVolume: 1
+    hitSpatialBlend: 1
+    hitVfxPrefab: {fileID: 4112965816803744093, guid: a1a379aa38c0b294883985840fcafabe, type: 3}

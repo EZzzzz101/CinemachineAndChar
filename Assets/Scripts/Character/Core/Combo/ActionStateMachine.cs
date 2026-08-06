@@ -8,6 +8,7 @@ public class ActionStateMachine : StateMachine
 
     public ActionNullState ActionNullState{get;}
     public ATKingState ComboState {get;}
+    public HitState HitState {get;}
     public ComboResuableData ResuableData{get;}
     public ActionStateMachine(PlayerController owner,ComboConfigSO config)
     {
@@ -15,5 +16,6 @@ public class ActionStateMachine : StateMachine
         ResuableData=new ComboResuableData{comboConfig=config};
         ComboState = new ATKingState(this);
         ActionNullState=new ActionNullState(this);
+        HitState = new HitState(this);
     }
 }

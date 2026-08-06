@@ -307,7 +307,7 @@
                 {
                     "name": "",
                     "id": "81b5e06e-8b8f-4bef-b060-1c9a08732635",
-                    "path": "<Mouse>/middleButton",
+                    "path": "<Keyboard>/q",
                     "interactions": "",
                     "processors": "",
                     "groups": ";Keyboard&Mouse",

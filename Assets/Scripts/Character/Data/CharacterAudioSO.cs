@@ -26,5 +26,5 @@ public class CharacterAudioSO : ScriptableObject
     [Range(0, 1)] public float dodgeSpatialBlend = 0.7f;
 
     [Header("受击")]
-    public AudioClip hurtVoice;
+    public AudioClip[] hurtVoiceClips;
 }

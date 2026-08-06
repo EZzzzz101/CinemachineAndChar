@@ -98,8 +98,8 @@ public class ATKingState : PlayerComboState
         ResuableData.currentATKIndex = 0;
         _hasAdvancedCombo = true;
         Owner.Animator.CrossFadeInFixedTime(ResuableData.CurrentAnimationName,0.1f);
-        CharacterAudio.Instance.PlayComboSound(ResuableData.CurrentStep.attackSound);
-        CharacterAudio.Instance.PlayComboVoice(ResuableData.CurrentStep.voiceClips);
+        Owner.PlayerAudio.PlayComboSound(ResuableData.CurrentStep.attackSound);
+        Owner.PlayerAudio.PlayComboVoice(ResuableData.CurrentStep.voiceClips);
     }
 
      #region 攻击事件（动画关键帧调用 → 委托到当前状态）
@@ -137,26 +137,20 @@ public class ATKingState : PlayerComboState
             if (force > 0f) CameraShake.Instance.TriggerShake(force);
         }
 
-        // 命中检测：OverlapSphere + 角度过滤 + IDamageable + 去重
-        var hitTargets = DetectHits(step);
-        foreach (var damageable in hitTargets)
+        // 命中检测 + 结算（复用共享工具 AttackHitHelper，与怪物攻击同一套命中逻辑）
+        var combo = ResuableData.comboConfig;
+        int mask = combo != null && combo.enemyLayer.value != 0 ? combo.enemyLayer.value : Physics.AllLayers;
+        Vector3 origin = Owner.transform.position + Vector3.up * (step.attackUpOffset > 0f ? step.attackUpOffset : 1f);
+        bool anyHit = AttackHitHelper.DealDamage(
+            origin, Owner.transform.forward,
+            step.attackRange, step.attackAngle, mask,
+            step.damage, Owner.gameObject, step.hitVfxPrefab,
+            Owner.transform);   // 排除自身：玩家现在是 IDamageable，防止打到自己
+
+        // 命中音效：至少打中一个目标才播（空挥不响）
+        if (anyHit && step.hitSound != null)
         {
-            if (damageable == null) continue;
-            damageable.TakeDamage(step.damage, Owner.gameObject);
-
-            // 受击特效（配置了才播，2s 自毁）
-            if (step.hitVfxPrefab != null)
-            {
-                var comp = damageable as Component;
-                Vector3 hitPos = comp != null
-                    ? comp.transform.position + Vector3.up * 1f
-                    : Owner.transform.position + Owner.transform.forward * 1f;
-                GameObject vfx = Object.Instantiate(step.hitVfxPrefab, hitPos, Quaternion.identity);
-                Object.Destroy(vfx, 2f);
-            }
-
-            // 供以后伤害数字/统计订阅（无订阅者时安全 no-op）
-            EventBus.Emit(GameEvents.HitLanded, step.damage);
+            Owner.PlayerAudio.PlayHitSound(step.hitSound);
         }
 
         // 顿帧
@@ -167,36 +161,6 @@ public class ATKingState : PlayerComboState
         }
 
         ResuableData.currentATKIndex++;
-    }
-
-    // OverlapSphere(按 Enemy 层) → 角度过滤前方锥形 → 只留挂 IDamageable 的
-    private HashSet<IDamageable> DetectHits(ComboStepData step)
-    {
-        var result = new HashSet<IDamageable>();           // 按引用去重：多碰撞体只结算一次
-        float range = step.attackRange > 0f ? step.attackRange : 2.5f;
-        float halfAngle = (step.attackAngle > 0f ? step.attackAngle : 80f) * 0.5f;
-        Vector3 origin = Owner.transform.position + Vector3.up * (step.attackUpOffset > 0f ? step.attackUpOffset : 1f);
-        // 敌人层在 ComboConfigSO（整段连招共用）；未配则查所有层（靠下面的接口过滤兜底，玩家/地面没 IDamageable 自动跳过）
-        var combo = ResuableData.comboConfig;
-        LayerMask layer = combo != null ? combo.enemyLayer : default;
-        int mask = layer.value != 0 ? layer.value : Physics.AllLayers;
-
-        Collider[] cols = Physics.OverlapSphere(origin, range, mask);
-        foreach (var col in cols)
-        {
-            if (col == null) continue;
-
-            Vector3 toTarget = col.transform.position - origin;
-            toTarget.y = 0f;
-            if (toTarget.sqrMagnitude > range * range) continue;
-            if (Vector3.Angle(Owner.transform.forward, toTarget.normalized) > halfAngle) continue;
-
-            var damageable = col.GetComponentInParent<IDamageable>();
-            if (damageable == null) continue;
-
-            result.Add(damageable);
-        }
-        return result;
     }
     #endregion
 }

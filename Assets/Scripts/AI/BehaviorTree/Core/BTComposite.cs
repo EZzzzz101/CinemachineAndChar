@@ -37,6 +37,16 @@ namespace AI.BehaviourTree
             foreach (var child in Children)
                 child.ResetNode();
         }
+
+        public override void Abort(Blackboard bb)
+        {
+            // 自底向上：先中止正在运行的子节点（沿 _runningIndex 递归），叶子最先生成 OnExit
+            if (IsRunning && _runningIndex >= 0 && _runningIndex < Children.Count)
+                Children[_runningIndex].Abort(bb);
+            if (IsRunning)
+                OnExit(bb);
+            ResetNode();   // 已递归清子节点 _wasRunning 和各级 _runningIndex
+        }
     }
 
     /// <summary>

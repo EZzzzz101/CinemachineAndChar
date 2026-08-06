@@ -23,7 +23,8 @@ MonoBehaviour:
     voiceClips:
     - {fileID: 8300000, guid: 96d6cac7aa3300b449f4389abfaa9110, type: 3}
     - {fileID: 8300000, guid: 9d2cba0049a938344b1ecf7ba5d1b748, type: 3}
-    hitVfxPrefab: {fileID: 0}
+    hitSound: {fileID: 8300000, guid: 4b9c1d6918c16cf4ab07098aa01ef840, type: 3}
+    hitVfxPrefab: {fileID: 2981233846487126522, guid: ce5e7abcffa309b44b9b58d64153d78b, type: 3}
     shakeForceList: []
     hitPauseList: []
     hitPauseScale: 0.05
@@ -38,7 +39,8 @@ MonoBehaviour:
     - {fileID: 8300000, guid: 96d6cac7aa3300b449f4389abfaa9110, type: 3}
     - {fileID: 8300000, guid: 9d2cba0049a938344b1ecf7ba5d1b748, type: 3}
     - {fileID: 8300000, guid: 58a8e17b02c497d49ab52daf7d303508, type: 3}
-    hitVfxPrefab: {fileID: 0}
+    hitSound: {fileID: 8300000, guid: be7658528d067aa4ab612584504b3060, type: 3}
+    hitVfxPrefab: {fileID: 2981233846487126522, guid: ce5e7abcffa309b44b9b58d64153d78b, type: 3}
     shakeForceList:
     - 0.15
     hitPauseList: []
@@ -54,7 +56,8 @@ MonoBehaviour:
     - {fileID: 8300000, guid: 9d2cba0049a938344b1ecf7ba5d1b748, type: 3}
     - {fileID: 8300000, guid: 67962eeb9da990d4880a13891fe5c269, type: 3}
     - {fileID: 8300000, guid: 4e106c77aaf89954ea2dece7534cbf1a, type: 3}
-    hitVfxPrefab: {fileID: 0}
+    hitSound: {fileID: 8300000, guid: 723f33a93b83587428bff95cf9299112, type: 3}
+    hitVfxPrefab: {fileID: 2981233846487126522, guid: ce5e7abcffa309b44b9b58d64153d78b, type: 3}
     shakeForceList: []
     hitPauseList: []
     hitPauseScale: 0.05
@@ -70,7 +73,8 @@ MonoBehaviour:
     - {fileID: 8300000, guid: 67962eeb9da990d4880a13891fe5c269, type: 3}
     - {fileID: 8300000, guid: 4e106c77aaf89954ea2dece7534cbf1a, type: 3}
     - {fileID: 8300000, guid: 03ce7510829862a48bff2d43ea4c2a8c, type: 3}
-    hitVfxPrefab: {fileID: 0}
+    hitSound: {fileID: 8300000, guid: c914542f9b4cf5e4088485f33429109f, type: 3}
+    hitVfxPrefab: {fileID: 2981233846487126522, guid: ce5e7abcffa309b44b9b58d64153d78b, type: 3}
     shakeForceList:
     - 0
     - 0
@@ -88,7 +92,8 @@ MonoBehaviour:
     - {fileID: 8300000, guid: 03ce7510829862a48bff2d43ea4c2a8c, type: 3}
     - {fileID: 8300000, guid: 4e106c77aaf89954ea2dece7534cbf1a, type: 3}
     - {fileID: 8300000, guid: e53c9bdd76fe4544cb78a5b9a781aa20, type: 3}
-    hitVfxPrefab: {fileID: 0}
+    hitSound: {fileID: 8300000, guid: 89969e178cd0c5d4a9e5b6539690e301, type: 3}
+    hitVfxPrefab: {fileID: 2981233846487126522, guid: ce5e7abcffa309b44b9b58d64153d78b, type: 3}
     shakeForceList:
     - 0
     - 0.2
