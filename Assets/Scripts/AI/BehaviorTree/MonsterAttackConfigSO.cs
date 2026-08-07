@@ -11,6 +11,10 @@ public class MonsterAttackStepData
     [Tooltip("Animator 里的攻击状态名（与 BTAttack.StateNames 对应，如 Attcak1~6）")]
     public string animStateName;
 
+    [Header("霸体")]
+    [Tooltip("勾选 = 该攻击不可被打断：受击时不会切受击动画/硬直，攻击继续")]
+    public bool isSuperArmor;
+
     [Header("命中时机")]
     [Tooltip("每次命中的归一化时间点(0~1)，按时间先后排列。如 [0.2, 0.5, 0.8] = 动画 20%/50%/80% 各打一下；空/未填则默认 0.3 打一下")]
     public float[] hitTimes;
@@ -43,16 +47,7 @@ public class MonsterAttackStepData
     public float swingSpatialBlend = 1f;
 
     public AudioClip[] voiceClips;              // 吼声（随机）
-    public AudioClip hitSound;                  // 命中音效（打中目标时播，空挥不播）
-    
-    [Range(0,1)]
-    public float hitVolume = 1f;
-
-    [Range(0,1)]
-    public float hitSpatialBlend = 1f;
-
-    [Header("特效（可空，预留接口）")]
-    public GameObject hitVfxPrefab;             // 命中受击特效预制体
+    // 受击反馈（命中音/特效/震屏/顿帧）已解耦到被击者自己播放，这里不再配置
 }
 
 /// <summary>
@@ -68,6 +63,13 @@ public class MonsterAttackConfigSO : ScriptableObject
 
     [Tooltip("命中层(LayerMask)。不设则查所有层，靠 IDamageable 接口过滤 + 自排除兜底")]
     public LayerMask targetLayer;
+
+    [Header("攻击提示闪光")]
+    [Tooltip("怪物起手攻击时在锁定点生成的预警特效预制体（如 PS_SlashCircle_Dark），留空不闪")]
+    public GameObject telegraphVfxPrefab;
+
+    [Tooltip("预警音效（所有攻击共用，起手/每段命中前播放）")]
+    public AudioClip telegraphSound;
 
     [Header("攻击列表")]
     public MonsterAttackStepData[] steps;       // 每段数据，索引与 BTAttack 随机挑中的攻击序号对齐

@@ -5,14 +5,19 @@
 public static class GameEvents
 {
     // ---- 玩家 ----
-    public const string PlayerHPChanged   = "player.hp.changed";
     public const string PlayerDied        = "player.died";
     public const string PlayerRevived     = "player.revived";
+
 
     // ---- 战斗 ----
     public const string HitLanded         = "hit.landed";       // 命中（触发伤害数字）
     public const string EnemyDied         = "enemy.died";
     public const string EnemySpawned      = "enemy.spawned";
+
+    public const string HPChanged   = "hp.changed";
+
+    public const string HPTextChanged   = "hptext.changed";
+
 
     // ---- 副本 ----
     public const string DungeonStarted    = "dungeon.started";

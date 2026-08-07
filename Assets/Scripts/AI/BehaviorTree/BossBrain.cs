@@ -11,6 +11,7 @@ using UnityEngine;
 /// </summary>
 public class BossBrain : MonoBehaviour, IDamageable
 {
+    int id =100;
     [Header("血量")]
     public float MaxHP = 100f;
     public float CurrentHP { get; private set; }
@@ -18,6 +19,10 @@ public class BossBrain : MonoBehaviour, IDamageable
     [Header("阶段阈值（血量比例）")]
     [Tooltip("超过此比例 → Phase 1，低于 → Phase 2，以此类推")]
     public float[] PhaseThresholds = { 0.75f, 0.5f, 0.25f };
+
+    [Header("受击反馈")]
+    [Tooltip("受击特效（自身播放）")]
+    [SerializeField] private GameObject hitVfxPrefab;
 
     [Header("攻击配置")]
     [Tooltip("每段攻击的伤害/时机/音效/特效，写入黑板供 BTAttack 节点读取")]
@@ -75,7 +80,24 @@ public class BossBrain : MonoBehaviour, IDamageable
     public void TakeDamage(float damage, GameObject attacker)
     {
         CurrentHP = Mathf.Max(0, CurrentHP - damage);
+
+        EventBus.Emit(
+            GameEvents.HPChanged,
+            new HPData(id,CurrentHP,MaxHP)
+        );
+        
         _lastPlayerAttackTime = Time.time;  // 记录玩家攻击时间
+
+        // 受击特效（自身播放）
+        if (hitVfxPrefab != null)
+        {
+            GameObject vfx = Instantiate(hitVfxPrefab, transform.position + Vector3.up * 1f, Quaternion.identity);
+            Destroy(vfx, 2f);
+        }
+
+        // 霸体：当前攻击不可被打断，不进受击动画/硬直（仍扣血）
+        if (_bt != null && _bt.Blackboard != null && _bt.Blackboard.Get<bool>("_superArmor"))
+            return;
 
         // 触发受击动画
         Animator anim = GetComponent<Animator>();

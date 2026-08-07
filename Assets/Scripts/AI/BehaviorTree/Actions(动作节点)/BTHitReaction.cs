@@ -64,7 +64,9 @@ namespace AI.BehaviourTree
 
         public override void OnExit(Blackboard bb)
         {
-            // 防御性复位：被打断的分支自己会复位(BTStandoff/BTDash.OnExit)，这里兜一层
+            // 只有真正受击过才复位移动参数；否则（响应式根每 tick 重评返回 Failure）不动对峙的 SpeedX/SpeedY，防鬼畜
+            if (!_engaged) return;
+            _engaged = false;
             Animator anim = bb.Get<Animator>("_animator");
             if (anim == null) return;
             anim.SetFloat("SpeedX", 0f);

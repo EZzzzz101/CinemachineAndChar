@@ -45,14 +45,14 @@ public static class AttackHitHelper
     }
 
     /// <summary>
-    /// 命中结算：DetectHits + TakeDamage + 受击特效。
+    /// 命中结算：DetectHits + TakeDamage。**不播受击特效**——特效由被击者自己决定（
+    /// 如玩家闪避成功时不该播受击特效/动画）。
     /// 返回是否至少命中一个目标（调用方可据此播命中音/震屏/顿帧）。
     /// </summary>
     public static bool DealDamage(
         Vector3 origin, Vector3 forward,
         float range, float angle, int layerMask,
         float damage, GameObject attacker,
-        GameObject hitVfxPrefab = null,
         Transform attackerRoot = null)
     {
         var targets = DetectHits(origin, forward, range, angle, layerMask, attackerRoot);
@@ -63,17 +63,6 @@ public static class AttackHitHelper
             if (damageable == null) continue;
             anyHit = true;
             damageable.TakeDamage(damage, attacker);
-
-            // 受击特效（配置了才播，2s 自毁）
-            if (hitVfxPrefab != null)
-            {
-                var comp = damageable as Component;
-                Vector3 hitPos = comp != null
-                    ? comp.transform.position + Vector3.up * 1f
-                    : attacker.transform.position + attacker.transform.forward * 1f;
-                GameObject vfx = Object.Instantiate(hitVfxPrefab, hitPos, Quaternion.identity);
-                Object.Destroy(vfx, 2f);
-            }
 
             // 供伤害数字/统计订阅（无订阅者时安全 no-op）
             EventBus.Emit(GameEvents.HitLanded, damage);

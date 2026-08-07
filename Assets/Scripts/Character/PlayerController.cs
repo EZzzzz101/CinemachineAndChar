@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -6,6 +7,7 @@ using UnityEngine.InputSystem;
 /// </summary>
 public class PlayerController : MonoBehaviour, IDamageable
 {
+    int id =1;
     [Header("配置")]
     public float SpeedSmoothTime=0.2f;
     [SerializeField] private float rotationSpeed = 10f;
@@ -14,12 +16,40 @@ public class PlayerController : MonoBehaviour, IDamageable
     public float MaxHP = 100f;
     public float CurrentHP { get; private set; }
 
+    [Header("受击反馈")]
+    [Tooltip("受击特效（角色自己播放；闪避成功不播）")]
+    [SerializeField] private GameObject hitVfxPrefab;
+    [Tooltip("受击命中音（角色自己播放；闪避成功不播）")]
+    [SerializeField] private AudioClip hitSound;
+    [Tooltip("受击命中音音量")]
+    [Range(0, 1)]
+    [SerializeField] private float hitVolume = 1f;
+    [Tooltip("受击命中音空间度(0=2D立体声,1=全3D)")]
+    [Range(0, 1)]
+    [SerializeField] private float hitSpatialBlend = 0f;
+    [Tooltip("受击震屏力度")]
+    [SerializeField] private float hitShake = 0.5f;
+    [Tooltip("受击顿帧时长(秒)")]
+    [SerializeField] private float hitPauseDuration = 0.05f;
+
     [Header("闪避无敌帧")]
     [Tooltip("闪避开始后无敌持续的秒数")]
     [SerializeField] private float _dodgeInvincibleTime = 0.4f;
     public float DodgeInvincibleTime => _dodgeInvincibleTime;
     /// <summary>闪避无敌帧中（受击免疫）。由 DashingState 开/关</summary>
     public bool IsInvincible { get; set; }
+
+    [Header("完美闪避·时停")]
+    [Tooltip("完美闪避触发时停的倍率(0~1，越小越慢)，可调")]
+    [SerializeField] private float _perfectDodgeTimeScale = 0.2f;
+    [Tooltip("完美闪避时停持续的秒数(真实秒)")]
+    [SerializeField] private float _perfectDodgeDuration = 0.5f;
+    [Tooltip("完美闪避时运动模糊强度(0~1)，随开始时停开启")]
+    [SerializeField] private float _perfectDodgeBlurIntensity = 0.5f;
+    [Tooltip("完美闪避模糊淡出秒数")]
+    [SerializeField] private float _perfectDodgeBlurFade = 0.3f;
+    /// <summary>本次闪避是否已触发过完美闪避（每次闪避只时停一次）</summary>
+    private bool _perfectDodgeTriggered;
 
     [Header("锁定战斗")]
     [SerializeField] private float _flashMaxDist = 3f;      // 闪身最大距离
@@ -37,13 +67,17 @@ public class PlayerController : MonoBehaviour, IDamageable
     public LocomotionStateMachine Locomotion { get; private set; }
     public ActionStateMachine     Action     { get; private set; }
 
+    /// <summary>受击硬直锁定中（受击动画前 70%：禁止移动/冲刺，强制看受击动画）</summary>
+    public bool IsInHitStun => Action != null && Action.CurrentState is HitState hit && hit.IsLocked;
+    /// <summary>攻击挥击锁定转向（段切换给短暂脉冲放开，供瞄准下一段；其余挥击时间锁定）</summary>
+    public bool IsTurnLocked => Action != null && Action.CurrentState is ATKingState atk && atk.IsTurnLocked;
+
     public PlayerAudio     PlayerAudio     { get; private set; }
     public ComboConfigSO comboConfigSO;
 
 
     //动画枚举动作
     public AnimationEnterBehaviour.AnimationEnterState LastAnimEnterState { get; private set; }
-
 
     void Awake()
     {
@@ -55,11 +89,12 @@ public class PlayerController : MonoBehaviour, IDamageable
 
         Locomotion = new LocomotionStateMachine(this);
         Action     = new ActionStateMachine(this,comboConfigSO);
+        CurrentHP = MaxHP;
     }
 
     void Start()
     {
-        CurrentHP = MaxHP;
+        
         Locomotion.ChangeState(Locomotion.IdleState);
         Action.ChangeState(Action.ActionNullState);
     }
@@ -135,16 +170,55 @@ public class PlayerController : MonoBehaviour, IDamageable
     /// <summary>受击（由怪物攻击触发）：扣血 + 打断移动 + 进受击硬直</summary>
     public void TakeDamage(float damage, GameObject attacker)
     {
-        // 闪避无敌帧：免疫伤害不进硬直
-        if (IsInvincible) return;
+        // 闪避无敌帧：免疫伤害不进硬直；若恰好盖住攻击命中瞬间 → 完美闪避 + 时停
+        if (IsInvincible)
+        {
+            if (!_perfectDodgeTriggered)
+            {
+                _perfectDodgeTriggered = true;
+                Debug.Log($"[PerfectDodge] 完美闪避成功！无敌帧盖住命中 → 时停(timeScale={_perfectDodgeTimeScale:F2}, {_perfectDodgeDuration:F2}s) | 攻击者={(attacker != null ? attacker.name : "null")}");
+                HitPauseManager.Instance.Trigger(_perfectDodgeDuration, _perfectDodgeTimeScale);
+                CameraShake.Instance.TriggerShake(0.3f);
+                // 完美闪避模糊：随时停开始开启，时停结束后淡出
+                DashMotionBlur.Instance.Play(_perfectDodgeBlurIntensity);
+                TimerManager.Instance.GetRealTimer(_perfectDodgeDuration, () => DashMotionBlur.Instance.Stop(_perfectDodgeBlurFade));
+            }
+            return;
+        }
 
         CurrentHP = Mathf.Max(0f, CurrentHP - damage);
+
+        //通知ui改变血条
+        EventBus.Emit(
+            GameEvents.HPChanged,
+            new HPData(id,CurrentHP,MaxHP)
+        );
+
+        //通知ui改变血量数字
+        EventBus.Emit(
+            GameEvents.HPTextChanged,
+            new HPData(id,CurrentHP,MaxHP)
+        );
+
+        // 受击反馈（角色自己播放；闪避成功/无敌帧不会走到这里）
+        if (hitVfxPrefab != null)
+        {
+            GameObject vfx = Instantiate(hitVfxPrefab, transform.position + Vector3.up * 1f, Quaternion.identity);
+            Destroy(vfx, 2f);
+        }
+        if (hitSound != null && PlayerAudio != null)
+            PlayerAudio.PlayHitSound(hitSound, hitVolume, hitSpatialBlend);
+        CameraShake.Instance.TriggerShake(hitShake);
+        HitPauseManager.Instance.Trigger(hitPauseDuration);
 
         // 受击打断移动/冲刺，避免动画与 FSM 失步
         Locomotion.ChangeState(Locomotion.IdleState);
         // 进受击硬直（若已在受击中则 Hit 重入，动画重播延续硬直）
         Action.ChangeState(Action.HitState);
     }
+
+    /// <summary>重置完美闪避标记（每次闪避开始时调用，允许再次触发时停）</summary>
+    public void ResetPerfectDodge() => _perfectDodgeTriggered = false;
 
 
     // ===== 锁定战斗: 闪身 + 面向 =====
@@ -173,10 +247,13 @@ public class PlayerController : MonoBehaviour, IDamageable
 
         if (dist > _flashMaxDist) return; // 太远不闪，原地打
 
-        // 闪到敌人正前方
+        // 闪到敌人正前方（带碰撞：撞到敌人停在表面，不穿进身体）
         Vector3 flashPos = target.GetLockOnPosition() - toTarget.normalized * _flashTargetDist;
         flashPos.y = transform.position.y;
-        transform.position = flashPos;
+        if (_controller != null)
+            _controller.Move(flashPos - transform.position);
+        else
+            transform.position = flashPos;
     }
 
     // ===== 角色转向 =====

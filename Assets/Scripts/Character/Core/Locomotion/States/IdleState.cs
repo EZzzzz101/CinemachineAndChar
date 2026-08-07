@@ -25,6 +25,9 @@ public class IdleState : LocomotionState
 
     private void OnMoveStarted(InputAction.CallbackContext ctx)
     {
+        // 受击硬直锁定中：禁止走路（动画前 70% 站桩）
+        if (Owner.IsInHitStun) return;
+
         // if (Owner.MoveInput.IsSprinting)
         //     Sm.ChangeState(Sm.SprintState);
         // else

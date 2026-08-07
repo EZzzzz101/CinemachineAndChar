@@ -16,24 +16,24 @@ MonoBehaviour:
   targetLayer:
     serializedVersion: 2
     m_Bits: 64
+  telegraphVfxPrefab: {fileID: 872462168564033203, guid: 37af80b30e01bdc4d8041d51f4c381e7, type: 3}
+  telegraphSound: {fileID: 8300000, guid: a30f1368c4f3a4247a4c914f70d0b9c5, type: 3}
   steps:
   - animStateName: Attcak1
+    isSuperArmor: 1
     hitTimes:
     - 0.176
     damage: 10
     attackRange: 5
     attackAngle: 80
     attackUpOffset: 0.8
-    attackSound: {fileID: 8300000, guid: 8dd590bb7a3f66e46a3b2c08023b2af1, type: 3}
-    swingSound: {fileID: 0}
-    swingVolume: 1
-    swingSpatialBlend: 1
+    attackSound: {fileID: 0}
+    swingSound: {fileID: 8300000, guid: 8dd590bb7a3f66e46a3b2c08023b2af1, type: 3}
+    swingVolume: 0.5
+    swingSpatialBlend: 0.5
     voiceClips: []
-    hitSound: {fileID: 8300000, guid: cadf52f9fc224e448bc3b4bf383f9947, type: 3}
-    hitVolume: 1
-    hitSpatialBlend: 1
-    hitVfxPrefab: {fileID: 4112965816803744093, guid: a1a379aa38c0b294883985840fcafabe, type: 3}
   - animStateName: Attcak2
+    isSuperArmor: 1
     hitTimes:
     - 0.168
     - 0.4
@@ -41,15 +41,11 @@ MonoBehaviour:
     attackRange: 5
     attackAngle: 80
     attackUpOffset: 1
-    attackSound: {fileID: 8300000, guid: 8dd590bb7a3f66e46a3b2c08023b2af1, type: 3}
-    swingSound: {fileID: 0}
+    attackSound: {fileID: 0}
+    swingSound: {fileID: 8300000, guid: f6b7d84faf3f2e24590394e6228d3417, type: 3}
     swingVolume: 1
-    swingSpatialBlend: 1
+    swingSpatialBlend: 0.5
     voiceClips: []
-    hitSound: {fileID: 8300000, guid: ccceba05c41964c4cb826cc9a28aa7c6, type: 3}
-    hitVolume: 1
-    hitSpatialBlend: 1
-    hitVfxPrefab: {fileID: 4112965816803744093, guid: a1a379aa38c0b294883985840fcafabe, type: 3}
   - animStateName: Attcak3
     hitTimes:
     - 0.108
@@ -59,15 +55,11 @@ MonoBehaviour:
     attackRange: 5
     attackAngle: 80
     attackUpOffset: 1
-    attackSound: {fileID: 8300000, guid: 8dd590bb7a3f66e46a3b2c08023b2af1, type: 3}
-    swingSound: {fileID: 0}
+    attackSound: {fileID: 0}
+    swingSound: {fileID: 8300000, guid: 8dd590bb7a3f66e46a3b2c08023b2af1, type: 3}
     swingVolume: 1
-    swingSpatialBlend: 1
+    swingSpatialBlend: 0.5
     voiceClips: []
-    hitSound: {fileID: 8300000, guid: 51938b2231cabae4db172c097d6e9d49, type: 3}
-    hitVolume: 1
-    hitSpatialBlend: 1
-    hitVfxPrefab: {fileID: 4112965816803744093, guid: a1a379aa38c0b294883985840fcafabe, type: 3}
   - animStateName: Attcak4
     hitTimes:
     - 0.185
@@ -78,31 +70,24 @@ MonoBehaviour:
     attackRange: 5
     attackAngle: 80
     attackUpOffset: 1
-    attackSound: {fileID: 8300000, guid: f6b7d84faf3f2e24590394e6228d3417, type: 3}
-    swingSound: {fileID: 0}
+    attackSound: {fileID: 0}
+    swingSound: {fileID: 8300000, guid: 8dd590bb7a3f66e46a3b2c08023b2af1, type: 3}
     swingVolume: 1
-    swingSpatialBlend: 1
+    swingSpatialBlend: 0.5
     voiceClips: []
-    hitSound: {fileID: 8300000, guid: b2e2b8813c822cd4ea5627ef7fb9aaf4, type: 3}
-    hitVolume: 1
-    hitSpatialBlend: 1
-    hitVfxPrefab: {fileID: 4112965816803744093, guid: a1a379aa38c0b294883985840fcafabe, type: 3}
   - animStateName: Attcak5
+    isSuperArmor: 1
     hitTimes:
     - 0.12
     damage: 10
     attackRange: 5
     attackAngle: 80
     attackUpOffset: 1
-    attackSound: {fileID: 8300000, guid: f6b7d84faf3f2e24590394e6228d3417, type: 3}
-    swingSound: {fileID: 0}
+    attackSound: {fileID: 0}
+    swingSound: {fileID: 8300000, guid: f6b7d84faf3f2e24590394e6228d3417, type: 3}
     swingVolume: 1
-    swingSpatialBlend: 1
+    swingSpatialBlend: 0.5
     voiceClips: []
-    hitSound: {fileID: 8300000, guid: 46e2075ea87092e4cb362a792636be08, type: 3}
-    hitVolume: 1
-    hitSpatialBlend: 1
-    hitVfxPrefab: {fileID: 4112965816803744093, guid: a1a379aa38c0b294883985840fcafabe, type: 3}
   - animStateName: Attcak6
     hitTimes:
     - 0.1
@@ -110,12 +95,8 @@ MonoBehaviour:
     attackRange: 5
     attackAngle: 80
     attackUpOffset: 1
-    attackSound: {fileID: 8300000, guid: 8dd590bb7a3f66e46a3b2c08023b2af1, type: 3}
-    swingSound: {fileID: 0}
+    attackSound: {fileID: 0}
+    swingSound: {fileID: 8300000, guid: f6b7d84faf3f2e24590394e6228d3417, type: 3}
     swingVolume: 1
-    swingSpatialBlend: 1
+    swingSpatialBlend: 0.5
     voiceClips: []
-    hitSound: {fileID: 8300000, guid: 254125cdc58c47f48978ad46f8f797b6, type: 3}
-    hitVolume: 1
-    hitSpatialBlend: 1
-    hitVfxPrefab: {fileID: 4112965816803744093, guid: a1a379aa38c0b294883985840fcafabe, type: 3}

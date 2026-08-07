@@ -13,6 +13,7 @@ public class DashingState : LocomotionState
         _enterTime = Time.time;
         _invincibleActive = true;
         Owner.IsInvincible = true;      // 闪避无敌帧开启：受击免疫
+        Owner.ResetPerfectDodge();      // 每次闪避可完美一次
         Owner.PlayerAudio.PlayDodgeSound(Owner.LastAnimEnterState);
         Debug.Log($"[DashingState] Enter via: {Owner.LastAnimEnterState}");
     }

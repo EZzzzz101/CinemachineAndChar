@@ -22,6 +22,18 @@ public class LockOnManager : Singleton<LockOnManager>
     [SerializeField] private CinemachineTargetGroup  _targetGroup;
     [SerializeField] private Transform               _playerTransform;
 
+    [Header("TargetGroup 取景权重")]
+    [Tooltip("玩家权重（越大取景点越偏玩家，相机越稳、不飘到两人中点）")]
+    [SerializeField] private float _playerGroupWeight = 0.7f;
+    [Tooltip("敌人权重")]
+    [SerializeField] private float _enemyGroupWeight = 0.3f;
+
+    [Header("索敌相机")]
+    [Tooltip("索敌相机与玩家的固定距离（关掉群框后生效；越大视野越平、贴脸时越不俯视）")]
+    [SerializeField] private float _lockCamDistance = 4.5f;
+    [Tooltip("玩家在画面中的垂直位置(0~1)。偏低=相机略仰，减少俯视感")]
+    [SerializeField] private float _lockScreenY = 0.45f;
+
     // 代码创建的索敌相机
     private CinemachineVirtualCamera _lockOnCam;
 
@@ -100,9 +112,24 @@ public class LockOnManager : Singleton<LockOnManager>
         var inputProvider = _lockOnCam.GetComponent<CinemachineInputProvider>();
         if (inputProvider != null) Destroy(inputProvider);
 
-        // POV → Composer（只偏头看中点，不强制推拉距离）
+        // POV → Composer（只偏头看取景点，不强制推拉距离）
         _lockOnCam.DestroyCinemachineComponent<CinemachinePOV>();
         _lockOnCam.AddCinemachineComponent<CinemachineComposer>();
+
+        // 关掉群框 + 固定距离：不再随两人贴近自动拉高/推近（这是"距离一近就俯视"的根因）
+        var body = _lockOnCam.GetCinemachineComponent<CinemachineFramingTransposer>();
+        if (body != null)
+        {
+            body.m_GroupFramingMode = CinemachineFramingTransposer.FramingMode.None;
+            body.m_CameraDistance = _lockCamDistance;   // 更远，视野更平
+            body.m_ScreenY = _lockScreenY;              // 玩家放画面偏下，减少俯视感
+        }
+
+        // 保留碰撞避障（不穿墙），但忽略玩家(6)/敌人(7)两层：
+        // 角色不再挡视线 → 不会把相机推到两人之间；墙/地形(0/3等)仍会避
+        var camCollider = _lockOnCam.GetComponent<CinemachineCollider>();
+        if (camCollider != null)
+            camCollider.m_CollideAgainst = ~((1 << 6) | (1 << 7));
 
         // 指向 TargetGroup
         _lockOnCam.LookAt = _targetGroup.transform;
@@ -165,20 +192,39 @@ public class LockOnManager : Singleton<LockOnManager>
 
     public void Unlock()
     {
-        // 把 FreeCam 拉到 LockOnCam 当前位置/朝向，过渡从同一点出发
-        _freeCam.transform.SetPositionAndRotation(
-            _lockOnCam.transform.position,
-            _lockOnCam.transform.rotation
-        );
+        // 同步 FreeCam 的 POV Axis，而不是复制 Transform：
+        // FreeCam 旋转由 CinemachinePOV 内部 Axis 决定，只改 Transform 下一帧会被覆盖 → 绕大圈
+        SyncFreeCamFromLockCam();
 
         _lockOnCam.Priority = 0;
         _freeCam.Priority   = 10;
 
-        Debug.Log("[LockOn] 解锁 | FreeCam 瞬移到索敌位 → 0.25s 滑回 POV");
+        Debug.Log("[LockOn] 解锁 | POV Axis 同步到索敌视角 → 0.25s 滑回 POV");
         CurrentTarget = null;
         SetGroupTargets(false);
 
         OnLockOnChanged?.Invoke(null);
+    }
+
+    /// <summary>
+    /// 把 LockOnCam 当前观察方向同步给 FreeCam 的 POV Axis。
+    /// LockOnCam 旋转由 Composer+TargetGroup 决定，FreeCam 由 POV 内部 Axis 决定，
+    /// 控制方式不同 → 要把"观察方向"转换成 POV 的 yaw/pitch，而不是复制 Transform。
+    /// </summary>
+    void SyncFreeCamFromLockCam()
+    {
+        var pov = _freeCam.GetCinemachineComponent<CinemachinePOV>();
+        if (pov == null) return;
+
+        // 索敌相机当前真实观察方向（Composer 已算出）
+        Vector3 fwd = _lockOnCam.transform.forward;
+
+        // POV 朝向 = Quaternion.Euler(pitch, yaw, 0)，forward = (sin yaw·cos pitch, sin pitch, cos yaw·cos pitch)
+        float yaw   = Mathf.Atan2(fwd.x, fwd.z) * Mathf.Rad2Deg;
+        float pitch = Mathf.Asin(Mathf.Clamp(fwd.y, -1f, 1f)) * Mathf.Rad2Deg;
+
+        pov.m_HorizontalAxis.Value = yaw;
+        pov.m_VerticalAxis.Value = pitch;
     }
 
     void Update()
@@ -206,14 +252,17 @@ public class LockOnManager : Singleton<LockOnManager>
     {
         if (_targetGroup == null || _playerTransform == null) return;
 
+        // 组位置用"加权平均"而非包围盒中点：配合权重让取景点偏向玩家，不飘到两人正中间
+        _targetGroup.m_PositionMode = CinemachineTargetGroup.PositionMode.GroupAverage;
+
         if (locked && CurrentTarget != null)
         {
             var targets = new CinemachineTargetGroup.Target[2];
             targets[0].target = _playerTransform;
-            targets[0].weight = 1f;
+            targets[0].weight = _playerGroupWeight;
             targets[0].radius = 0.5f;
             targets[1].target = CurrentTarget.transform;
-            targets[1].weight = 1f;
+            targets[1].weight = _enemyGroupWeight;
             targets[1].radius = 0.5f;
             _targetGroup.m_Targets = targets;
         }
@@ -221,7 +270,7 @@ public class LockOnManager : Singleton<LockOnManager>
         {
             var targets = new CinemachineTargetGroup.Target[1];
             targets[0].target = _playerTransform;
-            targets[0].weight = 1f;
+            targets[0].weight = _playerGroupWeight;
             targets[0].radius = 0.5f;
             _targetGroup.m_Targets = targets;
         }

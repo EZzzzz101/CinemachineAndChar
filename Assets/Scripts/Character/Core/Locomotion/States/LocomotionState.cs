@@ -13,6 +13,9 @@ public abstract class LocomotionState : IState
     protected readonly LocomotionStateMachine Sm;
     protected readonly PlayerController Owner;
 
+    /// <summary>冲刺动画播放到多少进度才允许再次冲刺（0.7 = 冲到 70% 才开放新冲刺窗口，防无限连冲）</summary>
+    private const float DashChainThreshold = 0.7f;
+
     protected LocomotionState(LocomotionStateMachine sm)
     {
         Sm = sm;
@@ -42,6 +45,16 @@ public abstract class LocomotionState : IState
     // 子类可以覆写，比如后面限制某些条件不能冲刺
     protected virtual void OnDashStarted(InputAction.CallbackContext ctx)
     {
+        // 受击硬直中禁止冲刺，强制看受击动画
+        if (Owner.IsInHitStun) return;
+
+        // 冲刺未到 70% 不允许再次冲刺（防无限连冲）
+        if (Owner.Locomotion != null && Owner.Locomotion.CurrentState is DashingState)
+        {
+            var info = Owner.Animator.GetCurrentAnimatorStateInfo(0);
+            if (info.normalizedTime < DashChainThreshold) return;
+        }
+
         if(Owner.MoveInput.MoveValue.magnitude>0.1f)
             Owner.Animator.CrossFadeInFixedTime("DashFront", 0.1555f);
         else
@@ -57,8 +70,9 @@ public abstract class LocomotionState : IState
 
         // Animator 内置阻尼，比 Mathf.SmoothDamp 更丝滑，不影响 root motion
         Owner.Animator.SetFloat("Movement", targetSpeed, Owner.SpeedSmoothTime, Time.deltaTime);
-        // 转向
-        Owner.HandleRotation();
+        // 攻击挥击进行中/受击锁定中：不随移动输入转（挥击段末放开供控制下一段；受击站桩）
+        if (!Owner.IsTurnLocked && !Owner.IsInHitStun)
+            Owner.HandleRotation();
     }
 
     public virtual void OnAnimationTranslateEvent(IState newState)

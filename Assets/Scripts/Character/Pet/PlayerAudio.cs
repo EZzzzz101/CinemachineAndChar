@@ -34,6 +34,12 @@ public class PlayerAudio : UnitAudio
         PlayClip(clip, _data.audioData.atkSpatialBlend);
     }
 
+    /// <summary>受击命中音（带音量/空间度）— 被击者自己播放用</summary>
+    public void PlayHitSound(AudioClip clip, float volume, float spatialBlend)
+    {
+        PlayClip(clip, spatialBlend, volume);
+    }
+
     public void PlayWeaponBackSound()
     {
         PlayClip(_data.audioData.weaponBackSound, _data.audioData.atkSpatialBlend);

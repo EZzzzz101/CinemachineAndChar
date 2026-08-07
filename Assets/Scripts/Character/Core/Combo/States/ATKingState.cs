@@ -9,8 +9,27 @@ public class ATKingState : PlayerComboState
 
     /// <summary>攻击自动面向锁定目标的角速度（度/秒）</summary>
     private const float AutoFaceTurnSpeed = 720f;
+    /// <summary>段切换后放开转向的脉冲时长（短暂可转，避免整段末尾放开造成滑步）</summary>
+    private const float TurnPulseDuration = 0.15f;
 
     public ATKingState(ActionStateMachine Asm):base(Asm){}
+
+    /// <summary>段切换脉冲结束的时间戳（此之前 = 可转向）</summary>
+    private float _turnPulseUntil;
+
+    /// <summary>
+    /// 挥击中锁定转向；段切换（ComboNext）后给一个短暂脉冲放开，供玩家用移动输入瞄准下一段。
+    /// 用"短暂脉冲"而非"整段末尾放开"，避免根运动滑步。
+    /// </summary>
+    public bool IsTurnLocked
+    {
+        get
+        {
+            // 段切换脉冲期间 → 放开（短暂可转向）
+            if (Time.time < _turnPulseUntil) return false;
+            return true;   // 其余挥击时间锁定
+        }
+    }
 
     public override void Enter()
     {
@@ -18,6 +37,7 @@ public class ATKingState : PlayerComboState
         ResuableData.canInput = false;        // 等 EnablePreInput() 打开（允许记录按下）
         ResuableData.canATK   = false;        // 等 CancelAttackColdTime() 打开（允许执行）
         ResuableData.canLinkCombo = true;     // 每段进状态重置，防止上一段的 DisableLinkCombo 残留
+        _turnPulseUntil = 0f;                 // 起手段直接锁定转向（起手已 FaceEnemy 面向）
     }
 
     public override  void Exit()
@@ -41,8 +61,9 @@ public class ATKingState : PlayerComboState
 
     public override  void Update()
     {
-        // 攻击中自动面向锁定目标（绝区零式软锁定）：让命中锥形始终对准
-        AutoFaceEnemy();
+        // 锁定转向期间自动面向锁定目标（绝区零式软锁定）；段切换脉冲期间让玩家用输入控制转向
+        if (IsTurnLocked)
+            AutoFaceEnemy();
 
         // 两段锁：canATK（CancelAttackColdTime 打开）+ hasBufferedInput（玩家按了）
         if (!ResuableData.canATK) return;
@@ -94,6 +115,7 @@ public class ATKingState : PlayerComboState
         ResuableData.canInput = false;          // 关窗，等下一段 EnablePreInput
         ResuableData.canATK   = false;          // 关窗，等下一段 CancelAttackColdTime
         ResuableData.comboIndex = (ResuableData.comboIndex + 1) % ResuableData.comboConfig.steps.Length;  // 循环
+        _turnPulseUntil = Time.time + TurnPulseDuration;   // 段切换：给一个短暂脉冲放开转向，供瞄准下一段
         Debug.Log("[lianzhao]:"+ResuableData.comboIndex);
         ResuableData.currentATKIndex = 0;
         _hasAdvancedCombo = true;
@@ -144,7 +166,7 @@ public class ATKingState : PlayerComboState
         bool anyHit = AttackHitHelper.DealDamage(
             origin, Owner.transform.forward,
             step.attackRange, step.attackAngle, mask,
-            step.damage, Owner.gameObject, step.hitVfxPrefab,
+            step.damage, Owner.gameObject,
             Owner.transform);   // 排除自身：玩家现在是 IDamageable，防止打到自己
 
         // 命中音效：至少打中一个目标才播（空挥不响）

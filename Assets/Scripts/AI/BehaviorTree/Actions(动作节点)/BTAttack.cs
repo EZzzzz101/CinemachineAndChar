@@ -44,6 +44,7 @@ namespace AI.BehaviourTree
         private float _startTime;       // 进入时刻，用于超时兜底
 
         private MonsterAudio _audio;
+        private GameObject _telegraphFx;   // 本次攻击的提示闪光实例
 
         public override void OnEnter(Blackboard bb)
         {
@@ -58,6 +59,10 @@ namespace AI.BehaviourTree
             // 清掉该状态上次残留的退出信号，避免刚进入就误判完成
             if (_picked >= 0 && TryKey(Data.StateNames[_picked], out var k))
                 bb.Set(k, false);
+
+            // 记录本次攻击是否霸体（BossBrain 被打时据此决定是否打断）
+            var step = GetStep(bb);
+            bb.Set("_superArmor", step != null && step.isSuperArmor);
         }
 
         protected override BTResult OnExecute(Blackboard bb)
@@ -90,6 +95,9 @@ namespace AI.BehaviourTree
                     if (step.voiceClips != null && step.voiceClips.Length > 0 && _audio != null)
                         _audio.PlayComboVoice(step.voiceClips);
                 }
+
+                // 起手提示闪光（挂在锁定点骨骼上，跟随动画；第一击命中销毁）
+                SpawnTelegraph(bb);
             }
 
             // 没填状态名 → 防止挂死，按完成处理
@@ -123,6 +131,9 @@ namespace AI.BehaviourTree
 
         public override void OnExit(Blackboard bb)
         {
+            DespawnTelegraph();   // 兜底清理提示闪光（没命中时也清掉）
+            bb.Set("_superArmor", false);   // 攻击结束/被打断，解除霸体
+
             if (!_triggered) return;   // 未触发过（失败）不动 Animator
 
             Animator anim = bb.Get<Animator>("_animator");
@@ -151,8 +162,18 @@ namespace AI.BehaviourTree
                     _audio.PlaySwingSound(step.swingSound, step.swingVolume, step.swingSpatialBlend);
 
                 DealHit(bb, step, _hitIndex);
-
                 _hitIndex++;
+
+                // 多段命中：还有后续命中 → 重新起手预警（闪光+音效）；最后一段 → 关闭
+                if (_hitIndex < times.Length)
+                {
+                    DespawnTelegraph();
+                    SpawnTelegraph(bb);
+                }
+                else
+                {
+                    DespawnTelegraph();
+                }
             }
         }
 
@@ -180,18 +201,43 @@ namespace AI.BehaviourTree
             float range = step.attackRange > 0f ? step.attackRange : 2.5f;
             float angle = step.attackAngle > 0f ? step.attackAngle : 80f;
 
-            bool anyHit = AttackHitHelper.DealDamage(
+            // 只结算伤害；受击反馈（命中音/震屏/顿帧/特效/动画）由被击者自己播放（闪避时不播）
+            AttackHitHelper.DealDamage(
                 origin, self.forward, range, angle, mask,
-                step.damage, self.gameObject, step.hitVfxPrefab, self);
+                step.damage, self.gameObject, self);
+        }
 
-            // 命中反馈：命中音 + 震屏 + 顿帧
-            if (anyHit)
-            {
-                if (step.hitSound != null && _audio != null)
-                    _audio.PlayHitSound(step.hitSound, step.hitVolume, step.hitSpatialBlend);
-                CameraShake.Instance.TriggerShake(0.5f);
-                HitPauseManager.Instance.Trigger(0.05f);
-            }
+        /// <summary>起手生成提示闪光（挂在头部骨骼）+ 播预警音效；多段命中时每段重新触发</summary>
+        private void SpawnTelegraph(Blackboard bb)
+        {
+            if (_telegraphFx != null) return;
+            var config = bb.Get<MonsterAttackConfigSO>("_attackConfig");
+            if (config == null) return;
+
+            // 预警音效（所有攻击共用，起手/每段命中前播放）
+            if (config.telegraphSound != null && _audio != null)
+                _audio.PlayComboSound(config.telegraphSound);
+
+            // 预警特效（挂在头部骨骼）
+            if (config.telegraphVfxPrefab == null) return;
+
+            Transform self = bb.Get<Transform>("_transform");
+            if (self == null) return;
+
+            var lockOn = self.GetComponent<LockOnTarget>();
+            // 预警闪光挂在头部骨骼（自动找 Head，或手动拖 telegraphPoint）
+            Transform anchor = lockOn != null ? lockOn.TelegraphPointTransform : self;
+            if (anchor == self)
+                Debug.LogWarning($"[BTAttack] {self.name} 预警闪光点未生效（LockOnTarget.telegraphPoint 为空且自动找骨失败）→ 特效生成在根节点(脚底)。请把头部骨骼拖到 LockOnTarget.telegraphPoint");
+            _telegraphFx = Object.Instantiate(config.telegraphVfxPrefab, anchor);
+            _telegraphFx.transform.localPosition = Vector3.zero;
+        }
+
+        private void DespawnTelegraph()
+        {
+            if (_telegraphFx == null) return;
+            Object.Destroy(_telegraphFx);
+            _telegraphFx = null;
         }
 
         /// <summary>未配置 hitTimes 时的兜底：动画播到 30% 打一下</summary>
@@ -216,8 +262,7 @@ namespace AI.BehaviourTree
         }
 
         /// <summary>状态短名 → 信号键（= Animator.StringToHash，与退出脚本的 shortNameHash 一致）</summary>
-        private bool TryKey(string s, out string key)
-        {
+        private bool TryKey(string s, out string key)        {
             if (string.IsNullOrEmpty(s))
             {
                 key = null;
