@@ -40,6 +40,8 @@ public class BossBrain : MonoBehaviour, IDamageable
     void Awake()
     {
         _bt = GetComponent<BehaviorTreeRunner>();
+        if (hitVfxPrefab != null)
+            VFXPool.Prewarm(hitVfxPrefab, 2);
         CurrentHP = MaxHP;
         _lastPlayerAttackTime = Time.time;
         CurrentPhase = 0;
@@ -103,8 +105,7 @@ public class BossBrain : MonoBehaviour, IDamageable
         // 受击特效（自身播放）
         if (hitVfxPrefab != null)
         {
-            GameObject vfx = Instantiate(hitVfxPrefab, transform.position + Vector3.up * 1f, Quaternion.identity);
-            Destroy(vfx, 2f);
+            VFXPool.Spawn(hitVfxPrefab, transform.position + Vector3.up * 1f, Quaternion.identity, null, 2f);
         }
 
         // 霸体：当前攻击不可被打断，不进受击动画/硬直（仍扣血）

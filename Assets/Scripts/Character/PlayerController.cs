@@ -93,6 +93,9 @@ public class PlayerController : MonoBehaviour, IDamageable
         _controller = GetComponent<CharacterController>();
         PlayerAudio = GetComponent<PlayerAudio>();
 
+        if (hitVfxPrefab != null)
+            VFXPool.Prewarm(hitVfxPrefab, 2);
+
         Locomotion = new LocomotionStateMachine(this);
         Action     = new ActionStateMachine(this,comboConfigSO);
         CurrentHP = MaxHP;
@@ -215,8 +218,7 @@ public class PlayerController : MonoBehaviour, IDamageable
         // 受击反馈（角色自己播放；闪避成功/无敌帧不会走到这里）
         if (hitVfxPrefab != null)
         {
-            GameObject vfx = Instantiate(hitVfxPrefab, transform.position + Vector3.up * 1f, Quaternion.identity);
-            Destroy(vfx, 2f);
+            VFXPool.Spawn(hitVfxPrefab, transform.position + Vector3.up * 1f, Quaternion.identity, null, 2f);
         }
         if (hitSound != null && PlayerAudio != null)
             PlayerAudio.PlayHitSound(hitSound, hitVolume, hitSpatialBlend);

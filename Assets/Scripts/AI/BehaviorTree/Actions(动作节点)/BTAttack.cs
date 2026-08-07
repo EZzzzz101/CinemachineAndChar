@@ -229,14 +229,15 @@ namespace AI.BehaviourTree
             Transform anchor = lockOn != null ? lockOn.TelegraphPointTransform : self;
             if (anchor == self)
                 Debug.LogWarning($"[BTAttack] {self.name} 预警闪光点未生效（LockOnTarget.telegraphPoint 为空且自动找骨失败）→ 特效生成在根节点(脚底)。请把头部骨骼拖到 LockOnTarget.telegraphPoint");
-            _telegraphFx = Object.Instantiate(config.telegraphVfxPrefab, anchor);
+            _telegraphFx = VFXPool.Spawn(config.telegraphVfxPrefab, anchor.position, anchor.rotation, anchor, 0f);
+            if (_telegraphFx == null) return;
             _telegraphFx.transform.localPosition = Vector3.zero;
         }
 
         private void DespawnTelegraph()
         {
             if (_telegraphFx == null) return;
-            Object.Destroy(_telegraphFx);
+            VFXPool.Despawn(_telegraphFx);
             _telegraphFx = null;
         }
 

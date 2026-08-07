@@ -3,7 +3,7 @@ using System;
 
 /// <summary>
 /// 角色特效管理（单例）— Animation Event 接收端
-/// 挂在角色 GameObject 上，Instantiate + 自销毁（后续换对象池接口不变）
+/// 挂在角色 GameObject 上，特效统一走 VFXPool 对象池（自动回收复用）
 /// </summary>
 public class CharacterVFX : MonoBehaviour
 {
@@ -30,6 +30,16 @@ public class CharacterVFX : MonoBehaviour
             return;
         }
         Instance = this;
+
+        // 预热攻击特效，避免战斗中首帧 Instantiate 卡顿
+        if (_vfxEntries != null)
+        {
+            foreach (var entry in _vfxEntries)
+            {
+                if (entry.prefab != null)
+                    VFXPool.Prewarm(entry.prefab, 2);
+            }
+        }
     }
 
     void OnDestroy()
@@ -78,7 +88,6 @@ public class CharacterVFX : MonoBehaviour
     private void SpawnAndAutoDestroy(GameObject prefab, Vector3 pos, Quaternion rot, Transform parent)
     {
         if (prefab == null) return;
-        var go = Instantiate(prefab, pos, rot, parent);
-        Destroy(go, 2f);
+        VFXPool.Spawn(prefab, pos, rot, parent, 2f);
     }
 }
