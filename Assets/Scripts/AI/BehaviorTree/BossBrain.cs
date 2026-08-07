@@ -15,6 +15,8 @@ public class BossBrain : MonoBehaviour, IDamageable
     [Header("血量")]
     public float MaxHP = 100f;
     public float CurrentHP { get; private set; }
+    /// <summary>是否已死亡（血量<=0 触发一次；死亡后不再受伤/不再播受击）</summary>
+    public bool IsDead { get; private set; }
 
     [Header("阶段阈值（血量比例）")]
     [Tooltip("超过此比例 → Phase 1，低于 → Phase 2，以此类推")]
@@ -79,6 +81,8 @@ public class BossBrain : MonoBehaviour, IDamageable
     /// <summary>受伤时调用（由玩家攻击触发）</summary>
     public void TakeDamage(float damage, GameObject attacker)
     {
+        if (IsDead) return;   // 死亡后不再结算伤害/受击反馈
+
         CurrentHP = Mathf.Max(0, CurrentHP - damage);
 
         EventBus.Emit(
@@ -87,6 +91,14 @@ public class BossBrain : MonoBehaviour, IDamageable
         );
         
         _lastPlayerAttackTime = Time.time;  // 记录玩家攻击时间
+
+        // 死亡：发"胜利结算"事件，行为树血量<=0 分支接管播死亡动画，不再播受击反馈
+        if (CurrentHP <= 0f)
+        {
+            IsDead = true;
+            EventBus.Emit(GameEvents.EnemyDied);
+            return;
+        }
 
         // 受击特效（自身播放）
         if (hitVfxPrefab != null)

@@ -12,9 +12,15 @@ public class PlayerController : MonoBehaviour, IDamageable
     public float SpeedSmoothTime=0.2f;
     [SerializeField] private float rotationSpeed = 10f;
 
-    [Header("血量")]
-    public float MaxHP = 100f;
+    [Header("基础属性")]
+    [Tooltip("攻击力/生命力/暴击率/暴击伤害，统一在此配置")]
+    public CharacterBaseAttribute baseAttribute = new CharacterBaseAttribute();
+
+    /// <summary>最大生命值（从基础属性读取）</summary>
+    public float MaxHP => baseAttribute != null ? baseAttribute.maxHP : 100f;
     public float CurrentHP { get; private set; }
+    /// <summary>是否已发过"失败结算"事件（血量首次归零时发一次，角色行为不受影响）</summary>
+    private bool _playerDiedEventSent;
 
     [Header("受击反馈")]
     [Tooltip("受击特效（角色自己播放；闪避成功不播）")]
@@ -179,9 +185,8 @@ public class PlayerController : MonoBehaviour, IDamageable
                 Debug.Log($"[PerfectDodge] 完美闪避成功！无敌帧盖住命中 → 时停(timeScale={_perfectDodgeTimeScale:F2}, {_perfectDodgeDuration:F2}s) | 攻击者={(attacker != null ? attacker.name : "null")}");
                 HitPauseManager.Instance.Trigger(_perfectDodgeDuration, _perfectDodgeTimeScale);
                 CameraShake.Instance.TriggerShake(0.3f);
-                // 完美闪避模糊：随时停开始开启，时停结束后淡出
-                DashMotionBlur.Instance.Play(_perfectDodgeBlurIntensity);
-                TimerManager.Instance.GetRealTimer(_perfectDodgeDuration, () => DashMotionBlur.Instance.Stop(_perfectDodgeBlurFade));
+                // 完美闪避模糊：冲顶→回落→时停保持→曲线淡出（内部按真实时间推进）
+                DashMotionBlur.Instance.Play(_perfectDodgeBlurIntensity, _perfectDodgeDuration, _perfectDodgeBlurFade);
             }
             return;
         }
@@ -199,6 +204,13 @@ public class PlayerController : MonoBehaviour, IDamageable
             GameEvents.HPTextChanged,
             new HPData(id,CurrentHP,MaxHP)
         );
+
+        // 暂时不处理角色死亡：血量见底不影响任何行为，只发一次"失败结算"事件供 UI 使用
+        if (CurrentHP <= 0f && !_playerDiedEventSent)
+        {
+            _playerDiedEventSent = true;
+            EventBus.Emit(GameEvents.PlayerDied);
+        }
 
         // 受击反馈（角色自己播放；闪避成功/无敌帧不会走到这里）
         if (hitVfxPrefab != null)

@@ -20,12 +20,14 @@ public partial class BossMotor : MonoBehaviour
     public string FaceTargetKey = "_faceTarget";
 
     private BehaviorTreeRunner _bt;
+    private BossBrain _brain;
     private Transform _self;
     private Animator _animator;
 
     void Awake()
     {
         _bt = GetComponent<BehaviorTreeRunner>();
+        _brain = GetComponent<BossBrain>();
         _self = transform;
         _animator = GetComponent<Animator>();
     }
@@ -33,6 +35,9 @@ public partial class BossMotor : MonoBehaviour
     void Update()
     {
         if (_bt?.Blackboard == null) return;
+
+        // 死亡后禁止旋转/移动驱动（尸体交给死亡动画，不再面向玩家）
+        if (_brain != null && _brain.IsDead) return;
 
         var bb = _bt.Blackboard;
         if (bb.Get<bool>(FaceTargetKey))

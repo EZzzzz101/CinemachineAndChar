@@ -167,7 +167,8 @@ public class ATKingState : PlayerComboState
             origin, Owner.transform.forward,
             step.attackRange, step.attackAngle, mask,
             step.damage, Owner.gameObject,
-            Owner.transform);   // 排除自身：玩家现在是 IDamageable，防止打到自己
+            Owner.transform,          // 排除自身：玩家现在是 IDamageable，防止打到自己
+            Owner.baseAttribute);     // 传入玩家基础属性 → 参与暴击判定
 
         // 命中音效：至少打中一个目标才播（空挥不响）
         if (anyHit && step.hitSound != null)

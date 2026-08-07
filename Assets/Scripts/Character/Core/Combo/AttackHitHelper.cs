@@ -7,6 +7,9 @@ using UnityEngine;
 /// </summary>
 public static class AttackHitHelper
 {
+    /// <summary>伤害数字相对目标脚下的高度偏移（世界单位）</summary>
+    private const float HitPointHeightOffset = 1.5f;
+
     /// <summary>
     /// 范围 + 前方锥形 OverlapSphere → 去重收集 IDamageable。
     /// layerMask 为 0 时查所有层（靠 IDamageable 过滤 + attackerRoot 自排除兜底）。
@@ -45,15 +48,18 @@ public static class AttackHitHelper
     }
 
     /// <summary>
-    /// 命中结算：DetectHits + TakeDamage。**不播受击特效**——特效由被击者自己决定（
+    /// 命中结算：DetectHits + 暴击判定 + TakeDamage + 发伤害数字事件。
+    /// **不播受击特效**——特效由被击者自己决定（
     /// 如玩家闪避成功时不该播受击特效/动画）。
     /// 返回是否至少命中一个目标（调用方可据此播命中音/震屏/顿帧）。
+    /// attackerAttribute 为空或 critRate<=0 时不暴击（怪物不传即天然不暴击）。
     /// </summary>
     public static bool DealDamage(
         Vector3 origin, Vector3 forward,
         float range, float angle, int layerMask,
         float damage, GameObject attacker,
-        Transform attackerRoot = null)
+        Transform attackerRoot = null,
+        CharacterBaseAttribute attackerAttribute = null)
     {
         var targets = DetectHits(origin, forward, range, angle, layerMask, attackerRoot);
         bool anyHit = false;
@@ -62,10 +68,25 @@ public static class AttackHitHelper
         {
             if (damageable == null) continue;
             anyHit = true;
-            damageable.TakeDamage(damage, attacker);
+
+            // 暴击判定：critRate<=0（或未传属性）永不暴击 —— 怪物不传属性即可
+            bool isCritical = attackerAttribute != null
+                              && attackerAttribute.critRate > 0f
+                              && Random.value < attackerAttribute.critRate;
+            float finalDamage = isCritical
+                ? damage * Mathf.Max(1f, attackerAttribute.critDamage)
+                : damage;
+
+            // 命中点：取目标位置上方，供伤害跳字在目标处显示
+            var targetMb = damageable as MonoBehaviour;
+            Vector3 hitPoint = targetMb != null
+                ? targetMb.transform.position + Vector3.up * HitPointHeightOffset
+                : origin;
+
+            damageable.TakeDamage(finalDamage, attacker);
 
             // 供伤害数字/统计订阅（无订阅者时安全 no-op）
-            EventBus.Emit(GameEvents.HitLanded, damage);
+            EventBus.Emit(GameEvents.HitLanded, new DamageData(finalDamage, isCritical, hitPoint));
         }
 
         return anyHit;

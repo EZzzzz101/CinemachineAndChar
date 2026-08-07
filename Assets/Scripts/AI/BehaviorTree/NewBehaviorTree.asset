@@ -169,10 +169,31 @@ MonoBehaviour:
     Position: {x: -2136, y: -2444}
     JsonData: 
     ChildIds:
+    - d4e5f6a7-b809-4c1d-9e2f-3a4b5c6d7e8f
     - bb1dcac2-804b-4832-bac8-2ff8eae45b53
     - 1bbc414d-662e-4cf3-a6a3-56bd56046548
     - 4966f620-59ee-4816-a0a4-57a660e4321d
     CustomName: "\u9009\u62E9"
+  - Id: f6a7b8c9-d012-4e3f-9a4b-5c6d7e8f9012
+    TypeName: AI.BehaviourTree.BTDeath
+    Position: {x: -1621.6, y: -3275.2}
+    JsonData: '{"TriggerName":"Death","StateName":"Death","MaxDuration":3.0}'
+    ChildIds: []
+    CustomName: "\u6B7B\u4EA1\u52A8\u753B"
+  - Id: e5f6a7b8-c901-4d2e-8f3a-4b5c6d7e8f90
+    TypeName: AI.BehaviourTree.BTBlackboardCondition
+    Position: {x: -1621.6, y: -3440.8}
+    JsonData: '{"Key":"_hpRatio","Op":3,"Value":0.0}'
+    ChildIds: []
+    CustomName: "\u8840\u91CF<=0"
+  - Id: d4e5f6a7-b809-4c1d-9e2f-3a4b5c6d7e8f
+    TypeName: AI.BehaviourTree.BTSequence
+    Position: {x: -1876, y: -3317.6}
+    JsonData: 
+    ChildIds:
+    - e5f6a7b8-c901-4d2e-8f3a-4b5c6d7e8f90
+    - f6a7b8c9-d012-4e3f-9a4b-5c6d7e8f9012
+    CustomName: "\u6B7B\u4EA1"
   _rootNodeId: 5a825475-2c79-4aac-a18e-8ae7aa74961e
   _blackboardAsset: {fileID: 11400000, guid: c9e5f2bf5174f0c4bb13fad567d09f20, type: 2}
   Description: 

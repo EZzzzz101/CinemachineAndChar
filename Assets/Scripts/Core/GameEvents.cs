@@ -5,13 +5,13 @@
 public static class GameEvents
 {
     // ---- 玩家 ----
-    public const string PlayerDied        = "player.died";
+    public const string PlayerDied        = "player.died";       // 角色死亡 → 失败结算界面
     public const string PlayerRevived     = "player.revived";
 
 
     // ---- 战斗 ----
     public const string HitLanded         = "hit.landed";       // 命中（触发伤害数字）
-    public const string EnemyDied         = "enemy.died";
+    public const string EnemyDied         = "enemy.died";        // 怪物死亡 → 胜利结算界面
     public const string EnemySpawned      = "enemy.spawned";
 
     public const string HPChanged   = "hp.changed";
