@@ -41,6 +41,10 @@ public class UIManager : GameModule<UIManager>
         var prefab = Resources.Load<GameObject>($"UI/Panels/{type.Name}");
         if (prefab != null)
         {
+            // 兜底：没在 Inspector 拖 _root 时，自动挂到场景里的 Canvas 下（避免克隆跑到场景根）
+            if (_root == null)
+                _root = FindObjectOfType<Canvas>()?.transform;
+
             var go = Instantiate(prefab, _root);
             go.SetActive(true);
             return go.GetComponent<T>();

@@ -28,6 +28,12 @@ public static class GameModules
         // 3. UI 系统（依赖 ResourceManager 加载面板预制体）
         UIManager.Instance.Init();
 
+        // 4. 相机（移动方向计算，常驻）
+        CameraManager.Instance.Init();
+
+        // 5. 场景加载（loadingUI 引用等配置随模块初始化就绪）
+        SceneLoader.Instance.Init();
+
     }
 
     /// <summary>退出时清理（场景切换时不需要调）</summary>

@@ -1,16 +1,16 @@
 using UnityEngine;
 
 /// <summary>
-/// 相机管理器（单例）— 移动方向计算
-/// VCam 的 Follow/LookAt 自动处理旋转
+/// 相机管理器（模块）— 移动方向计算（相对相机）
+/// 继承 GameModule&lt;CameraManager&gt;，由 GameModules.Init() 统一初始化并常驻；
+/// 没在场景里放对象也会自动创建，避免角色转向 NRE。
+/// VCam 的 Follow/LookAt 自动处理旋转。
 /// </summary>
-public class CameraManager : MonoBehaviour
+public class CameraManager : GameModule<CameraManager>
 {
-    public static CameraManager Instance { get; private set; }
-
-    void Awake()
+    protected override void OnInit()
     {
-        Instance = this;
+        Debug.Log("[CameraManager] 初始化完成");
     }
 
     public Vector3 GetMoveDir(Vector2 input)

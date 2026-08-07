@@ -29,6 +29,9 @@ public class BangbooFollow : MonoBehaviour
         set => _follow = value;
     }
 
+    /// <summary>设置跟随目标（出生点生成邦布后显式指定，不依赖 Player 标签）</summary>
+    public void SetTarget(Transform target) => _target = target;
+
     void Awake()
     {
         _animator = GetComponent<Animator>();
