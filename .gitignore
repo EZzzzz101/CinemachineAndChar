@@ -40,6 +40,9 @@ Desktop.ini
 Server/venv/
 Server/.cache/
 
+# 热更构建产物
+HotUpdateCDN/
+
 # Claude local config
 .claude/
 

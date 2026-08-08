@@ -32,4 +32,7 @@ public static class GameEvents
 
     // ---- 游戏状态 ----
     public const string GameStateChanged  = "game.state.changed";
+
+    // ---- 热更 ----
+    public const string HotUpdateCompleted = "hotupdate.completed";   // 热更流程完成（资源提供者已切换）
 }

@@ -1,5 +1,6 @@
 using UnityEngine;
 using Cinemachine;
+using Cysharp.Threading.Tasks;
 
 /// <summary>
 /// 玩家出生点 — 挂在场景里的空物体上（六分街/战斗场景）。
@@ -29,18 +30,18 @@ public class PlayerSpawnPoint : MonoBehaviour
     [Tooltip("邦布出生位置相对出生点的偏移")]
     [SerializeField] private Vector3 bangbooOffset = new Vector3(-0.5f, 0f, 0.5f);
 
-    private void Start()
+    private async void Start()
     {
         // 实例化玩家到出生点
-        GameObject player = Spawn(playerPrefab, playerPrefabPath, transform.position, transform.rotation);
+        GameObject player = await SpawnAsync(playerPrefab, playerPrefabPath, transform.position, transform.rotation);
         if (player == null)
         {
-            Debug.LogWarning($"[PlayerSpawnPoint] {name}: 未找到玩家 prefab（拖引用或 Resources/{playerPrefabPath}），跳过生成");
+            Debug.LogWarning($"[PlayerSpawnPoint] {name}: 未找到玩家 prefab（拖引用或 {playerPrefabPath}），跳过生成");
             return;
         }
 
         // 邦布（可选）
-        SpawnBangboo(player.transform);
+        await SpawnBangboo(player.transform);
 
         // 相机跟随玩家：运行时生成，Follow/LookAt 必须在生成后绑定（跟胸口锚点）
         Transform cameraPoint = EnsureCameraPoint(player.transform);
@@ -60,10 +61,10 @@ public class PlayerSpawnPoint : MonoBehaviour
         EventBus.Emit(GameEvents.PlayerSpawned, player);
     }
 
-    /// <summary>优先用 Inspector 引用，空则按 Resources 路径加载并实例化</summary>
-    private GameObject Spawn(GameObject prefab, string path, Vector3 position, Quaternion rotation)
+    /// <summary>优先用 Inspector 引用，空则按地址走资源提供者加载并实例化</summary>
+    private async UniTask<GameObject> SpawnAsync(GameObject prefab, string path, Vector3 position, Quaternion rotation)
     {
-        var source = prefab != null ? prefab : Resources.Load<GameObject>(path);
+        var source = prefab != null ? prefab : await ResourceManager.Instance.LoadAsync<GameObject>(path);
         if (source == null) return null;
 
         var go = Instantiate(source, position, rotation);
@@ -71,11 +72,11 @@ public class PlayerSpawnPoint : MonoBehaviour
         return go;
     }
 
-    private void SpawnBangboo(Transform player)
+    private async UniTask SpawnBangboo(Transform player)
     {
         if (!spawnBangboo) return;
 
-        GameObject bangboo = Spawn(bangbooPrefab, bangbooPrefabPath, transform.position + bangbooOffset, Quaternion.identity);
+        GameObject bangboo = await SpawnAsync(bangbooPrefab, bangbooPrefabPath, transform.position + bangbooOffset, Quaternion.identity);
         if (bangboo == null) return;
 
         var follow = bangboo.GetComponent<BangbooFollow>();

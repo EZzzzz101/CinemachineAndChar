@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using TMPro;
+using Cysharp.Threading.Tasks;
 
 /// <summary>
 /// Boss 房入口 — 挂在六分街的入口空物体上（可穿过触发器）。
@@ -94,9 +95,6 @@ public class BossEntrance : MonoBehaviour
     private void EnterTeamUp()
     {
         Debug.Log("打开组队界面");
-
-        var view = UIManager.Instance.Open<TeamUpView>();
-
-        Debug.Log(view);
+        UIManager.Instance.OpenAsync<TeamUpView>().Forget();
     }
 }

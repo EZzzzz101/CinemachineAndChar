@@ -22,6 +22,9 @@ public static class GameModules
         // 1. 资源 — 基础，供后续加载用
         ResourceManager.Instance.Init();
 
+        // 1.5 热更 — 版本检查/下载/切 provider 的实际流程由 BootFlow 触发，这里只注册模块
+        HotUpdateManager.Instance.Init();
+
         // 2. 游戏状态
         GameStateManager.Instance.Init();
 

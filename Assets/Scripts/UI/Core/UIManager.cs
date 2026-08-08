@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem.UI;
@@ -103,12 +104,28 @@ public class UIManager : GameModule<UIManager>
             return (T)view;
         }
 
-        var prefab = Resources.Load<GameObject>($"UI/Panels/{type.Name}");
+        // 未实例化过：异步从资源提供者加载（AB/编辑器兜底），调用方不需要返回值
+        OpenAsync<T>().Forget();
+        return default;
+    }
+
+    /// <summary>异步打开面板：优先缓存，没有则从资源提供者加载预制体实例化</summary>
+    public async UniTask<T> OpenAsync<T>() where T : IUIView
+    {
+        var type = typeof(T);
+
+        if (_views.TryGetValue(type, out var view))
+        {
+            view.Show();
+            return (T)view;
+        }
+
+        EnsureRoot();   // 兜底：保证 _root 指向常驻 Canvas，而不是 FindObjectOfType 乱找
+        EnsureEventSystem();
+
+        var prefab = await ResourceManager.Instance.LoadAsync<GameObject>($"UI/Panels/{type.Name}");
         if (prefab != null)
         {
-            EnsureRoot();   // 兜底：保证 _root 指向常驻 Canvas，而不是 FindObjectOfType 乱找
-            EnsureEventSystem();
-
             var go = Instantiate(prefab, _root);
             go.SetActive(true);
             return go.GetComponent<T>();

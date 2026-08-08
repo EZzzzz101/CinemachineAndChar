@@ -1,9 +1,10 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using Cysharp.Threading.Tasks;
 
 /// <summary>
 /// 战斗 UI 加载器 — 常驻模块
-/// 进入 Main 战斗场景时自动从 Resources 加载 GamePanel（HUD）并预加载 WinView（胜利面板，隐藏），
+/// 进入 Main 战斗场景时自动从资源提供者加载 GamePanel（HUD）并预加载 WinView（胜利面板，隐藏），
 /// 离开战斗场景时关闭/隐藏。UI 不再手动摆进场景。
 /// LockOnIndicator 是场景预置，不归这里管。
 /// </summary>
@@ -61,14 +62,14 @@ public class BattleUILoader : GameModule<BattleUILoader>
             _winView.SetActive(false);
     }
 
-    private void PreloadWinView()
+    private async void PreloadWinView()
     {
         if (_winView != null) return;
 
-        var prefab = Resources.Load<GameObject>("UI/Panels/WinView");
+        var prefab = await ResourceManager.Instance.LoadAsync<GameObject>("UI/Panels/WinView");
         if (prefab == null)
         {
-            Debug.LogWarning("[BattleUILoader] 未找到 WinView 预制体：Resources/UI/Panels/WinView");
+            Debug.LogWarning("[BattleUILoader] 未找到 WinView 预制体：UI/Panels/WinView");
             return;
         }
 

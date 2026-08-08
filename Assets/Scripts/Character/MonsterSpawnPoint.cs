@@ -1,4 +1,5 @@
 using UnityEngine;
+using Cysharp.Threading.Tasks;
 
 /// <summary>
 /// 怪兽出生点 — 挂在战斗场景里的空物体上，位置由场景自己摆。
@@ -13,12 +14,12 @@ public class MonsterSpawnPoint : MonoBehaviour
     [Tooltip("怪兽 prefab 的 Resources 路径（Assets/Resources 下）")]
     [SerializeField] private string monsterPrefabPath = "Prefabs/怪兽";
 
-    private void Start()
+    private async void Start()
     {
-        var source = monsterPrefab != null ? monsterPrefab : Resources.Load<GameObject>(monsterPrefabPath);
+        var source = monsterPrefab != null ? monsterPrefab : await ResourceManager.Instance.LoadAsync<GameObject>(monsterPrefabPath);
         if (source == null)
         {
-            Debug.LogWarning($"[MonsterSpawnPoint] {name}: 未找到怪兽 prefab（拖引用或 Resources/{monsterPrefabPath}），跳过生成");
+            Debug.LogWarning($"[MonsterSpawnPoint] {name}: 未找到怪兽 prefab（拖引用或 {monsterPrefabPath}），跳过生成");
             return;
         }
 

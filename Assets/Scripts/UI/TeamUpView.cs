@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
+using Cysharp.Threading.Tasks;
 
 /// <summary>
 /// 组队界面 
@@ -67,7 +68,7 @@ public class TeamUpView : UIView
     }
 
     /// <summary>单机进入时一号位刷出本地玩家立绘（联机后由槽位系统接管）</summary>
-    private void ApplyLocalPlayerPortrait()
+    private async void ApplyLocalPlayerPortrait()
     {
         if (_slot1Portrait == null)
         {
@@ -94,11 +95,11 @@ public class TeamUpView : UIView
         }
         if (_slot1Portrait == null) return;
 
-        var sprite = localPortrait != null ? localPortrait : Resources.Load<Sprite>("UI/Portraits/Player");
+        var sprite = localPortrait != null ? localPortrait : await ResourceManager.Instance.LoadAsync<Sprite>("UI/Portraits/Player");
         if (sprite != null)
             _slot1Portrait.sprite = sprite;
         else
-            Debug.LogWarning("[TeamUpView] 未配置本地玩家立绘：拖 localPortrait 或放 Resources/UI/Portraits/Player");
+            Debug.LogWarning("[TeamUpView] 未配置本地玩家立绘：拖 localPortrait 或放 Assets/GameAssets/UI/Portraits/Player");
     }
 
     private void CloseLobby()
