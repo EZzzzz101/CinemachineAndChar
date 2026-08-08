@@ -1,0 +1,79 @@
+{
+    "entries": [
+        {
+            "address": "prefabs/安比",
+            "assetPath": "assets/gameassets/prefabs/安比.prefab",
+            "bundle": "character/player"
+        },
+        {
+            "address": "prefabs/bangboo",
+            "assetPath": "assets/gameassets/prefabs/bangboo.prefab",
+            "bundle": "character/pet"
+        },
+        {
+            "address": "prefabs/怪兽",
+            "assetPath": "assets/gameassets/prefabs/怪兽.prefab",
+            "bundle": "enemy/monster"
+        },
+        {
+            "address": "ui/panels/addview",
+            "assetPath": "assets/gameassets/ui/panels/addview.prefab",
+            "bundle": "ui/panels"
+        },
+        {
+            "address": "ui/panels/beinvitedview",
+            "assetPath": "assets/gameassets/ui/panels/beinvitedview.prefab",
+            "bundle": "ui/panels"
+        },
+        {
+            "address": "ui/panels/gamelaunchview",
+            "assetPath": "assets/gameassets/ui/panels/gamelaunchview.prefab",
+            "bundle": "ui/panels"
+        },
+        {
+            "address": "ui/panels/gamepanel",
+            "assetPath": "assets/gameassets/ui/panels/gamepanel.prefab",
+            "bundle": "ui/panels"
+        },
+        {
+            "address": "ui/panels/loadingbar",
+            "assetPath": "assets/gameassets/ui/panels/loadingbar.prefab",
+            "bundle": "ui/panels"
+        },
+        {
+            "address": "ui/panels/loadingpanelmain",
+            "assetPath": "assets/gameassets/ui/panels/loadingpanelmain.prefab",
+            "bundle": "ui/panels"
+        },
+        {
+            "address": "ui/panels/loadingpanelsixthstreet",
+            "assetPath": "assets/gameassets/ui/panels/loadingpanelsixthstreet.prefab",
+            "bundle": "ui/panels"
+        },
+        {
+            "address": "ui/panels/lockonindicator",
+            "assetPath": "assets/gameassets/ui/panels/lockonindicator.prefab",
+            "bundle": "ui/panels"
+        },
+        {
+            "address": "ui/panels/teamupview",
+            "assetPath": "assets/gameassets/ui/panels/teamupview.prefab",
+            "bundle": "ui/panels"
+        },
+        {
+            "address": "ui/panels/winview",
+            "assetPath": "assets/gameassets/ui/panels/winview.prefab",
+            "bundle": "ui/panels"
+        },
+        {
+            "address": "bgm/battle",
+            "assetPath": "assets/gameassets/bgm/battle.mp3",
+            "bundle": "audio/bgm"
+        },
+        {
+            "address": "bgm/world",
+            "assetPath": "assets/gameassets/bgm/world.mp3",
+            "bundle": "audio/bgm"
+        }
+    ]
+}

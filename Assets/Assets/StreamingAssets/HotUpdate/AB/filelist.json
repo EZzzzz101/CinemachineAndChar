@@ -1,0 +1,71 @@
+{
+    "version": "1.0.6",
+    "rootBundle": "Windows",
+    "files": [
+        {
+            "name": "bundlemap.json",
+            "hash": "1a6145421089ac26574c02b258a72075",
+            "size": 2646
+        },
+        {
+            "name": "Windows",
+            "hash": "35a7d7d9ce187c470a2fd019ebccb4b3",
+            "size": 1724
+        },
+        {
+            "name": "Windows.manifest",
+            "hash": "41b1db1d6cef121af209dfa53ba3337e",
+            "size": 380
+        },
+        {
+            "name": "audio/bgm",
+            "hash": "1551c1ec1b7ea0020e38dfde9513b3ae",
+            "size": 7298997
+        },
+        {
+            "name": "audio/bgm.manifest",
+            "hash": "2ee613a63bcd73cc53da6ccd11e061fd",
+            "size": 507
+        },
+        {
+            "name": "character/pet",
+            "hash": "2e158551e69af50ce10dfdb815206be4",
+            "size": 6204703
+        },
+        {
+            "name": "character/pet.manifest",
+            "hash": "1c415329032e71033c8d578e1fb45cc7",
+            "size": 2241
+        },
+        {
+            "name": "character/player",
+            "hash": "a6ea4f66bd6b758fd90e8db237632e00",
+            "size": 19962979
+        },
+        {
+            "name": "character/player.manifest",
+            "hash": "8b903f84b1501146d5594e8ec765c9ae",
+            "size": 4446
+        },
+        {
+            "name": "enemy/monster",
+            "hash": "00990a487f5b67edbd2f844fe23d6a25",
+            "size": 10221518
+        },
+        {
+            "name": "enemy/monster.manifest",
+            "hash": "f6e23b56a542446b4f6dc8638e3cf2d8",
+            "size": 2309
+        },
+        {
+            "name": "ui/panels",
+            "hash": "2a816c50796ba9342f4611c3d605010b",
+            "size": 8312351
+        },
+        {
+            "name": "ui/panels.manifest",
+            "hash": "55da2999fd9d8b66ff3c9d2ffecfd5bd",
+            "size": 5059
+        }
+    ]
+}

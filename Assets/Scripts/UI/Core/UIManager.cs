@@ -98,11 +98,14 @@ public class UIManager : GameModule<UIManager>
     {
         var type = typeof(T);
 
-        if (_views.TryGetValue(type, out var view))
+        if (_views.TryGetValue(type, out var view) && IsViewValid(view))
         {
             view.Show();
             return (T)view;
         }
+
+        // 缓存里可能残留"已销毁"的引用（Unity 假 null），清掉再走异步加载
+        _views.Remove(type);
 
         // 未实例化过：异步从资源提供者加载（AB/编辑器兜底），调用方不需要返回值
         OpenAsync<T>().Forget();
@@ -114,11 +117,13 @@ public class UIManager : GameModule<UIManager>
     {
         var type = typeof(T);
 
-        if (_views.TryGetValue(type, out var view))
+        if (_views.TryGetValue(type, out var view) && IsViewValid(view))
         {
             view.Show();
             return (T)view;
         }
+
+        _views.Remove(type);
 
         EnsureRoot();   // 兜底：保证 _root 指向常驻 Canvas，而不是 FindObjectOfType 乱找
         EnsureEventSystem();
@@ -137,14 +142,23 @@ public class UIManager : GameModule<UIManager>
 
     public void Close<T>() where T : IUIView
     {
-        if (_views.TryGetValue(typeof(T), out var view))
+        if (_views.TryGetValue(typeof(T), out var view) && IsViewValid(view))
             view.Hide();
     }
 
     public T Get<T>() where T : IUIView
     {
-        if (_views.TryGetValue(typeof(T), out var view))
+        if (_views.TryGetValue(typeof(T), out var view) && IsViewValid(view))
             return (T)view;
         return default;
+    }
+
+    /// <summary>
+    /// 校验缓存的 View 是否还活着：Unity 对象被 Destroy 后，接口引用 != null 但转成
+    /// UnityEngine.Object 再比 null 能识别出来（Unity 重载了 ==）。
+    /// </summary>
+    private static bool IsViewValid(IUIView view)
+    {
+        return view != null && view as UnityEngine.Object != null;
     }
 }

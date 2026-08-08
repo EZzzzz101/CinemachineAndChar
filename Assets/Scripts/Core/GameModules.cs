@@ -37,6 +37,15 @@ public static class GameModules
         // 5. 场景加载（loadingUI 引用等配置随模块初始化就绪）
         SceneLoader.Instance.Init();
 
+        // 5.5 常驻网络层（大厅客户端服务；连接在登录界面触发，切场景不断开）
+        LobbyClientService.Instance.Init();
+
+        // 5.6 联机 UI 桥接（预加载被邀请弹窗、进房开组队界面）
+        LobbyUIBridge.Instance.Init();
+
+        // 5.7 游戏内 ESC 呼出鼠标（打包后也需要）
+        CursorEscapeToggle.Instance.Init();
+
         // 6. 背景音乐（常驻，跨场景按场景切曲）
         BgmManager.Instance.Init();
 

@@ -878,6 +878,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   loadingBar: {fileID: 1928248754}
   loadingBarFill: {fileID: 713455888}
+  statusText: {fileID: 0}
 --- !u!1001 &2598667392458319924
 PrefabInstance:
   m_ObjectHideFlags: 0

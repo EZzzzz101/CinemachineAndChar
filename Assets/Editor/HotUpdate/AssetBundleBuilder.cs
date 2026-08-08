@@ -16,24 +16,24 @@ using UnityEngine;
 ///   热更/一键构建并发布       —— 2 + 3
 ///
 /// 改资源后：把 Version 加一 → 一键构建并发布 → 客户端启动时自动拉新。
-/// 分包：场景 / 角色 / 敌人 / UI / 音频（对齐《联机与热更开发计划》M13）。
+/// 分包：角色 / 敌人 / UI / 音频（场景留 Build Settings 不进 AB，热更包瘦身，主包大点无所谓）。
 /// 注意：托管资源在 Assets/GameAssets（已迁出 Resources），依赖资源（模型/材质/动画等）
 /// 未单独分包时会被 Unity 自动收进引用它的 bundle。
 /// </summary>
 public static class AssetBundleBuilder
 {
-    public const string Version = "1.0.3";   // 资源有改动就 +1，客户端据此判断是否需要热更
+    public const string Version = "1.0.7";   // 资源有改动就 +1，客户端据此判断是否需要热更
     public const string OutputRelative = "Build/AssetBundles/Windows";
     public const string CdnRelative = "HotUpdateCDN";
+    public const string StreamingRelative = "Assets/StreamingAssets/HotUpdate/AB";   // 内置首包
 
     private static string OutputPath => Path.Combine(Application.dataPath, "..", OutputRelative);
     private static string CdnPath => Path.Combine(Application.dataPath, "..", CdnRelative);
+    private static string StreamingPath => Path.Combine(Application.dataPath, StreamingRelative);
 
     /// <summary>分包规则：bundle 名 → 资源路径（单文件或目录；目录下所有资产进同一包）</summary>
     private static readonly (string bundle, string path)[] BundleRules =
     {
-        ("scene/sixthstreet", "Assets/Scene/SixthStreet.unity"),
-        ("scene/main",        "Assets/Scene/Main.unity"),
         ("character/player",  "Assets/GameAssets/Prefabs/安比.prefab"),
         ("character/pet",     "Assets/GameAssets/Prefabs/Bangboo.prefab"),
         ("enemy/monster",     "Assets/GameAssets/Prefabs/怪兽.prefab"),
@@ -44,6 +44,9 @@ public static class AssetBundleBuilder
     [MenuItem("热更/1. 分配 AB 包名")]
     public static void AssignBundleNames()
     {
+        // 先清掉管理目录里所有已设置的 bundle 名（防止"从规则里删掉的资源"还挂着旧包名被继续打包）
+        ClearManagedBundleNames();
+
         var count = 0;
         foreach (var (bundle, path) in BundleRules)
         {
@@ -58,6 +61,28 @@ public static class AssetBundleBuilder
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
         Debug.Log($"[AssetBundleBuilder] 分配完成：{count} 个资源");
+    }
+
+    /// <summary>
+    /// 清空 Assets/Scene 与 Assets/GameAssets 下所有资源的 bundle 名，
+    /// 然后 AssignBundleNames 再按当前 BundleRules 重新分配。
+    /// </summary>
+    private static void ClearManagedBundleNames()
+    {
+        var cleared = 0;
+        foreach (var root in new[] { "Assets/Scene", "Assets/GameAssets" })
+        {
+            foreach (var assetPath in EnumerateAssets(root))
+            {
+                var importer = AssetImporter.GetAtPath(assetPath);
+                if (importer == null) continue;
+                if (string.IsNullOrEmpty(importer.assetBundleName)) continue;
+                importer.SetAssetBundleNameAndVariant("", "");
+                cleared++;
+            }
+        }
+        if (cleared > 0)
+            Debug.Log($"[AssetBundleBuilder] 已清除 {cleared} 个旧 bundle 名");
     }
 
     [MenuItem("热更/2. 构建 AssetBundle")]
@@ -110,6 +135,24 @@ public static class AssetBundleBuilder
             File.Copy(Path.Combine(OutputPath, "bundlemap.json"), Path.Combine(CdnPath, "bundlemap.json"), true);
 
         Debug.Log($"[AssetBundleBuilder] 已发布到模拟 CDN：{CdnPath}（version={Version}）");
+    }
+
+    [MenuItem("热更/4. 生成内置首包（StreamingAssets）")]
+    public static void CopyToStreamingAssets()
+    {
+        if (!Directory.Exists(OutputPath))
+        {
+            Debug.LogError("[AssetBundleBuilder] 请先执行：热更/2. 构建 AssetBundle");
+            return;
+        }
+
+        EnsureUnderProject(StreamingPath);
+        if (Directory.Exists(StreamingPath)) Directory.Delete(StreamingPath, true);
+        Directory.CreateDirectory(StreamingPath);
+
+        CopyDirectory(OutputPath, StreamingPath);
+        File.WriteAllText(Path.Combine(StreamingPath, "version.txt"), Version);
+        Debug.Log($"[AssetBundleBuilder] 内置首包已生成：{StreamingPath}（随主包发布，无网可玩）");
     }
 
     [MenuItem("热更/一键构建并发布")]

@@ -1,0 +1,21 @@
+ManifestFileVersion: 0
+CRC: 2578266839
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: 1193e3942717049972aef80f2d7f38c9
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: 9a2ca7bdbd1871f7131daf57de908e0c
+  IncrementalBuildHash:
+    serializedVersion: 2
+    Hash: 1193e3942717049972aef80f2d7f38c9
+HashAppended: 0
+ClassTypes:
+- Class: 83
+  Script: {instanceID: 0}
+SerializeReferenceClassIdentifiers: []
+Assets:
+- Assets/GameAssets/BGM/World.mp3
+- Assets/GameAssets/BGM/Battle.mp3
+Dependencies: []

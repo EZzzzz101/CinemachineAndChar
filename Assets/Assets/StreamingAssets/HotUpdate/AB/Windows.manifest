@@ -1,0 +1,19 @@
+ManifestFileVersion: 0
+CRC: 2865613285
+AssetBundleManifest:
+  AssetBundleInfos:
+    Info_0:
+      Name: character/player
+      Dependencies: {}
+    Info_1:
+      Name: character/pet
+      Dependencies: {}
+    Info_2:
+      Name: enemy/monster
+      Dependencies: {}
+    Info_3:
+      Name: ui/panels
+      Dependencies: {}
+    Info_4:
+      Name: audio/bgm
+      Dependencies: {}

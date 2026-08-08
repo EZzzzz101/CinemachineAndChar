@@ -42,6 +42,7 @@ Server/.cache/
 
 # 热更构建产物
 HotUpdateCDN/
+Assets/StreamingAssets/HotUpdate/
 
 # Claude local config
 .claude/

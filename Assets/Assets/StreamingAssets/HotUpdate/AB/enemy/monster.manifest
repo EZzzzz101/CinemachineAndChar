@@ -1,0 +1,78 @@
+ManifestFileVersion: 0
+CRC: 3138958816
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: a8460be7547938fd559b92f0bec63aa6
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: 09e1adeefbec2583e7991bd4d44ef540
+  IncrementalBuildHash:
+    serializedVersion: 2
+    Hash: a8460be7547938fd559b92f0bec63aa6
+HashAppended: 0
+ClassTypes:
+- Class: 1
+  Script: {instanceID: 0}
+- Class: 4
+  Script: {instanceID: 0}
+- Class: 21
+  Script: {instanceID: 0}
+- Class: 28
+  Script: {instanceID: 0}
+- Class: 43
+  Script: {instanceID: 0}
+- Class: 48
+  Script: {instanceID: 0}
+- Class: 74
+  Script: {instanceID: 0}
+- Class: 83
+  Script: {instanceID: 0}
+- Class: 90
+  Script: {instanceID: 0}
+- Class: 91
+  Script: {instanceID: 0}
+- Class: 95
+  Script: {instanceID: 0}
+- Class: 114
+  Script: {fileID: 11500000, guid: b2e879c22147b5f4382085c6333958dd, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 8c8bd311fa4e38b41b70ac93d57429cd, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: b6978e9a72d949ace49e41e416af1490, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 48550f44973050c4588f45c184dd7220, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 37da042e17c1f054ea5539563ab63d58, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 74523850a7d565c4e8923533ab81ed29, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 430beb9da649a584ba409b5d012d2035, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 975d84f2e887dc442a39bdead032320a, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 1a9221dd99656474e8c0b75856961521, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 8e3426f39c8f88849aaee40ddb17ebe5, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: af5c060617280824fb5e796f86c0b7c4, type: 3}
+- Class: 115
+  Script: {instanceID: 0}
+- Class: 137
+  Script: {instanceID: 0}
+- Class: 143
+  Script: {instanceID: 0}
+- Class: 198
+  Script: {instanceID: 0}
+- Class: 199
+  Script: {instanceID: 0}
+SerializeReferenceClassIdentifiers:
+- AssemblyName: Assembly-CSharp
+  ClassName: AI.BehaviourTree.BTBlackboardSO/BlackboardKeyEntry
+- AssemblyName: Assembly-CSharp
+  ClassName: AI.BehaviourTree.BehaviorTreeSO/NodeEntry
+- AssemblyName: Assembly-CSharp
+  ClassName: MonsterAttackStepData
+Assets:
+- "Assets/GameAssets/Prefabs/\u602A\u517D.prefab"
+Dependencies: []

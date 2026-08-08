@@ -16,6 +16,7 @@ public class AddView : UIView
     [SerializeField] private TMP_InputField idInput; // 玩家 ID 输入框
 
     private GameObject _modalBlocker;
+    private bool _searching;
 
     public bool IsOpen => gameObject.activeSelf;
 
@@ -32,8 +33,14 @@ public class AddView : UIView
 
     public override void Show()
     {
+        transform.SetAsLastSibling();   // 置顶：保证弹窗盖在最上层
         base.Show();
-        if (_modalBlocker != null) _modalBlocker.SetActive(true);
+        if (_modalBlocker != null)
+        {
+            _modalBlocker.SetActive(true);
+            _modalBlocker.transform.SetAsLastSibling();   // 遮罩盖住下层
+            transform.SetAsLastSibling();                 // 弹窗再盖在遮罩上
+        }
     }
 
     public override void Hide()
@@ -130,27 +137,37 @@ public class AddView : UIView
             Debug.Log("[AddView] 请输入玩家ID");
             return;
         }
+        if (_searching) return;
 
-        if (IsPlayerOnline(playerId))
-            TryInvitePlayer(playerId);
-        else
-            Debug.Log($"[AddView] 玩家 {playerId} 不在线");
+        _searching = true;
+        Debug.Log($"[AddView] 搜索 {playerId}...");
 
-        Hide();   // 点击邀请后弹窗消失，回到组队界面
+        // 先搜索：在线才邀请（服务器权威，在线表说了算）
+        LobbyClientService.Instance.OnSearchResult += OnSearchResult;
+        LobbyClientService.Instance.Search(playerId);
     }
 
-    /// <summary>联机预留：M7 会话/房间时接真实在线状态（本地阶段先默认在线）</summary>
-    private bool IsPlayerOnline(string playerId)
+    private void OnSearchResult(bool found, string name)
     {
-        // TODO 联机：查好友列表/房间在线状态
-        return true;
+        LobbyClientService.Instance.OnSearchResult -= OnSearchResult;
+        _searching = false;
+
+        if (found)
+        {
+            Debug.Log($"[AddView] 已向 {name} 发送邀请");
+            TryInvitePlayer(name);
+            Hide();   // 邀请成功，关闭弹窗回到组队界面
+        }
+        else
+        {
+            Debug.Log($"[AddView] {name} 不在线");
+        }
     }
 
     /// <summary>联机预留接口：真正发送邀请在这里实现（本地阶段只打日志）</summary>
     protected virtual void TryInvitePlayer(string playerId)
     {
-        // TODO 联机：向玩家发送邀请 → 成功后组队界面槽位刷出对方立绘
-        Debug.Log($"[AddView] 预留联机接口：向玩家 {playerId} 发送邀请");
+        LobbyClientService.Instance.Invite(playerId);
     }
 
     private void OnDestroy()
@@ -158,5 +175,7 @@ public class AddView : UIView
         if (_modalBlocker != null) Destroy(_modalBlocker);
         if (closeButton != null) closeButton.onClick.RemoveListener(OnCloseClicked);
         if (inviteButton != null) inviteButton.onClick.RemoveListener(OnInviteClicked);
+        if (LobbyClientService.HasInstance)
+            LobbyClientService.Instance.OnSearchResult -= OnSearchResult;
     }
 }

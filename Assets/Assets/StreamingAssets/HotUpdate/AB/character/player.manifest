@@ -1,0 +1,130 @@
+ManifestFileVersion: 0
+CRC: 4205815643
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: dd87571db267fb3018aacf23623e8867
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: 274c54c77a3a29c8bfefc7a8f45be86d
+  IncrementalBuildHash:
+    serializedVersion: 2
+    Hash: dd87571db267fb3018aacf23623e8867
+HashAppended: 0
+ClassTypes:
+- Class: 1
+  Script: {instanceID: 0}
+- Class: 4
+  Script: {instanceID: 0}
+- Class: 21
+  Script: {instanceID: 0}
+- Class: 28
+  Script: {instanceID: 0}
+- Class: 43
+  Script: {instanceID: 0}
+- Class: 48
+  Script: {instanceID: 0}
+- Class: 74
+  Script: {instanceID: 0}
+- Class: 82
+  Script: {instanceID: 0}
+- Class: 83
+  Script: {instanceID: 0}
+- Class: 90
+  Script: {instanceID: 0}
+- Class: 91
+  Script: {instanceID: 0}
+- Class: 95
+  Script: {instanceID: 0}
+- Class: 114
+  Script: {fileID: 11500000, guid: 6121019c1552a10468ddd2d4935b909e, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 48550f44973050c4588f45c184dd7220, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 3c359a8c3537c8f43bce40435a34784c, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 62899f850307741f2a39c98a8b639597, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: b58d21e04c9a47e3a6f8d0c5b2e91f37, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 5770c4b326408ff468512156cee747ee, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: fae8d62f6139b78468ccc8e0be626b66, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: a7269ad417fc17d4fa3f1f70c2fdac74, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 39fa3d8997a24136984ca6e2c99902bc, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 8f4adb8666c44e449a75004acc394edf, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 71c1514a6bd24e1e882cebbe1904ce04, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 882fa61826d51b244b5adf43ad1bc5cc, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: e35272b76d39ca3489a143540248b077, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 01256ced70eba0841b9e495ca2989be1, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 223c48d66d37bb44bbaaf76a82f6a86a, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: db8c8e7ce52527e4da731718894310e2, type: 3}
+- Class: 115
+  Script: {instanceID: 0}
+- Class: 128
+  Script: {instanceID: 0}
+- Class: 137
+  Script: {instanceID: 0}
+- Class: 143
+  Script: {instanceID: 0}
+- Class: 198
+  Script: {instanceID: 0}
+- Class: 199
+  Script: {instanceID: 0}
+SerializeReferenceClassIdentifiers:
+- AssemblyName: Assembly-CSharp
+  ClassName: CharacterBaseAttribute
+- AssemblyName: Assembly-CSharp
+  ClassName: CharacterVFX/VFXEntry
+- AssemblyName: Assembly-CSharp
+  ClassName: ComboStepData
+- AssemblyName: Unity.InputSystem
+  ClassName: UnityEngine.InputSystem.InputAction
+- AssemblyName: Unity.InputSystem
+  ClassName: UnityEngine.InputSystem.InputActionMap
+- AssemblyName: Unity.InputSystem
+  ClassName: UnityEngine.InputSystem.InputBinding
+- AssemblyName: Unity.InputSystem
+  ClassName: UnityEngine.InputSystem.InputControlScheme
+- AssemblyName: Unity.InputSystem
+  ClassName: UnityEngine.InputSystem.InputControlScheme/DeviceRequirement
+- AssemblyName: Unity.InputSystem
+  ClassName: UnityEngine.InputSystem.PlayerInput/ControlsChangedEvent
+- AssemblyName: Unity.InputSystem
+  ClassName: UnityEngine.InputSystem.PlayerInput/DeviceLostEvent
+- AssemblyName: Unity.InputSystem
+  ClassName: UnityEngine.InputSystem.PlayerInput/DeviceRegainedEvent
+- AssemblyName: Unity.TextMeshPro
+  ClassName: TMPro.FaceInfo_Legacy
+- AssemblyName: Unity.TextMeshPro
+  ClassName: TMPro.FontAssetCreationSettings
+- AssemblyName: Unity.TextMeshPro
+  ClassName: TMPro.KerningTable
+- AssemblyName: Unity.TextMeshPro
+  ClassName: TMPro.TMP_Character
+- AssemblyName: Unity.TextMeshPro
+  ClassName: TMPro.TMP_FontFeatureTable
+- AssemblyName: Unity.TextMeshPro
+  ClassName: TMPro.TMP_FontWeightPair
+- AssemblyName: UnityEngine.CoreModule
+  ClassName: UnityEngine.Events.PersistentCallGroup
+- AssemblyName: UnityEngine.TextCoreFontEngineModule
+  ClassName: UnityEngine.TextCore.FaceInfo
+- AssemblyName: UnityEngine.TextCoreFontEngineModule
+  ClassName: UnityEngine.TextCore.Glyph
+- AssemblyName: UnityEngine.TextCoreFontEngineModule
+  ClassName: UnityEngine.TextCore.GlyphMetrics
+- AssemblyName: UnityEngine.TextCoreFontEngineModule
+  ClassName: UnityEngine.TextCore.GlyphRect
+Assets:
+- "Assets/GameAssets/Prefabs/\u5B89\u6BD4.prefab"
+Dependencies: []

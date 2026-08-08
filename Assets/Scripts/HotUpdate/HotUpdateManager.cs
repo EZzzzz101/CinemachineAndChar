@@ -102,10 +102,11 @@ public class HotUpdateManager : GameModule<HotUpdateManager>
         SetStatus("正在进入游戏");
         Report(progress, 0.02f);
 
-        if (enableAssetBundle && TryResolveCdnPath(out var cdn))
+        if (enableAssetBundle && TryResolveSourcePath(out var source))
         {
+            Debug.Log($"[HotUpdateManager] 资源源：{source}");
             Report(progress, 0.05f);   // 版本检查
-            var downloaded = await DownloadIfNeeded(cdn, progress);   // 0.05 → 0.5
+            var downloaded = await DownloadIfNeeded(source, progress);   // 0.05 → 0.5
             if (downloaded)
             {
                 Report(progress, 0.55f);
@@ -334,13 +335,32 @@ public class HotUpdateManager : GameModule<HotUpdateManager>
 #endif
     }
 
-    private bool TryResolveCdnPath(out string path)
+    /// <summary>
+    /// 解析资源源：优先外部 CDN（本地文件夹模拟，可热更）；没有就退回内置首包（StreamingAssets，随主包）。
+    /// </summary>
+    private bool TryResolveSourcePath(out string path)
     {
-        path = Path.IsPathRooted(cdnRoot)
+        // 1) 外部 CDN（默认相对项目根 / exe 目录的 HotUpdateCDN）
+        var external = Path.IsPathRooted(cdnRoot)
             ? cdnRoot
             : Path.Combine(Application.dataPath, "..", cdnRoot);
-        path = Path.GetFullPath(path);
-        return Directory.Exists(path);
+        external = Path.GetFullPath(external);
+        if (Directory.Exists(external))
+        {
+            path = external;
+            return true;
+        }
+
+        // 2) 内置首包（StreamingAssets/HotUpdate/AB，随主包发布）
+        var builtIn = Path.Combine(Application.streamingAssetsPath, "HotUpdate", "AB");
+        if (Directory.Exists(builtIn) && File.Exists(Path.Combine(builtIn, "filelist.json")))
+        {
+            path = builtIn;
+            return true;
+        }
+
+        path = null;
+        return false;
     }
 
     private string LocalBundleFullPath() => Path.Combine(Application.persistentDataPath, localBundleRoot);
