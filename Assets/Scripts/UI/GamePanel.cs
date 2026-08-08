@@ -1,3 +1,4 @@
+using System;
 using TMPro;
 using UnityEngine;
 
@@ -12,12 +13,16 @@ public class GamePanel : UIView
     [Tooltip("已挂 DamageText 组件的跳字模板；留空自动从子物体查找")]
     [SerializeField] private DamageText damageTextPrefab;
 
+    // EventBus 无参版 Subscribe 每次会包新委托、无法退订，这里存住包装委托用泛型版订阅
+    private Action<object> _onEnemyDied;
+
     private Canvas _canvas;
     private UIObjectPool<DamageText> _damagePool;
 
     protected override void Awake()
     {
         base.Awake();
+        _onEnemyDied = _ => OnEnemyDied();
         _canvas = GetComponentInParent<Canvas>();
 
         if (damageTextPrefab == null)
@@ -50,6 +55,11 @@ public class GamePanel : UIView
             GameEvents.HitLanded,
             OnHitLanded
         );
+
+        EventBus.Subscribe<object>(
+            GameEvents.EnemyDied,
+            _onEnemyDied
+        );
     }
 
 
@@ -69,6 +79,17 @@ public class GamePanel : UIView
             GameEvents.HitLanded,
             OnHitLanded
         );
+
+        EventBus.Unsubscribe<object>(
+            GameEvents.EnemyDied,
+            _onEnemyDied
+        );
+    }
+
+    /// <summary>怪物死亡 → 弹出胜利结算面板（UI 只订阅，不反向调用战斗模块）</summary>
+    private void OnEnemyDied()
+    {
+        UIManager.Instance.Open<WinView>();
     }
 
     /// <summary>命中事件 → 在命中点生成伤害数字（暴击=图标+数字，普通=纯数字）</summary>

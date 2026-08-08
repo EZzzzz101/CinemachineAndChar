@@ -34,6 +34,9 @@ public static class GameModules
         // 5. 场景加载（loadingUI 引用等配置随模块初始化就绪）
         SceneLoader.Instance.Init();
 
+        // 6. 背景音乐（常驻，跨场景按场景切曲）
+        BgmManager.Instance.Init();
+
     }
 
     /// <summary>退出时清理（场景切换时不需要调）</summary>

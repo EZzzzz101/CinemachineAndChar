@@ -28,8 +28,9 @@ public class GameLaunchView : UIView
 
     private void OnEnterGameClicked()
     {
-        // 先关闭登录窗口：它的全屏半透明遮罩在常驻 Canvas 上会跨场景存活，盖暗下一个场景
+        // 先关闭登录窗口 + Boot 专属 UI（BG/读条）：都在常驻 Canvas 上，不藏会盖住下一个场景
         gameObject.SetActive(false);
+        PersistentUIRoot.Instance?.HideBootUI();
         SceneLoader.Instance.LoadScene(nextSceneName);
     }
 }

@@ -63,7 +63,7 @@ public class BossEntrance : MonoBehaviour
         if (!_playerInside) return;
 
         if (Keyboard.current != null && Keyboard.current.fKey.wasPressedThisFrame)
-            EnterBattle();
+            EnterTeamUp();
     }
 
     private void OnTriggerEnter(Collider other)
@@ -91,11 +91,12 @@ public class BossEntrance : MonoBehaviour
         promptText.gameObject.SetActive(show);
     }
 
-    private void EnterBattle()
+    private void EnterTeamUp()
     {
-        _playerInside = false;
-        ShowPrompt(false);
-        Debug.Log($"[BossEntrance] 按 F 确认，进入战斗场景：{battleSceneName}");
-        SceneLoader.Instance.LoadScene(battleSceneName);
+        Debug.Log("打开组队界面");
+
+        var view = UIManager.Instance.Open<TeamUpView>();
+
+        Debug.Log(view);
     }
 }
