@@ -36,6 +36,7 @@ public class LockOnManager : Singleton<LockOnManager>
 
     // 代码创建的索敌相机
     private CinemachineVirtualCamera _lockOnCam;
+    private Transform _playerAimPoint;   // 玩家胸口锚点（没有 CameraBasePoint 时自动创建）
 
     public LockOnTarget CurrentTarget { get; private set; }
     public bool IsLockedOn => CurrentTarget != null;
@@ -81,6 +82,52 @@ public class LockOnManager : Singleton<LockOnManager>
         Debug.Log($"[LockOn] 初始化: freeCam={_freeCam != null} player={_playerTransform != null}");
     }
 
+    /// <summary>
+    /// 运行时玩家生成后显式注入（安比 tag 是 Untagged，不能靠 FindGameObjectWithTag 兜底）。
+    /// 锁敌相机 Follow 和取景组都依赖这个引用。
+    /// </summary>
+    public void BindPlayer(Transform player)
+    {
+        _playerTransform = player;
+
+        // 索敌相机立刻拿到 Follow/LookAt：避免 Follow 为空时 Body 空转导致相机位置退化（贴地/钻地）
+        if (_lockOnCam != null)
+        {
+            _lockOnCam.Follow = GetPlayerAimPoint();
+            _lockOnCam.LookAt = _targetGroup != null ? _targetGroup.transform : null;
+        }
+
+        SetGroupTargets(IsLockedOn);
+        Debug.Log($"[LockOn] 绑定玩家: {player?.name}");
+    }
+
+    /// <summary>
+    /// 玩家取景锚点：优先找 CameraBasePoint（胸口），没有则在角色根下创建一个胸口锚点。
+    /// 出生点模式下角色根在脚底，相机跟根会低头看地、玩家出画。
+    /// </summary>
+    Transform GetPlayerAimPoint()
+    {
+        if (_playerTransform == null) return null;
+
+        if (_playerAimPoint != null && _playerAimPoint.parent == _playerTransform)
+            return _playerAimPoint;
+
+        foreach (var t in _playerTransform.GetComponentsInChildren<Transform>(true))
+        {
+            if (t.name == "CameraBasePoint")
+            {
+                _playerAimPoint = t;
+                return t;
+            }
+        }
+
+        var go = new GameObject("CameraBasePoint");
+        go.transform.SetParent(_playerTransform, false);
+        go.transform.localPosition = new Vector3(0f, 0.8f, 0f);   // 胸口高度
+        _playerAimPoint = go.transform;
+        return _playerAimPoint;
+    }
+
     void CreateOrFindTargetGroup()
     {
         if (_targetGroup == null)
@@ -102,42 +149,39 @@ public class LockOnManager : Singleton<LockOnManager>
     /// </summary>
     void CreateLockOnCam()
     {
-        if (_freeCam == null) return;
+        if (_lockOnCam != null) return;
 
-        // 克隆
-        _lockOnCam = Instantiate(_freeCam, _freeCam.transform.parent);
-        _lockOnCam.name = "LockOnCam";
+        // 独立专用索敌相机：不克隆自由相机，Follow/LookAt 在 Lock 时显式指定，
+        // 不依赖自由相机的快照 → 出生点模式下也不会因为 Follow 未绑定而乱飞。
+        var holder = new GameObject("LockOnCam");
+        holder.transform.SetParent(transform, false);
 
-        // 清理多余组件
-        var inputProvider = _lockOnCam.GetComponent<CinemachineInputProvider>();
-        if (inputProvider != null) Destroy(inputProvider);
-
-        // POV → Composer（只偏头看取景点，不强制推拉距离）
-        _lockOnCam.DestroyCinemachineComponent<CinemachinePOV>();
-        _lockOnCam.AddCinemachineComponent<CinemachineComposer>();
-
-        // 关掉群框 + 固定距离：不再随两人贴近自动拉高/推近（这是"距离一近就俯视"的根因）
-        var body = _lockOnCam.GetCinemachineComponent<CinemachineFramingTransposer>();
-        if (body != null)
-        {
-            body.m_GroupFramingMode = CinemachineFramingTransposer.FramingMode.None;
-            body.m_CameraDistance = _lockCamDistance;   // 更远，视野更平
-            body.m_ScreenY = _lockScreenY;              // 玩家放画面偏下，减少俯视感
-        }
-
-        // 保留碰撞避障（不穿墙），但忽略玩家(6)/敌人(7)两层：
-        // 角色不再挡视线 → 不会把相机推到两人之间；墙/地形(0/3等)仍会避
-        var camCollider = _lockOnCam.GetComponent<CinemachineCollider>();
-        if (camCollider != null)
-            camCollider.m_CollideAgainst = ~((1 << 6) | (1 << 7));
-
-        // 指向 TargetGroup
-        _lockOnCam.LookAt = _targetGroup.transform;
-
-        // 初始隐藏（优先级低于自由相机）
+        _lockOnCam = holder.AddComponent<CinemachineVirtualCamera>();
         _lockOnCam.Priority = 0;
+        if (_freeCam != null)
+            _lockOnCam.m_Lens.FieldOfView = _freeCam.m_Lens.FieldOfView;
 
-        Debug.Log("[LockOn] 索敌相机创建完成");
+        // 子管线物体（Cinemachine 的 Body/Aim 挂在带 CinemachinePipeline 的子物体上）
+        var pipelineGo = new GameObject("cm");
+        pipelineGo.transform.SetParent(holder.transform, false);
+        pipelineGo.AddComponent<CinemachinePipeline>();
+
+        // Body：FramingTransposer，None 模式 + 固定距离（和之前克隆后的行为一致）
+        var body = pipelineGo.AddComponent<CinemachineFramingTransposer>();
+        body.m_GroupFramingMode = CinemachineFramingTransposer.FramingMode.None;
+        body.m_CameraDistance = _lockCamDistance;   // 更远，视野更平
+        body.m_ScreenX = 0.5f;
+        body.m_ScreenY = _lockScreenY;              // 玩家放画面偏下，减少俯视感
+        body.m_TargetMovementOnly = false;
+
+        // Aim：Composer 自动看向 LookAt（锁定时指向 TargetGroup）
+        pipelineGo.AddComponent<CinemachineComposer>();
+
+        // 碰撞避障：忽略玩家(6)/敌人(7)层，墙/地形仍会避
+        var camCollider = holder.AddComponent<CinemachineCollider>();
+        camCollider.m_CollideAgainst = ~((1 << 6) | (1 << 7));
+
+        Debug.Log("[LockOn] 专用索敌相机创建完成");
     }
 
     // ==================== 输入 ====================
@@ -180,9 +224,22 @@ public class LockOnManager : Singleton<LockOnManager>
         CurrentTarget = target;
         SetGroupTargets(true);
 
-        // 从自由相机当前朝向开始过渡（避免跳变）
-        _lockOnCam.transform.position = _freeCam.transform.position;
-        _lockOnCam.transform.rotation = _freeCam.transform.rotation;
+        // Follow/LookAt 显式指定（跟胸口锚点，不依赖克隆快照，出生点模式也安全）
+        Transform aimPoint = GetPlayerAimPoint();
+        _lockOnCam.Follow = aimPoint;
+        _lockOnCam.LookAt = _targetGroup.transform;
+
+        // 固定初始机位：玩家身后、略上方、面向敌人（不沿用自由相机当前朝向，避免甩到天上/地板）
+        Vector3 toTarget = target.GetLockOnPosition() - _playerTransform.position;
+        toTarget.y = 0f;
+        if (toTarget.sqrMagnitude < 0.01f)
+            toTarget = _playerTransform.forward;
+        Quaternion facing = Quaternion.LookRotation(toTarget.normalized);
+        _lockOnCam.transform.rotation = facing;
+        _lockOnCam.transform.position = aimPoint.position
+                                        - facing * Vector3.forward * _lockCamDistance
+                                        + Vector3.up * 2f;
+
         _lockOnCam.Priority = 20;
         _freeCam.Priority   = 10;
 
@@ -258,10 +315,10 @@ public class LockOnManager : Singleton<LockOnManager>
         if (locked && CurrentTarget != null)
         {
             var targets = new CinemachineTargetGroup.Target[2];
-            targets[0].target = _playerTransform;
+            targets[0].target = GetPlayerAimPoint();   // 胸口锚点，避免低头看脚
             targets[0].weight = _playerGroupWeight;
             targets[0].radius = 0.5f;
-            targets[1].target = CurrentTarget.transform;
+            targets[1].target = CurrentTarget.CameraFocusTransform;   // 敌人相机聚焦点（根 + cameraFocusOffset，独立于锁定点）
             targets[1].weight = _enemyGroupWeight;
             targets[1].radius = 0.5f;
             _targetGroup.m_Targets = targets;
@@ -269,7 +326,7 @@ public class LockOnManager : Singleton<LockOnManager>
         else
         {
             var targets = new CinemachineTargetGroup.Target[1];
-            targets[0].target = _playerTransform;
+            targets[0].target = GetPlayerAimPoint();
             targets[0].weight = _playerGroupWeight;
             targets[0].radius = 0.5f;
             _targetGroup.m_Targets = targets;

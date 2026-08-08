@@ -18,18 +18,74 @@ public class LockOnTarget : MonoBehaviour
     [Tooltip("锁定点自动找骨关键字（胸部）：优先 Chest/Thorax，其次最深 Spine（上段脊柱≈胸口）")]
     public string[] lockBoneKeywords = { "Chest", "Thorax", "Spine" };
 
+    [Header("相机聚焦点（取景组权重焦点，和锁定点独立）")]
+    [Tooltip("相机聚焦点偏移（相对敌人根位置），y 可调；用于算相机权重焦点")]
+    public Vector3 cameraFocusOffset = new Vector3(0, 1f, 0);
+
     [Header("攻击预警闪光(头)")]
     [Tooltip("预警闪光点：手动拖头骨（跟随动画）。不自动找，留空则退回怪物根节点")]
     public Transform telegraphPoint;
 
     private Transform _autoLockPoint;
+    private Transform _cameraFocusPoint;
 
     void Awake()
     {
         if (lockPoint == null)
+        {
             _autoLockPoint = FindDeepestBone(transform, lockBoneKeywords);
+            if (_autoLockPoint == null)
+                _autoLockPoint = GetOrCreateRootOffsetPoint();   // 没指定骨骼 → 根节点 + 偏移（可调）
+        }
 
         Debug.Log($"[LockOnTarget] {name} 锁定点(胸): {(_autoLockPoint != null ? GetPath(_autoLockPoint) : "未找到→用根+偏移")} | 预警闪光(头): {(telegraphPoint != null ? GetPath(telegraphPoint) : "未手动拖→用根节点")}");
+    }
+
+    /// <summary>根节点 + lockOnPointOffset 的跟随点（y 由 Inspector 的 lockOnPointOffset 调）</summary>
+    Transform GetOrCreateRootOffsetPoint()
+    {
+        var existing = transform.Find("LockPointOffset");
+        if (existing != null)
+        {
+            existing.localPosition = lockOnPointOffset;
+            return existing;
+        }
+
+        var go = new GameObject("LockPointOffset");
+        go.transform.SetParent(transform, false);
+        go.transform.localPosition = lockOnPointOffset;
+        return go.transform;
+    }
+
+    void LateUpdate()
+    {
+        // 运行时微调 lockOnPointOffset 时，偏移点跟着动（方便调手感）
+        if (_autoLockPoint != null && _autoLockPoint.name == "LockPointOffset")
+            _autoLockPoint.localPosition = lockOnPointOffset;
+
+        // 相机聚焦点跟随 cameraFocusOffset（运行时微调也生效）
+        if (_cameraFocusPoint != null)
+            _cameraFocusPoint.localPosition = cameraFocusOffset;
+    }
+
+    /// <summary>相机聚焦点：根节点 + cameraFocusOffset（用于取景组权重焦点，跟随动画根）</summary>
+    public Transform CameraFocusTransform
+    {
+        get
+        {
+            if (_cameraFocusPoint == null)
+            {
+                _cameraFocusPoint = transform.Find("CameraFocusPoint");
+                if (_cameraFocusPoint == null)
+                {
+                    var go = new GameObject("CameraFocusPoint");
+                    go.transform.SetParent(transform, false);
+                    _cameraFocusPoint = go.transform;
+                }
+            }
+            _cameraFocusPoint.localPosition = cameraFocusOffset;
+            return _cameraFocusPoint;
+        }
     }
 
     /// <summary>Inspector 右键 → 重新查找并打印锁定点骨骼路径</summary>

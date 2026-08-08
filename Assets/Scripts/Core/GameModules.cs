@@ -37,6 +37,9 @@ public static class GameModules
         // 6. 背景音乐（常驻，跨场景按场景切曲）
         BgmManager.Instance.Init();
 
+        // 7. 战斗 UI（进战斗场景自动从 Resources 加载 HUD / 预加载胜利面板）
+        BattleUILoader.Instance.Init();
+
     }
 
     /// <summary>退出时清理（场景切换时不需要调）</summary>

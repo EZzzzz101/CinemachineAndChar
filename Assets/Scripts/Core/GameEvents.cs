@@ -7,6 +7,7 @@ public static class GameEvents
     // ---- 玩家 ----
     public const string PlayerDied        = "player.died";       // 角色死亡 → 失败结算界面
     public const string PlayerRevived     = "player.revived";
+    public const string PlayerSpawned     = "player.spawned";    // 玩家运行时生成完成（带玩家 GameObject）
 
 
     // ---- 战斗 ----
