@@ -1,7 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 public class ATKingState : PlayerComboState
 {
@@ -61,6 +58,13 @@ public class ATKingState : PlayerComboState
 
     public override  void Update()
     {
+        // 攻击边沿轮询：窗口内按下 → 缓冲（等价原 OnFireStarted 回调）
+        if (Owner.Input != null && Owner.Input.AttackPressed)
+        {
+            if (ResuableData.canInput && ResuableData.canLinkCombo && !ResuableData.hasBufferedInput)
+                ResuableData.hasBufferedInput = true;
+        }
+
         // 锁定转向期间自动面向锁定目标（绝区零式软锁定）；段切换脉冲期间让玩家用输入控制转向
         if (IsTurnLocked)
             AutoFaceEnemy();
@@ -97,15 +101,6 @@ public class ATKingState : PlayerComboState
             Quaternion.LookRotation(toTarget.normalized),
             AutoFaceTurnSpeed * Time.deltaTime
         );
-    }
-
-    protected override void OnFireStarted(InputAction.CallbackContext ctx)
-    {
-        if (!ResuableData.canInput) return;              // 预输入窗口未开（等 EnablePreInput）
-        if (!ResuableData.canLinkCombo) return;         // DisableLinkCombo() 禁止连招
-        if (ResuableData.hasBufferedInput) return;
-
-        ResuableData.hasBufferedInput = true;
     }
 
     //继续连招方法

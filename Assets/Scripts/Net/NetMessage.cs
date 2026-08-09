@@ -17,7 +17,19 @@ public static class NetMessage
     public const int InviteAck    = 7;   // 被邀请者→服务器：接受/拒绝
     public const int JoinRoom     = 8;   // 服务器→双方：进房通知（带房主地址）
     public const int InviteResult = 9;   // 服务器→邀请人：邀请结果（接受/拒绝/不在线）
-    // ...后续战斗同步消息继续往后加
+
+    // ---- 战斗会话（房主 Listen Server，端口 7778）----
+    public const int BattleJoin        = 10;  // 客户端→房主：请求加入战斗（带玩家名）
+    public const int BattleJoinAck     = 11;  // 房主→客户端：加入结果 + 成员表
+    public const int BattleJoinNotify  = 12;  // 房主→已加入的客户端：有新玩家加入
+    public const int BattleLeaveNotify = 13;  // 房主→其余客户端：有人离开
+    public const int BattleInput       = 14;  // 客户端→房主：输入上报（边沿事件即时 + 移动定频）
+    public const int BattleSnapshot    = 15;  // 房主→客户端：主机权威状态快照（定频）
+    public const int BattleEvent       = 16;  // 房主→客户端：一次性事件（伤害/死亡等）
+
+    // ---- 大厅→战斗 过渡 ----
+    public const int RoomStart         = 17;  // 房主→大厅：请求开始战斗；大厅→房间其他成员：开始战斗
+    // ...后续继续往后加（M11 怪物同步、M12 结算等）
 
     public const int MsgIdSize = 4;
 

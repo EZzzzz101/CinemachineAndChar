@@ -29,6 +29,7 @@ public class LobbyClientService : GameModule<LobbyClientService>
     public event Action<string> OnInvited;                // 被谁邀请
     public event Action<string, string, string, int, int> OnJoinedRoom;   // 房主名、客人名、房主IP、端口、房间号
     public event Action<bool, string> OnInviteResult;     // 我发出的邀请结果
+    public event Action<int> OnRoomStart;                 // 房间开始战斗（收到即进战斗场景）
     public event Action<string> OnError;                  // 错误信息
     public event Action OnDisconnected;                   // 与服务器断开
 
@@ -68,6 +69,13 @@ public class LobbyClientService : GameModule<LobbyClientService>
         Client.ReplyInvite(accept);
     }
 
+    /// <summary>房主点"进入游戏"：请求大厅通知全房间一起进战斗场景</summary>
+    public void RequestStartBattle()
+    {
+        EnsureClient();
+        Client.RequestStartBattle();
+    }
+
     public void Disconnect()
     {
         Client?.Disconnect();
@@ -83,6 +91,7 @@ public class LobbyClientService : GameModule<LobbyClientService>
         Client.OnInvited += n => OnInvited?.Invoke(n);
         Client.OnJoinedRoom += (hn, gn, ip, p, id) => OnJoinedRoom?.Invoke(hn, gn, ip, p, id);
         Client.OnInviteResult += (a, r) => OnInviteResult?.Invoke(a, r);
+        Client.OnRoomStart += id => OnRoomStart?.Invoke(id);
         Client.OnError += e => OnError?.Invoke(e);
         Client.OnDisconnected += () => OnDisconnected?.Invoke();
     }

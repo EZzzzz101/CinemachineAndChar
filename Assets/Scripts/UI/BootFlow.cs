@@ -1,4 +1,3 @@
-using Cysharp.Threading.Tasks;
 using UnityEngine;
 
 /// <summary>
@@ -11,26 +10,11 @@ public class BootFlow : MonoBehaviour
     [Tooltip("读条流程脚本（挂在 LoadingBar 上）；留空自动查找")]
     [SerializeField] private LoadingFlow loadingFlow;
 
-    private async void Start()
+    private void Start()
     {
-        if (loadingFlow == null)
-            loadingFlow = GetComponent<LoadingFlow>() ?? FindObjectOfType<LoadingFlow>();
-
-        // 状态文案：热更阶段 → LoadingFlow 的 StatusText（新版本→更新中，否则→正在进入游戏）
-        var hotUpdate = HotUpdateManager.Instance;
-        hotUpdate.StatusChanged += OnHotUpdateStatus;
-
-        // 真实流程：版本检查 → 下载 AB → 预加载关键资源（HotUpdateManager 内部喂 0→1）
-        var progress = new System.Progress<float>(p =>
-        {
-            if (loadingFlow != null)
-                loadingFlow.SetProgress(p);
-        });
-        await HotUpdateManager.Instance.RunFlow(progress);
-
-        // 满 100%：LoadingFlow 内部自动隐藏读条 + UIManager.Open<GameLaunchView>()
-        if (loadingFlow != null)
-            loadingFlow.SetProgress(1f);
+        // 资源引导已由 GameEntry 驱动（RunFlow 幂等），本脚本不再重复调用，避免读条跳满。
+        // 读条显示由 LoadingFlow 直接订阅 HotUpdateManager 的进度/状态事件。
+        // 本脚本保留仅为兼容 Boot 场景的组件挂载；如需自定义 UI 转发，请订阅 ProgressChanged/StatusChanged。
     }
 
     private void OnHotUpdateStatus(string status)

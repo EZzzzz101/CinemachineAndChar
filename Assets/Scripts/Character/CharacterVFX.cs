@@ -24,12 +24,13 @@ public class CharacterVFX : MonoBehaviour
 
     void Awake()
     {
-        if (Instance != null)
-        {
-            Destroy(gameObject);
-            return;
-        }
-        Instance = this;
+        // 联机同屏多角色：不能"全局唯一 + 销毁后来者"。
+        // 曾经的写法：Instance != null → Destroy(gameObject)，会把第二个角色的整个 GameObject 销毁，
+        // 导致远端角色/幽灵在多人同屏时直接消失（单实例联机测试踩到的坑）。
+        // 现在：每个角色保留自己的 CharacterVFX（动画事件按组件直接调用，不经过 Instance），
+        // Instance 只做兼容，指向第一个创建的实例。
+        if (Instance == null)
+            Instance = this;
 
         // 预热攻击特效，避免战斗中首帧 Instantiate 卡顿
         if (_vfxEntries != null)

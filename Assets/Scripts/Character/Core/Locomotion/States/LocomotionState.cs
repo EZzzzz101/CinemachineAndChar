@@ -1,10 +1,10 @@
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 /// <summary>
 /// Locomotion 状态基类
-/// 提供所有移动状态共享的东西：读输入、转向
-/// 子类重写 AddInputCallbacks / RemoveInputCallbacks 来决定自己在什么输入下切状态
+/// 提供所有移动状态共享的东西：读输入（IInputProvider 轮询）、转向。
+/// M9 之后不再订阅 InputSystem 事件：边沿统一在 Update 里轮询，
+/// 本地/远端输入对状态机完全透明。
 /// </summary>
 public abstract class LocomotionState : IState
 {
@@ -24,27 +24,36 @@ public abstract class LocomotionState : IState
 
     public virtual void Enter()
     {
-        AddInputCallbacks();
     }
 
     public virtual void Exit()
     {
-        RemoveInputCallbacks();
     }
 
-    /// <summary>子类在这里只订阅自己关心的输入</summary>
-    protected virtual void AddInputCallbacks()
+    //获取目标速度虚函数
+    protected virtual float GetTargetSpeed() => 0f;
+
+    public virtual void Update()
     {
-        Owner.PlayerInput.actions["Player/Dash"].started += OnDashStarted;
-    }
-    protected virtual void RemoveInputCallbacks()
-    {
-        Owner.PlayerInput.actions["Player/Dash"].started -= OnDashStarted;
+        HandleDashInput();
+
+        float targetSpeed = GetTargetSpeed();
+
+        // Animator 内置阻尼，比 Mathf.SmoothDamp 更丝滑，不影响 root motion
+        Owner.Animator.SetFloat("Movement", targetSpeed, Owner.SpeedSmoothTime, Time.deltaTime);
+        // 攻击挥击进行中/受击锁定中：不随移动输入转（挥击段末放开供控制下一段；受击站桩）
+        if (!Owner.IsTurnLocked && !Owner.IsInHitStun)
+            Owner.HandleRotation();
     }
 
-    // 子类可以覆写，比如后面限制某些条件不能冲刺
-    protected virtual void OnDashStarted(InputAction.CallbackContext ctx)
+    /// <summary>
+    /// 闪避边沿轮询（原 InputAction started 回调改到这里）：
+    /// 所有移动状态共享；受击硬直禁闪、冲刺未到 70% 禁连闪。
+    /// </summary>
+    private void HandleDashInput()
     {
+        if (Owner.Input == null || !Owner.Input.DashPressed) return;
+
         // 受击硬直中禁止冲刺，强制看受击动画
         if (Owner.IsInHitStun) return;
 
@@ -55,24 +64,10 @@ public abstract class LocomotionState : IState
             if (info.normalizedTime < DashChainThreshold) return;
         }
 
-        if(Owner.MoveInput.MoveValue.magnitude>0.1f)
+        if (Owner.MoveValue.magnitude > 0.1f)
             Owner.Animator.CrossFadeInFixedTime("DashFront", 0.1555f);
         else
             Owner.Animator.CrossFadeInFixedTime("DashBack", 0.1555f);
-    }
-
-    //获取目标速度虚函数
-    protected virtual float GetTargetSpeed() => 0f;
-    
-    public virtual void Update()
-    {
-        float targetSpeed = GetTargetSpeed();
-
-        // Animator 内置阻尼，比 Mathf.SmoothDamp 更丝滑，不影响 root motion
-        Owner.Animator.SetFloat("Movement", targetSpeed, Owner.SpeedSmoothTime, Time.deltaTime);
-        // 攻击挥击进行中/受击锁定中：不随移动输入转（挥击段末放开供控制下一段；受击站桩）
-        if (!Owner.IsTurnLocked && !Owner.IsInHitStun)
-            Owner.HandleRotation();
     }
 
     public virtual void OnAnimationTranslateEvent(IState newState)

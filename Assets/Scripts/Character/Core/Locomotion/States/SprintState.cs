@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 public class SprintState : LocomotionState
 {
@@ -15,7 +14,7 @@ public class SprintState : LocomotionState
     {
         base.Enter();
         Owner.Animator.SetBool("HasInput", true);
-        _lastMoveValue = Owner.MoveInput.MoveValue;
+        _lastMoveValue = Owner.MoveValue;
         _isTurning = false;
     }
 
@@ -28,32 +27,14 @@ public class SprintState : LocomotionState
     public override void Update()
     {
         CheckTurnBack();
+
+        // 轮询边沿替代输入回调：松方向 → 缓冲 0.15s 后回 Idle（防急停/误触）；再推方向 → 取消缓冲
+        if (Owner.Input != null && Owner.Input.MoveCanceled && _idleTimer == null)
+            _idleTimer = TimerManager.Instance.GetTimer(IDLE_BUFFER, GoIdle);
+        if (Owner.Input != null && Owner.Input.MoveStarted)
+            CancelIdleTimer();
+
         base.Update();
-    }
-
-    protected override void AddInputCallbacks()
-    {
-        base.AddInputCallbacks();
-        Owner.PlayerInput.actions["Player/Move"].canceled += OnMoveCanceled;
-        Owner.PlayerInput.actions["Player/Move"].started  += OnMoveStarted;
-    }
-
-    protected override void RemoveInputCallbacks()
-    {
-        base.RemoveInputCallbacks();
-        Owner.PlayerInput.actions["Player/Move"].canceled -= OnMoveCanceled;
-        Owner.PlayerInput.actions["Player/Move"].started  -= OnMoveStarted;
-    }
-
-    private void OnMoveCanceled(InputAction.CallbackContext ctx)
-    {
-        if (_idleTimer != null) return;
-        _idleTimer = TimerManager.Instance.GetTimer(IDLE_BUFFER, GoIdle);
-    }
-
-    private void OnMoveStarted(InputAction.CallbackContext ctx)
-    {
-        CancelIdleTimer();
     }
 
     private void GoIdle()
@@ -74,12 +55,12 @@ public class SprintState : LocomotionState
 
     protected override float GetTargetSpeed()
     {
-        return Owner.MoveInput.MoveValue.magnitude > 0.1f ? 3f : 0f;
+        return Owner.MoveValue.magnitude > 0.1f ? 3f : 0f;
     }
 
     private void CheckTurnBack()
     {
-        Vector2 cur = Owner.MoveInput.MoveValue;
+        Vector2 cur = Owner.MoveValue;
         if (_lastMoveValue.magnitude < 0.1f || cur.magnitude < 0.1f) return;
 
         if (Vector2.Angle(_lastMoveValue, cur) > TURN_ANGLE)

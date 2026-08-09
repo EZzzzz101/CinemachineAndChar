@@ -70,6 +70,14 @@ public class PlayerController : MonoBehaviour, IDamageable
     public MoveInputMY         MoveInput     { get; private set; }
     public PlayerInput       PlayerInput   { get; private set; }
 
+    /// <summary>输入源抽象（M9）：本地玩家=LocalInputProvider，主机上的远端玩家=RemoteInputProvider</summary>
+    public IInputProvider Input { get; private set; }
+    /// <summary>是否远端角色（主机模拟的别人；true 时禁用本地输入组件）</summary>
+    public bool IsRemote { get; private set; }
+
+    /// <summary>统一移动输入读取口：状态机不要再直接碰 Input System</summary>
+    public Vector2 MoveValue => Input != null ? new Vector2(Input.MoveX, Input.MoveZ) : Vector2.zero;
+
     public LocomotionStateMachine Locomotion { get; private set; }
     public ActionStateMachine     Action     { get; private set; }
 
@@ -93,6 +101,9 @@ public class PlayerController : MonoBehaviour, IDamageable
         _controller = GetComponent<CharacterController>();
         PlayerAudio = GetComponent<PlayerAudio>();
 
+        // 默认本地输入：每个玩家 prefab 实例都有独立的 PlayerInput，各读各的
+        Input = PlayerInput != null ? new LocalInputProvider(PlayerInput) : null;
+
         if (hitVfxPrefab != null)
             VFXPool.Prewarm(hitVfxPrefab, 2);
 
@@ -110,8 +121,22 @@ public class PlayerController : MonoBehaviour, IDamageable
 
     void Update()
     {
+        Input?.Tick();        // 采集本帧输入（远端 provider 为空实现，状态由网络 Apply 推入）
         Locomotion.Update();
         Action.Update();
+        Input?.EndFrame();    // 消费边沿：防下一帧重复触发
+    }
+
+    /// <summary>
+    /// 主机把"别人的角色"绑定为远端输入：替换 provider + 禁用本地输入组件，
+    /// 这样同一份 PlayerController 就被遥控驱动了（M9 的核心）。
+    /// </summary>
+    public void BindRemoteInput(RemoteInputProvider provider)
+    {
+        Input = provider;
+        IsRemote = true;
+        if (MoveInput != null) MoveInput.enabled = false;
+        if (PlayerInput != null) PlayerInput.enabled = false;
     }
 
     void OnAnimatorMove()
@@ -195,7 +220,23 @@ public class PlayerController : MonoBehaviour, IDamageable
         }
 
         CurrentHP = Mathf.Max(0f, CurrentHP - damage);
+        ApplyHpEffects();
+    }
 
+    /// <summary>
+    /// 网络伤害应用（主机权威）— 客户端收到 BattleEvent(Damage) 时调用。
+    /// 为什么不用 TakeDamage：主机已经判定过无敌帧/命中，客户端若再走本地无敌帧判定会不一致；
+    /// 而且伤害值要以主机广播的新 HP 为准（v2），而不是本地再算一遍（v1 仅用于日志/表现）。
+    /// </summary>
+    public void ApplyNetworkDamage(float damage, float newHp)
+    {
+        CurrentHP = Mathf.Max(0f, newHp);
+        ApplyHpEffects();
+    }
+
+    /// <summary>扣血后的公共处理：发 HP 事件 → 死亡结算 → 受击反馈（本地/网络伤害共用）</summary>
+    private void ApplyHpEffects()
+    {
         //通知ui改变血条
         EventBus.Emit(
             GameEvents.HPChanged,
@@ -215,6 +256,12 @@ public class PlayerController : MonoBehaviour, IDamageable
             EventBus.Emit(GameEvents.PlayerDied);
         }
 
+        PlayHitFeedback();
+    }
+
+    /// <summary>受击反馈（角色自己播；闪避成功/无敌帧不会走到这里）</summary>
+    private void PlayHitFeedback()
+    {
         // 受击反馈（角色自己播放；闪避成功/无敌帧不会走到这里）
         if (hitVfxPrefab != null)
         {
@@ -274,10 +321,15 @@ public class PlayerController : MonoBehaviour, IDamageable
 
     public void HandleRotation()
     {
-        Vector2 input = MoveInput.MoveValue;
+        Vector2 input = MoveValue;
         if (input.magnitude < 0.1f) return;
 
-        Vector3 moveDir = CameraManager.Instance.GetMoveDir(input);
+        // 本地玩家：摇杆是"相对相机"的输入 → 按自己相机转成世界方向；
+        // 远端角色：客户端上报前已把摇杆转成世界方向（x,z），直接使用——
+        // 否则主机会用"主机相机"解释客户端摇杆，方向必然错（联机坐标 bug）。
+        Vector3 moveDir = IsRemote
+            ? new Vector3(input.x, 0f, input.y)
+            : CameraManager.Instance.GetMoveDir(input);
 
         transform.rotation = Quaternion.Slerp(
             transform.rotation, Quaternion.LookRotation(moveDir),

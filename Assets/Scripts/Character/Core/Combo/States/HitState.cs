@@ -68,7 +68,7 @@ public class HitState : PlayerComboState
         if (!IsLocked && !_unlockHandled)
         {
             _unlockHandled = true;
-            if (Owner.MoveInput.MoveValue.magnitude > 0.1f)
+            if (Owner.MoveValue.magnitude > 0.1f)
                 Owner.Locomotion.ChangeState(Owner.Locomotion.RunState);
         }
     }

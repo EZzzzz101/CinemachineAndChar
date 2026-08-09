@@ -25,7 +25,7 @@ public static class PlayerInputGate
 
     private static void SetPlayerMapEnabled(bool enabled)
     {
-        var playerInput = Object.FindObjectOfType<PlayerInput>();
+        var playerInput = BattleInputLocator.FindLocalPlayerInput();
         var playerMap = playerInput?.actions.FindActionMap("Player");
         if (playerMap == null) return;
 

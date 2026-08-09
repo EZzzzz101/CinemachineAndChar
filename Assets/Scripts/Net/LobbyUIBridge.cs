@@ -44,6 +44,20 @@ public class LobbyUIBridge : GameModule<LobbyUIBridge>
 
     private async void OnJoinedRoom(string hostName, string guestName, string hostIp, int hostPort, int roomId)
     {
+        // 把大厅的联机关系写入跨场景状态：战斗场景加载后据此自动起服务器/连客户端
+        var svc = LobbyClientService.Instance;
+        BattleSessionState.FromLobby = true;
+        BattleSessionState.MyName = svc.MyName;
+        BattleSessionState.HostName = hostName;
+        BattleSessionState.HostIp = hostIp;
+        BattleSessionState.HostPort = hostPort;
+        BattleSessionState.RoomId = roomId;
+        BattleSessionState.IsHost = svc.MyName == hostName;
+        BattleSessionState.MemberNames.Clear();
+        BattleSessionState.MemberNames.Add(hostName);
+        BattleSessionState.MemberNames.Add(guestName);
+        Debug.Log($"[BattleFlow] 收到进房：房主={hostName} 客人={guestName} 我={svc.MyName} IsHost={BattleSessionState.IsHost}");
+
         // 进房了：关掉可能还开着的被邀请框
         if (_beInvitedView != null) _beInvitedView.Hide();
 

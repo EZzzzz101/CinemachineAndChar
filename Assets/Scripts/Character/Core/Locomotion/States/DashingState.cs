@@ -34,7 +34,7 @@ public class DashingState : LocomotionState
     public override void OnAnimationExitEvent()
     {
         Owner.IsInvincible = false;     // 防御性关闭
-        if (Owner.MoveInput.MoveValue.magnitude <0.1f)
+        if (Owner.MoveValue.magnitude <0.1f)
         {
             Sm.ChangeState(Sm.IdleState);
             return;

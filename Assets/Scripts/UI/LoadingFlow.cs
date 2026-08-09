@@ -23,6 +23,31 @@ public class LoadingFlow : MonoBehaviour
 
     private bool _completed;
 
+    private void Start()
+    {
+        // 解耦后读条只做显示：订阅热更流程的进度/状态，不再自己驱动流程。
+        // 流程由 GameEntry（或 BattleDevKit 兜底）驱动。
+        if (HotUpdateManager.HasInstance)
+        {
+            HotUpdateManager.Instance.ProgressChanged += OnProgress;
+            HotUpdateManager.Instance.StatusChanged += OnStatus;
+            if (HotUpdateManager.Instance.IsFlowDone)
+                SetProgress(1f);   // 启动时流程已跑完（如直进 Main 兜底），直接满条
+        }
+    }
+
+    private void OnDestroy()
+    {
+        if (HotUpdateManager.HasInstance)
+        {
+            HotUpdateManager.Instance.ProgressChanged -= OnProgress;
+            HotUpdateManager.Instance.StatusChanged -= OnStatus;
+        }
+    }
+
+    private void OnProgress(float progress) => SetProgress(progress);
+    private void OnStatus(string status) => SetStatus(status);
+
     private void Awake()
     {
         if (statusText == null)

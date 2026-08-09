@@ -12,13 +12,16 @@ public class BattleUILoader : GameModule<BattleUILoader>
 {
     private GameObject _winView;
     private bool _inBattle;
+    private System.Action<object> _onHotUpdateCompleted;
 
     protected override void Awake()
     {
         base.Awake();
         if (BattleUILoader.Instance != this) return;
 
+        _onHotUpdateCompleted = _ => OnHotUpdateCompleted();
         SceneManager.sceneLoaded += OnSceneLoaded;
+        EventBus.Subscribe<object>(GameEvents.HotUpdateCompleted, _onHotUpdateCompleted);
         ApplyForScene(SceneManager.GetActiveScene().name);   // 直接从 Main 启动也生效
     }
 
@@ -81,6 +84,19 @@ public class BattleUILoader : GameModule<BattleUILoader>
     protected override void OnDestroy()
     {
         SceneManager.sceneLoaded -= OnSceneLoaded;
+        EventBus.Unsubscribe<object>(GameEvents.HotUpdateCompleted, _onHotUpdateCompleted);
         base.OnDestroy();
+    }
+
+    /// <summary>
+    /// 热更完成（provider 切到 AB）后重新拉 HUD：
+    /// 直进 Main 场景时热更流程在场景加载后才跑完，首次 Open&lt;GamePanel&gt; 可能因资源未就绪失败，
+    /// 完成后再开一次（UIManager 缓存复用，幂等）。
+    /// </summary>
+    private void OnHotUpdateCompleted()
+    {
+        if (SceneManager.GetActiveScene().name != "Main") return;
+        UIManager.Instance.Open<GamePanel>();
+        PreloadWinView();
     }
 }

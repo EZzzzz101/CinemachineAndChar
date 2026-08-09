@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 /// <summary>
 /// 动作空状态 — 没在攻击时待在这里，接收 Fire 输入进入 Combo
@@ -20,7 +19,10 @@ public class ActionNullState : PlayerComboState
         base.Exit();
     }
 
-    public override  void Update() { }
+    public override void Update()
+    {
+        base.Update();   // 轮询攻击边沿 → OnFirePressed()
+    }
 
     public override  void OnAnimationTranslateEvent(IState newState)
     {
@@ -32,7 +34,7 @@ public class ActionNullState : PlayerComboState
 
     public override  void OnAnimationExitEvent() { }
 
-    protected override void OnFireStarted(InputAction.CallbackContext ctx)
+    protected override void OnFirePressed()
     {
         if(_isEntering) return;
 
@@ -45,7 +47,7 @@ public class ActionNullState : PlayerComboState
         ResuableData.comboIndex = 0;          // 起手重置段号
         ResuableData.currentATKIndex = 0;     // 起手重置击数
         ResuableData.canLinkCombo = true;     // 重置连招许可
-        base.OnFireStarted(ctx);            // 播第一段动画
+        base.OnFirePressed();               // 播第一段动画
         Owner.PlayerAudio.PlayComboSound(ResuableData.CurrentStep.attackSound);
         Owner.PlayerAudio.PlayComboVoice(ResuableData.CurrentStep.voiceClips);
     }

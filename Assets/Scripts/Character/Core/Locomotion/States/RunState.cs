@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 public class RunState : LocomotionState
 {
@@ -11,25 +10,17 @@ public class RunState : LocomotionState
         Owner.Animator.SetBool("HasInput", true);
     }
 
-    protected override void AddInputCallbacks()
+    public override void Update()
     {
-        base.AddInputCallbacks();
-        Owner.PlayerInput.actions["Player/Move"].canceled += OnMoveCanceled;
-    }
+        base.Update();
 
-    protected override void RemoveInputCallbacks()
-    {
-        base.RemoveInputCallbacks();
-        Owner.PlayerInput.actions["Player/Move"].canceled -= OnMoveCanceled;
-    }
-
-    private void OnMoveCanceled(InputAction.CallbackContext ctx)
-    {
-        Sm.ChangeState(Sm.IdleState);
+        // 松开方向 → 回 Idle（轮询边沿）
+        if (Owner.Input != null && Owner.Input.MoveCanceled)
+            Sm.ChangeState(Sm.IdleState);
     }
 
     protected override float GetTargetSpeed()
     {
-        return Owner.MoveInput.MoveValue.magnitude > 0.1f ? 2f : 0f;
+        return Owner.MoveValue.magnitude > 0.1f ? 2f : 0f;
     }
 }

@@ -32,12 +32,36 @@ public class PlayerSpawnPoint : MonoBehaviour
 
     private async void Start()
     {
+        // 服务器权威：客户端角色（非房主）不由场景 PlayerSpawnPoint 生成，
+        // 改由 BattleClientRuntime 按服务器下发的出生点生成（避免"先生成再搬"）。
+        if (BattleSessionState.FromLobby && !BattleSessionState.IsHost)
+        {
+            Debug.Log("[BattleFlow] 客户端角色：跳过 PlayerSpawnPoint 生成，等待服务器出生点");
+            return;
+        }
+        // 兜底：客户端进程（存在 BattleClientRuntime）一律不由 PlayerSpawnPoint 生成，
+        // 防止 FromLobby 因时序未填充时重复生成本地玩家。
+        if (FindObjectOfType<BattleClientRuntime>() != null)
+        {
+            Debug.Log("[BattleFlow] 检测到客户端运行时：跳过 PlayerSpawnPoint 生成");
+            return;
+        }
+
+        await SpawnPlayerAt(transform.position);
+    }
+
+    /// <summary>
+    /// 在指定位置生成玩家并完成绑定（相机/LockOn/PlayerSpawned 事件）。
+    /// 房主由 Start 调用（出生点位置）；客户端由 BattleClientRuntime 调用（服务器下发的出生点）。
+    /// </summary>
+    public async UniTask<GameObject> SpawnPlayerAt(Vector3 position)
+    {
         // 实例化玩家到出生点
-        GameObject player = await SpawnAsync(playerPrefab, playerPrefabPath, transform.position, transform.rotation);
+        GameObject player = await SpawnAsync(playerPrefab, playerPrefabPath, position, transform.rotation);
         if (player == null)
         {
             Debug.LogWarning($"[PlayerSpawnPoint] {name}: 未找到玩家 prefab（拖引用或 {playerPrefabPath}），跳过生成");
-            return;
+            return null;
         }
 
         // 邦布（可选）
@@ -59,6 +83,7 @@ public class PlayerSpawnPoint : MonoBehaviour
 
         // 通知其他系统（如 ChatInputUI）：玩家已生成
         EventBus.Emit(GameEvents.PlayerSpawned, player);
+        return player;
     }
 
     /// <summary>优先用 Inspector 引用，空则按地址走资源提供者加载并实例化</summary>

@@ -14,7 +14,7 @@ public class TurnBackState : LocomotionState
 
     public override void OnAnimationExitEvent()
     {
-        if (Owner.MoveInput.MoveValue.magnitude <0.1f)
+        if (Owner.MoveValue.magnitude <0.1f)
         {
             Sm.ChangeState(Sm.IdleState);
             return;

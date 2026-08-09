@@ -35,6 +35,7 @@ public class LobbyServer : IDisposable
         _router.Register(NetMessage.Search, OnSearch);
         _router.Register(NetMessage.Invite, OnInvite);
         _router.Register(NetMessage.InviteAck, OnInviteAck);
+        _router.Register(NetMessage.RoomStart, OnRoomStart);
 
         _server.OnClientConnected += OnClientConnected;
         return _server.Start(port);
@@ -126,6 +127,28 @@ public class LobbyServer : IDisposable
         inviter.Send(NetMessage.Encode(NetMessage.JoinRoom, MsgJoinRoom.Encode(GetName(inviter), GetName(conn), hostIp, BattlePort, roomId)));
         conn.Send(NetMessage.Encode(NetMessage.JoinRoom, MsgJoinRoom.Encode(GetName(inviter), GetName(conn), hostIp, BattlePort, roomId)));
         NetLog.Log($"[Lobby] 房间 {roomId} 创建：{GetName(inviter)}(房主) + {GetName(conn)}");
+    }
+
+    /// <summary>
+    /// 开始战斗：房主（或其他成员）点"进入游戏" → 大厅把开始信号转发给同房间的其他成员，
+    /// 大家同时进战斗场景（房主自己由客户端直接加载）。
+    /// </summary>
+    private void OnRoomStart(TcpConnection conn, byte[] body)
+    {
+        foreach (var kv in _rooms)
+        {
+            if (!kv.Value.Contains(conn)) continue;
+
+            var payload = NetMessage.Encode(NetMessage.RoomStart, MsgRoomStart.Encode(kv.Key));
+            foreach (var member in kv.Value)
+            {
+                if (member != conn)   // 转发给其他人；发起者自己本地加载
+                    member.Send(payload);
+            }
+            NetLog.Log($"[Lobby] 房间 {kv.Key} 开始战斗，通知其他成员进场景");
+            return;
+        }
+        NetLog.Warn("[Lobby] 收到开始战斗请求但连接不在任何房间");
     }
 
     // ================= 断线清理 =================

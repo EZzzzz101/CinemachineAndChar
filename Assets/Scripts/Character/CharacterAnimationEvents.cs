@@ -18,17 +18,17 @@ public class CharacterAnimationEvents : MonoBehaviour
     // —— 连招攻击事件（动画剪辑关键帧调用，无参）——
 
     /// <summary>核心打击：伤害判定、震屏、顿帧、受击特效（当前连招段）</summary>
-    public void ATK() => _controller.Action.ComboState.ATK();
+    public void ATK() { if (_controller != null) _controller.Action.ComboState.ATK(); }
 
     /// <summary>打开预输入窗口，允许记录玩家按键</summary>
-    public void EnablePreInput() => _controller.Action.ComboState.EnablePreInput();
+    public void EnablePreInput() { if (_controller != null) _controller.Action.ComboState.EnablePreInput(); }
 
     /// <summary>攻击冷却结束，允许缓冲的按键执行连段</summary>
-    public void CancelAttackColdTime() => _controller.Action.ComboState.CancelAttackColdTime();
+    public void CancelAttackColdTime() { if (_controller != null) _controller.Action.ComboState.CancelAttackColdTime(); }
 
     /// <summary>禁止连招（收刀段）</summary>
-    public void DisableLinkCombo() => _controller.Action.ComboState.DisableLinkCombo();
+    public void DisableLinkCombo() { if (_controller != null) _controller.Action.ComboState.DisableLinkCombo(); }
 
     /// <summary>允许移动打断</summary>
-    public void EnableMoveInterrupt() => _controller.Action.ComboState.EnableMoveInterrupt();
+    public void EnableMoveInterrupt() { if (_controller != null) _controller.Action.ComboState.EnableMoveInterrupt(); }
 }

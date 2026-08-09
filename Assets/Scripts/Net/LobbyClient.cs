@@ -20,6 +20,7 @@ public class LobbyClient
     public event Action<string> OnInvited;               // 参数：邀请人名字
     public event Action<string, string, string, int, int> OnJoinedRoom;  // 房主名、客人名、房主IP、端口、房间号
     public event Action<bool, string> OnInviteResult;    // 参数：是否接受、原因（我发出邀请后的反馈）
+    public event Action<int> OnRoomStart;                // 房间开始战斗（大厅转发，收到即进战斗场景）
     public event Action<string> OnError;                 // 参数：错误信息
     public event Action OnDisconnected;
 
@@ -30,6 +31,7 @@ public class LobbyClient
         _router.Register(NetMessage.InviteNotify, OnInviteNotify);
         _router.Register(NetMessage.JoinRoom, OnJoinRoom);
         _router.Register(NetMessage.InviteResult, HandleInviteResult);
+        _router.Register(NetMessage.RoomStart, HandleRoomStart);
     }
 
     /// <summary>连接大厅并注册用户名</summary>
@@ -53,6 +55,8 @@ public class LobbyClient
     public void Search(string keyword) => Send(NetMessage.Search, MsgSearch.Encode(keyword));
     public void Invite(string targetName) => Send(NetMessage.Invite, MsgInvite.Encode(targetName));
     public void ReplyInvite(bool accept) => Send(NetMessage.InviteAck, MsgInviteAck.Encode(accept));
+    /// <summary>房主请求开始战斗：大厅会转发给房间其他成员</summary>
+    public void RequestStartBattle() => Send(NetMessage.RoomStart, MsgRoomStart.Encode(0));
 
     public void Disconnect() => _conn?.Disconnect();
 
@@ -97,5 +101,11 @@ public class LobbyClient
     {
         var msg = MsgInviteResult.Decode(body);
         OnInviteResult?.Invoke(msg.Accepted, msg.Reason);
+    }
+
+    private void HandleRoomStart(TcpConnection conn, byte[] body)
+    {
+        var msg = MsgRoomStart.Decode(body);
+        OnRoomStart?.Invoke(msg.RoomId);
     }
 }

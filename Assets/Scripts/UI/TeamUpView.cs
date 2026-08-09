@@ -48,6 +48,10 @@ public class TeamUpView : UIView
         if (FightButton != null)
             FightButton.onClick.AddListener(OnFightButtonClicked);
 
+        // 联机房间：收到"房主开始战斗"广播 → 一起进战斗场景
+        if (LobbyClientService.HasInstance)
+            LobbyClientService.Instance.OnRoomStart += OnRoomStart;
+
         PlayerInputGate.EnterUI();      // 首次实例化即锁输入 + 显鼠标
         ApplyLocalPlayerPortrait();     // 单机进入：一号位刷本地立绘
     }
@@ -204,11 +208,34 @@ public class TeamUpView : UIView
     {
         PlayerInputGate.ExitUI();       // 恢复操控 + 隐藏鼠标
         gameObject.SetActive(false);
+        Debug.Log($"[BattleFlow] 进入游戏：FromLobby={BattleSessionState.FromLobby} IsHost={BattleSessionState.IsHost}");
+
+        // 联机房间：只有房主点"进入游戏"才广播；客人等 RoomStart 广播再进
+        if (BattleSessionState.FromLobby && !BattleSessionState.IsHost)
+        {
+            Debug.Log("[TeamUpView] 你是客人，等待房主开始战斗");
+            return;
+        }
+        if (LobbyClientService.HasInstance && LobbyClientService.Instance.Registered)
+            LobbyClientService.Instance.RequestStartBattle();   // 房主：请大厅通知全房间
+
+        Debug.Log($"[BattleFlow] 开始加载场景 {nextSceneName}");
+        SceneLoader.Instance.LoadScene(nextSceneName);
+    }
+
+    /// <summary>大厅广播"开始战斗"：客人收到后与房主一起进战斗场景</summary>
+    private void OnRoomStart(int roomId)
+    {
+        Debug.Log($"[TeamUpView] 收到开始战斗广播（房间 {roomId}），进入战斗场景");
+        PlayerInputGate.ExitUI();
+        gameObject.SetActive(false);
         SceneLoader.Instance.LoadScene(nextSceneName);
     }
 
     private void OnDestroy()
     {
+        if (LobbyClientService.HasInstance)
+            LobbyClientService.Instance.OnRoomStart -= OnRoomStart;
         if (FightButton != null)
             FightButton.onClick.RemoveListener(OnFightButtonClicked);
         foreach (var button in AddButtons)

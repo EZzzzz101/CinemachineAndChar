@@ -65,7 +65,7 @@ public class LockOnManager : Singleton<LockOnManager>
             Debug.Log($"[LockOn] 相机过渡: EaseInOut {_blendTime}s");
         }
 
-        var playerInput = FindObjectOfType<PlayerInput>();
+        var playerInput = BattleInputLocator.FindLocalPlayerInput();
         if (playerInput != null)
             playerInput.actions["Player/LockOn"].started += OnLockOnInput;
     }
@@ -194,7 +194,7 @@ public class LockOnManager : Singleton<LockOnManager>
 
     protected override void OnDestroy()
     {
-        var playerInput = FindObjectOfType<PlayerInput>();
+        var playerInput = BattleInputLocator.FindLocalPlayerInput();
         if (playerInput != null)
             playerInput.actions["Player/LockOn"].started -= OnLockOnInput;
         base.OnDestroy();

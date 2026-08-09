@@ -1,7 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 public class PlayerComboState : IState
 {
@@ -18,12 +15,10 @@ public class PlayerComboState : IState
         
     public virtual void Enter()
     {
-        AddInputCallbacks();
     }
 
     public virtual void Exit()
     {
-        RemoveInputCallbacks();
     }
 
     public virtual  void OnAnimationExitEvent()
@@ -36,22 +31,15 @@ public class PlayerComboState : IState
   
     }
 
-    public virtual  void Update()
+    public virtual void Update()
     {
-
+        // M9：攻击边沿统一轮询（原 InputAction started 回调改到这里），本地/远端透明
+        if (Owner.Input != null && Owner.Input.AttackPressed)
+            OnFirePressed();
     }
 
-    protected virtual void AddInputCallbacks()
-    {
-        Owner.PlayerInput.actions["Player/Fire"].started += OnFireStarted;
-    }
-    protected virtual void RemoveInputCallbacks()
-    {
-        Owner.PlayerInput.actions["Player/Fire"].started -= OnFireStarted;
-    }
-
-    //鼠标左键攻击方法
-    protected virtual void OnFireStarted(InputAction.CallbackContext ctx)
+    /// <summary>鼠标左键攻击：默认动作 = 播第一段攻击动画（子类覆写做连招/起手逻辑）</summary>
+    protected virtual void OnFirePressed()
     {
         Owner.Animator.CrossFadeInFixedTime(ResuableData.CurrentAnimationName, 0.111f);
     }

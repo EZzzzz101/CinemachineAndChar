@@ -29,6 +29,18 @@ public static class NetIO
         buf.AddRange(bytes);
     }
 
+    public static void WriteByte(List<byte> buf, byte value)
+    {
+        buf.Add(value);
+    }
+
+    /// <summary>单精度浮点 → 4 字节大端（IEEE754 位模式翻转）</summary>
+    public static void WriteFloat(List<byte> buf, float value)
+    {
+        int bits = BitConverter.SingleToInt32Bits(value);
+        WriteInt(buf, bits);
+    }
+
     public static int ReadInt(byte[] buf, ref int offset)
     {
         int value = (buf[offset] << 24) | (buf[offset + 1] << 16) | (buf[offset + 2] << 8) | buf[offset + 3];
@@ -49,6 +61,20 @@ public static class NetIO
         string value = Encoding.UTF8.GetString(buf, offset, len);
         offset += len;
         return value;
+    }
+
+    public static byte ReadByte(byte[] buf, ref int offset)
+    {
+        byte value = buf[offset];
+        offset += 1;
+        return value;
+    }
+
+    /// <summary>4 字节大端 → 单精度浮点</summary>
+    public static float ReadFloat(byte[] buf, ref int offset)
+    {
+        int bits = ReadInt(buf, ref offset);
+        return BitConverter.Int32BitsToSingle(bits);
     }
 }
 
@@ -253,5 +279,24 @@ public class MsgInviteResult
             Accepted = NetIO.ReadBool(body, ref offset),
             Reason = NetIO.ReadString(body, ref offset),
         };
+    }
+}
+
+/// <summary>开始战斗：房主请求 → 大厅转发给房间其他成员，大家同时进战斗场景</summary>
+public class MsgRoomStart
+{
+    public int RoomId;
+
+    public static byte[] Encode(int roomId)
+    {
+        var buf = new List<byte>();
+        NetIO.WriteInt(buf, roomId);
+        return buf.ToArray();
+    }
+
+    public static MsgRoomStart Decode(byte[] body)
+    {
+        int offset = 0;
+        return new MsgRoomStart { RoomId = NetIO.ReadInt(body, ref offset) };
     }
 }

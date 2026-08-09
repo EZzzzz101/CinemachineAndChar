@@ -55,6 +55,8 @@ public class HotUpdateManager : GameModule<HotUpdateManager>
 
     /// <summary>状态文案回调（BootFlow 订阅，转发给 LoadingFlow 的状态 TMP）</summary>
     public event Action<string> StatusChanged;
+    /// <summary>进度回调（0~1）— 读条 UI 订阅用；流程驱动与 UI 解耦（GameEntry 驱动流程，UI 只监听）</summary>
+    public event Action<float> ProgressChanged;
 
     public bool IsFlowDone => _flowDone;
     public bool IsAbReady => _abReady;
@@ -378,9 +380,11 @@ public class HotUpdateManager : GameModule<HotUpdateManager>
         }
     }
 
-    private static void Report(IProgress<float> progress, float value)
+    private void Report(IProgress<float> progress, float value)
     {
-        progress?.Report(Mathf.Clamp01(value));
+        float p = Mathf.Clamp01(value);
+        progress?.Report(p);
+        ProgressChanged?.Invoke(p);
     }
 
     private void SetStatus(string status)
