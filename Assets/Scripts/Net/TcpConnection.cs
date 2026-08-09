@@ -21,6 +21,7 @@ public class TcpConnection : IDisposable
     private volatile bool _running;
     private bool _disconnected;
     private bool _disconnectEventFired;
+    private byte[] _sendFrame = new byte[256];   // 发送帧复用缓冲区（避免每帧 new 数组 → GC 压力）
 
     /// <summary>收到一条完整消息（主线程 Poll 时触发）</summary>
     public event Action<byte[]> OnMessage;
@@ -78,8 +79,49 @@ public class TcpConnection : IDisposable
         if (!IsConnected) return;
         try
         {
-            var frame = FrameCodec.Encode(payload);
-            _stream.Write(frame, 0, frame.Length);
+            // 复用帧缓冲区：长度头 + payload 写进 _sendFrame，不再每次 new byte[]
+            int len = payload.Length;
+            int frameLen = FrameCodec.HeaderSize + len;
+            if (_sendFrame.Length < frameLen)
+                _sendFrame = new byte[Math.Max(frameLen, _sendFrame.Length * 2)];
+
+            _sendFrame[0] = (byte)(len >> 24);
+            _sendFrame[1] = (byte)(len >> 16);
+            _sendFrame[2] = (byte)(len >> 8);
+            _sendFrame[3] = (byte)len;
+            Buffer.BlockCopy(payload, 0, _sendFrame, FrameCodec.HeaderSize, len);
+
+            _stream.Write(_sendFrame, 0, frameLen);
+        }
+        catch (Exception e)
+        {
+            NetLog.Warn($"[TcpConnection] 发送失败：{e.Message}");
+            MarkDisconnected();
+        }
+    }
+
+    /// <summary>
+    /// 发送（复用缓冲版本）：payload 写进复用 _sendFrame，避免 ToArray 再 new 一次。
+    /// 高频发送（输入/快照）走这个，减少 GC 分配。
+    /// </summary>
+    public void Send(List<byte> payload)
+    {
+        if (!IsConnected) return;
+        try
+        {
+            int len = payload.Count;
+            int frameLen = FrameCodec.HeaderSize + len;
+            if (_sendFrame.Length < frameLen)
+                _sendFrame = new byte[Math.Max(frameLen, _sendFrame.Length * 2)];
+
+            _sendFrame[0] = (byte)(len >> 24);
+            _sendFrame[1] = (byte)(len >> 16);
+            _sendFrame[2] = (byte)(len >> 8);
+            _sendFrame[3] = (byte)len;
+            for (int i = 0; i < len; i++)
+                _sendFrame[FrameCodec.HeaderSize + i] = payload[i];
+
+            _stream.Write(_sendFrame, 0, frameLen);
         }
         catch (Exception e)
         {

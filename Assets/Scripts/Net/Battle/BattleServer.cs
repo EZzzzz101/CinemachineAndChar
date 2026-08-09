@@ -28,6 +28,7 @@ public class BattleServer : IDisposable
     private int _nextSlot = 1;           // 网络玩家槽位从 1 开始递增
     private readonly List<string> _preRegistered = new();   // 大厅预登记成员（含房主），顺序即槽位
     private readonly List<float[]> _spawnPoints = new();    // 槽位 → 出生点 [x,y,z]（主机权威，JoinAck 下发）
+    private readonly List<byte> _snapBuf = new();           // 快照广播复用缓冲区（消 GC 分配）
 
     /// <summary>收到客户端输入：参数 = 玩家名 + 输入状态（Unity 运行时接住，喂给对应 RemoteInputProvider）</summary>
     public event Action<string, BattleInputState> OnInput;
@@ -193,9 +194,10 @@ public class BattleServer : IDisposable
     {
         if (_members.Count == 0) return;   // 没人观战就不浪费带宽
 
-        var payload = NetMessage.Encode(NetMessage.BattleSnapshot, MsgBattleSnapshot.Encode(tick, items));
+        _snapBuf.Clear();
+        MsgBattleSnapshot.EncodeInto(_snapBuf, tick, items);
         foreach (var conn in _members.Values)
-            conn.Send(payload);
+            conn.Send(_snapBuf);
     }
 
     /// <summary>

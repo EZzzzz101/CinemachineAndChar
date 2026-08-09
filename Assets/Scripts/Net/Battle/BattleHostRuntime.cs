@@ -42,18 +42,9 @@ public class BattleHostRuntime : MonoBehaviour
     private Vector3[] _spawnPoints;   // 槽位 → 出生点（服务器权威，JoinAck 下发，Remote 生成统一用它）
     private BossBrain _boss;          // 主机上的 Boss（M11：采样进快照同步给客户端）
     private float _lastBossHp = -1f;  // Boss HP 对比基准（变化 → 广播伤害事件）
-    private float _bossLogTimer;      // Boss 位移诊断节流
-    private Vector3 _lastBossPos;
-    private bool _hasLastBossPos;
     private int _nextRemoteId = 2;    // Remote 克隆的血条 id：主机玩家=1，克隆从 2 递增（防 HP 事件串到主机血条）
-    private float _bossSyncLogTimer;  // [BossSync] 主机采样日志节流（与 [BossDiag] 的 _bossLogTimer 区分）
-    private int _lastBossHash;        // [BossSync] 主机状态切换检测（变了就打一条）
     private float _tickAccum;
     private int _tick;
-    private float _syncLogTimer;   // [SyncDebug] 主机视角偏差日志节流
-    private float _inputLogTimer;   // 诊断日志节流
-    private float _noInputCheckTimer;
-    private readonly Dictionary<string, Vector3> _noInputLastPos = new();   // 无输入检测：上次采样位置
 
     private void Awake()
     {
@@ -112,10 +103,6 @@ public class BattleHostRuntime : MonoBehaviour
         _server?.Poll();   // 驱动收包队列 → 消息路由 → 事件
 
         CheckInputTimeout();   // 输入超时清零：客户端失联/失焦时停住角色，别漂移
-        CheckNoInputMovement();   // 诊断：无输入却有位移 → 警告（定位"自己向前移动"）
-        LogRemoteInputSample();   // 诊断：周期性打印远端输入，定位"主机眼里自己向前移动"
-        LogSyncDrift();   // [SyncDebug] 主机视角偏差：客户端上报位置 vs Remote 实际位置
-        LogBossState();   // [BossDiag] 主机 Boss 位置/位移/动画：定位"消失/飞远/拽回"
 
         // 用真实时间推进快照节拍：时停（HitPause）不暂停网络同步，否则客户端会卡在旧状态
         _tickAccum += Time.unscaledDeltaTime;
@@ -220,128 +207,6 @@ public class BattleHostRuntime : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// 诊断日志（定位"自己向前移动"）：每 0.5s 打印一次所有远端玩家的当前输入。
-    /// move≠0 = 客户端在持续上报移动（输入语义/时序问题）；
-    /// move=0 却仍在走 = Remote 角色模拟/动画残留问题。
-    /// </summary>
-    private void LogRemoteInputSample()
-    {
-        _inputLogTimer -= Time.unscaledDeltaTime;
-        if (_inputLogTimer > 0f || _remotePlayers.Count == 0) return;
-        _inputLogTimer = 0.5f;
-
-        foreach (var kv in _remotePlayers)
-        {
-            var remote = kv.Value != null ? kv.Value.Input as RemoteInputProvider : null;
-            if (remote == null) continue;
-            Debug.Log($"[BattleHost] 输入采样 {kv.Key}: move=({remote.MoveX:F2},{remote.MoveZ:F2}) sprint={remote.SprintHeld}");
-        }
-    }
-
-    /// <summary>
-    /// [SyncDebug] 主机视角偏差：客户端上报的本地位置 vs 主机模拟的 Remote 位置。
-    /// 这是"主机看到的客户端"和"客户端看到的自己"的差距，每 0.5s 打一次。
-    /// </summary>
-    private void LogSyncDrift()
-    {
-        _syncLogTimer -= Time.unscaledDeltaTime;
-        if (_syncLogTimer > 0f || _remotePlayers.Count == 0) return;
-        _syncLogTimer = 0.5f;
-
-        foreach (var kv in _remotePlayers)
-        {
-            if (kv.Value == null || !_lastClientPos.TryGetValue(kv.Key, out var cp)) continue;
-            float d = Vector3.Distance(cp, kv.Value.transform.position);
-            Debug.Log($"[SyncDebug] 主机视角偏差 {d:F2}m | 客户端上报 {cp} vs Remote {kv.Value.transform.position}");
-        }
-    }
-
-    /// <summary>
-    /// [BossDiag] 主机 Boss 状态诊断：每 0.5s 打印位置、位移量、当前动画 clip。
-    /// 用于区分"跳变发生在主机侧（位移大/动画切换）"还是"客户端插值表现问题"。
-    /// </summary>
-    private void LogBossState()
-    {
-        if (_boss == null) return;
-        _bossLogTimer -= Time.unscaledDeltaTime;
-        if (_bossLogTimer > 0f) return;
-        _bossLogTimer = 0.5f;
-
-        var tr = _boss.transform;
-        var animator = tr.GetComponent<Animator>();
-        string clip = "?";
-        if (animator != null)
-        {
-            var ci = animator.GetCurrentAnimatorClipInfo(0);
-            if (ci.Length > 0) clip = ci[0].clip.name;
-        }
-        float moved = _hasLastBossPos ? Vector3.Distance(_lastBossPos, tr.position) : 0f;
-        _lastBossPos = tr.position;
-        _hasLastBossPos = true;
-
-        Debug.Log($"[BossDiag] 位置 {tr.position} 位移 {moved:F2}m/0.5s 动画={clip} HP={_boss.CurrentHP}");
-    }
-
-    /// <summary>
-    /// 诊断检测（定位"自己向前移动"）：每 0.2s 检查一次所有远端角色——
-    /// 如果 RemoteInputProvider 的输入为 0，但角色在 0.2s 内位移超过 0.1m（≈0.5m/s），
-    /// 说明"没有输入却有位移"，打印警告（带状态机/动画诊断）。
-    /// 已排除攻击/受击/闪避动画（这些是正常 root motion 位移）；
-    /// 仍触发的动画 = 尚未识别的位移来源，需要继续查。
-    /// </summary>
-    private void CheckNoInputMovement()
-    {
-        _noInputCheckTimer -= Time.unscaledDeltaTime;
-        if (_noInputCheckTimer > 0f || _remotePlayers.Count == 0) return;
-        _noInputCheckTimer = 0.2f;
-
-        foreach (var kv in _remotePlayers)
-        {
-            var pc = kv.Value;
-            var remote = pc != null ? pc.Input as RemoteInputProvider : null;
-            if (pc == null || remote == null) continue;
-
-            // 攻击/受击/闪避动画自带 root motion 位移（突进/击退），是正常战斗表现，跳过
-            if (pc.Action != null &&
-                (pc.Action.CurrentState is ATKingState || pc.Action.CurrentState is HitState))
-                continue;
-            if (pc.Locomotion != null && pc.Locomotion.CurrentState is DashingState)
-                continue;
-
-            bool hasInput = remote.MoveX * remote.MoveX + remote.MoveZ * remote.MoveZ > 0.0001f;
-            if (hasInput)
-            {
-                _noInputLastPos[kv.Key] = pc.transform.position;   // 有输入：只刷新基准，不判
-                continue;
-            }
-
-            if (_noInputLastPos.TryGetValue(kv.Key, out var last))
-            {
-                float moved = Vector3.Distance(pc.transform.position, last);
-                // 阈值 0.5m/0.2s（≈2.5m/s）：过滤动画收尾/滑步的正常位移
-                // （Run_End/Walk 衰减、攻击收招等 <0.5m），只抓"持续高速漂移"。
-                if (moved > 0.5f)
-                {
-                    // 状态诊断：状态机状态 + Movement 参数 + 当前动画 clip 名，用于识别位移来源
-                    string loco = pc.Locomotion != null ? pc.Locomotion.CurrentState?.GetType().Name : "?";
-                    string action = pc.Action != null ? pc.Action.CurrentState?.GetType().Name : "?";
-                    float movement = pc.Animator != null ? pc.Animator.GetFloat("Movement") : -1f;
-                    string clip = "?";
-                    if (pc.Animator != null)
-                    {
-                        var clipInfo = pc.Animator.GetCurrentAnimatorClipInfo(0);
-                        if (clipInfo.Length > 0) clip = clipInfo[0].clip.name;
-                    }
-                    Debug.LogWarning(
-                        $"[BattleHost] 无输入却有位移：{kv.Key} 0.2s 移动 {moved:F3}m | " +
-                        $"Loco={loco} Action={action} Movement={movement:F2} 动画={clip} 位置={pc.transform.position}");
-                }
-            }
-            _noInputLastPos[kv.Key] = pc.transform.position;
-        }
-    }
-
     /// <summary>新玩家加入：克隆角色 prefab，绑定远端输入，放进世界</summary>
     private async void OnPlayerJoined(string name)
     {
@@ -431,7 +296,6 @@ public class BattleHostRuntime : MonoBehaviour
         if (_boss != null)
         {
             items.Add(SampleBoss(_boss));
-            LogBossSample(_tick);   // [BossSync] 主机采样日志
         }
 
         // 占位玩家：Remote 还在异步加载，先按出生点发 Idle/满血快照，
@@ -545,38 +409,6 @@ public class BattleHostRuntime : MonoBehaviour
         if (clip.Contains("Dash")) return BattleAnimState.Dash;
         if (clip.Contains("Walk") || clip.Contains("Run") || clip.Contains("Move")) return BattleAnimState.Run;
         return BattleAnimState.Idle;
-    }
-
-    /// <summary>
-    /// [BossSync] 主机侧 Boss 状态日志：
-    ///   状态切换（不节流，变了就打）→ 和客户端 [Clnt] 的状态切换对比，看动作延迟；
-    ///   周期采样（0.5s）→ 和客户端 [Clnt] 同 tick 对比位置/相位/对峙参数。
-    /// </summary>
-    private void LogBossSample(int tick)
-    {
-        var animator = _boss != null ? _boss.GetComponent<Animator>() : null;
-        if (animator == null) return;
-        var st = animator.GetCurrentAnimatorStateInfo(0);
-
-        // 状态切换：不节流（每 tick 都查），变了就打一条
-        if (st.shortNameHash != _lastBossHash && st.shortNameHash != 0)
-        {
-            _lastBossHash = st.shortNameHash;
-            Debug.Log($"[BossSync] [Host] 状态切换 hash={st.shortNameHash} time={st.normalizedTime:F2}");
-        }
-
-        // 周期采样：0.5s 一条
-        _bossSyncLogTimer -= Time.unscaledDeltaTime;
-        if (_bossSyncLogTimer > 0f) return;
-        _bossSyncLogTimer = 0.5f;
-
-        float sx = animator.GetFloat("SpeedX");
-        float sy = animator.GetFloat("SpeedY");
-        bool solo = animator.GetBool("IsSolo");
-        bool move = animator.GetBool("IsMoving");
-        Debug.Log($"[BossSync] [Host] tick={tick} | pos={_boss.transform.position:F1} " +
-                  $"hash={st.shortNameHash} time={st.normalizedTime:F2} " +
-                  $"sx={sx:F2} sy={sy:F2} solo={solo} move={move} hp={_boss.CurrentHP:F0}");
     }
 
     /// <summary>把一名角色采样成快照条目：位置/朝向/移动参数/动作枚举/HP</summary>

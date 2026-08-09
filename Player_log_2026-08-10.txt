@@ -1,0 +1,975 @@
+Mono path[0] = 'E:/gameas/Test2/CinemachineAndChar_Data/Managed'
+Mono config path = 'E:/gameas/Test2/MonoBleedingEdge/etc'
+Input System module state changed to: Initialized.
+[PhysX] Initialized MultithreadedTaskDispatcher with 24 workers.
+Initialize engine version: 2022.3.62f3c1 (1623fc0bbb97)
+[Subsystems] Discovering subsystems at path E:/gameas/Test2/CinemachineAndChar_Data/UnitySubsystems
+GfxDevice: creating device client; threaded=1; jobified=1
+Direct3D:
+    Version:  Direct3D 11.0 [level 11.1]
+    Renderer: NVIDIA GeForce RTX 4050 Laptop GPU (ID=0x28e1)
+    Vendor:   NVIDIA
+    VRAM:     5920 MB
+    Driver:   32.0.15.9282
+Begin MonoManager ReloadAssembly
+- Loaded All Assemblies, in  0.136 seconds
+- Finished resetting the current domain, in  0.002 seconds
+<RI> Initializing input.
+Using Windows.Gaming.Input
+<RI> Initialized touch support.
+[PhysX] Initialized MultithreadedTaskDispatcher with 24 workers.
+UnloadTime: 0.666500 ms
+[UIManager] 绑定常驻 Canvas: Canvas
+[ResourceManager] 初始化完成
+[HotUpdateManager] 初始化完成
+[GameStateManager] 初始化完成
+[UIManager] 初始化完成
+[CameraManager] 初始化完成
+[SceneLoader] 初始化完成
+[LobbyClientService] 初始化完成（未连接，登录界面触发连接）
+[LobbyUIBridge] 初始化完成
+[CursorEscapeToggle] 初始化完成
+[BgmManager] 初始化完成
+[BattleUILoader] 初始化完成
+[HotUpdateManager] 资源源：E:\gameas\Test2\HotUpdateCDN
+[HotUpdateManager] 本地已是最新版本 1.0.8，跳过下载
+[AssetBundleAssetProvider] 初始化完成，15 条地址映射
+[ResourceManager] 资源提供者切换为 AssetBundleAssetProvider
+[GameEntry] 所有模块初始化完成
+[BattleFlow] BattleDevKit Awake，场景=Boot
+[BattleFlow] BattleDevKit 常驻创建，启动场景=Boot
+[LobbyUIBridge] 找不到 BeInvitedView 预制体，邀请弹窗不可用
+[HotUpdateManager] 热更流程完成，资源来源：AssetBundle(C:/Users/谦/AppData/LocalLow/DefaultCompany/CinemachineAndChar\HotUpdate/AB)
+[Perf] FPS=0 总分配内存=158.5MB
+[Perf] FPS=240 总分配内存=173.9MB
+[Perf] FPS=240 总分配内存=173.9MB
+[Perf] FPS=240 总分配内存=173.9MB
+[Perf] FPS=240 总分配内存=173.9MB
+[Perf] FPS=240 总分配内存=173.9MB
+[Perf] FPS=240 总分配内存=173.9MB
+[Perf] FPS=240 总分配内存=173.9MB
+[Perf] FPS=240 总分配内存=173.9MB
+[Perf] FPS=240 总分配内存=173.9MB
+[Perf] FPS=240 总分配内存=173.9MB
+[Perf] FPS=4 总分配内存=173.9MB
+[Perf] FPS=240 总分配内存=173.9MB
+[Perf] FPS=240 总分配内存=173.9MB
+[Perf] FPS=240 总分配内存=173.9MB
+[Perf] FPS=240 总分配内存=173.9MB
+[Perf] FPS=240 总分配内存=173.9MB
+[Perf] FPS=240 总分配内存=173.9MB
+[Perf] FPS=240 总分配内存=173.9MB
+[Perf] FPS=240 总分配内存=173.9MB
+[Perf] FPS=240 总分配内存=173.9MB
+[Perf] FPS=240 总分配内存=173.9MB
+[Login] 连接大厅中...
+[Login] 注册结果：ok
+[AssetBundleAssetProvider] 场景 SixthStreet 不在 AB 映射里，走 Build Settings 场景名
+Unloading 6 Unused Serialized files (Serialized files now loaded: 6)
+[PhysX] Initialized MultithreadedTaskDispatcher with 24 workers.
+UnloadTime: 1.162700 ms
+[BattleFlow] 进入六分街：FromLobby=False IsHost=False
+[Targetable] OnEnable: 安比(Clone) Team=Player 已注册
+[FSM]  → IdleState
+[FSM]  → ActionNullState
+Unloading 4 unused Assets to reduce memory usage. Loaded Objects now: 7751.
+Total: 2.471900 ms (FindLiveObjects: 0.330500 ms CreateObjectMapping: 0.182700 ms MarkObjects: 1.925200 ms  DeleteObjects: 0.033300 ms)
+
+[Perf] FPS=9 总分配内存=241.3MB
+[Perf] FPS=240 总分配内存=241.6MB
+[Perf] FPS=22 总分配内存=241.6MB
+[Perf] FPS=34 总分配内存=241.6MB
+[Perf] FPS=24 总分配内存=241.6MB
+[Perf] FPS=27 总分配内存=241.6MB
+[FSM] ActionNullState → ATKingState
+[yv]预输入窗口开放
+CharacterVFX: 未找到特效 'AnBi_Run_ATK_2'
+[Perf] FPS=120 总分配内存=241.8MB
+[FSM] IdleState → RunState
+[FSM] ATKingState → ActionNullState
+[Perf] FPS=240 总分配内存=242.0MB
+[FSM] RunState → IdleState
+[FSM] IdleState → RunState
+[Perf] FPS=240 总分配内存=242.2MB
+[FSM] RunState → IdleState
+[FSM] IdleState → RunState
+[Perf] FPS=240 总分配内存=242.3MB
+[FSM] ActionNullState → ATKingState
+[yv]预输入窗口开放
+CharacterVFX: 未找到特效 'AnBi_Run_ATK_2'
+[FSM] RunState → DashingState
+[DashingState] Enter via: DashFront
+[FSM] ATKingState → ActionNullState
+[FSM] DashingState → SprintState
+[Perf] FPS=240 总分配内存=242.6MB
+[Perf] FPS=120 总分配内存=242.8MB
+[BossEntrance] 玩家进入 Boss 房入口范围，按 F 键进入战斗（提示预制体未就绪，先用日志代替）
+[BossEntrance] 玩家离开 Boss 房入口范围：安比
+[Perf] FPS=240 总分配内存=242.8MB
+[FSM] SprintState → TurnBackState
+[FSM] TurnBackState → IdleState
+[Perf] FPS=240 总分配内存=242.8MB
+[FSM] IdleState → RunState
+[FSM] RunState → IdleState
+[Perf] FPS=240 总分配内存=242.8MB
+[Perf] FPS=30 总分配内存=242.8MB
+[Perf] FPS=34 总分配内存=242.8MB
+[Perf] FPS=24 总分配内存=242.8MB
+[Perf] FPS=40 总分配内存=242.8MB
+[Perf] FPS=27 总分配内存=242.8MB
+[Perf] FPS=240 总分配内存=242.8MB
+[Perf] FPS=22 总分配内存=242.8MB
+[Perf] FPS=48 总分配内存=242.8MB
+[Perf] FPS=27 总分配内存=242.8MB
+[Perf] FPS=20 总分配内存=242.8MB
+[Perf] FPS=34 总分配内存=242.8MB
+[FSM] IdleState → RunState
+[FSM] RunState → IdleState
+[FSM] IdleState → RunState
+[Perf] FPS=120 总分配内存=242.9MB
+[FSM] RunState → IdleState
+[FSM] IdleState → RunState
+[Perf] FPS=120 总分配内存=242.9MB
+[FSM] RunState → IdleState
+[Perf] FPS=240 总分配内存=242.8MB
+[FSM] IdleState → RunState
+[FSM] RunState → IdleState
+[Perf] FPS=240 总分配内存=243.3MB
+[FSM] IdleState → RunState
+[Perf] FPS=240 总分配内存=243.4MB
+[FSM] RunState → IdleState
+[BossEntrance] 玩家进入 Boss 房入口范围，按 F 键进入战斗（提示预制体未就绪，先用日志代替）
+打开组队界面
+[TeamUpView] 自动找到游历家园按钮：游历家园
+[TeamUpView] 点击邀请好友
+[Perf] FPS=240 总分配内存=243.7MB
+[AddView] 搜索 2...
+[AddView] 已向 2 发送邀请
+[Perf] FPS=240 总分配内存=243.7MB
+[BattleFlow] 收到进房：房主=1 客人=2 我=1 IsHost=True
+[Perf] FPS=27 总分配内存=243.7MB
+[BattleFlow] 游历家园：FromLobby=True IsHost=True
+[AssetBundleAssetProvider] 场景 SixthStreet 不在 AB 映射里，走 Build Settings 场景名
+Unloading 4 Unused Serialized files (Serialized files now loaded: 6)
+[PhysX] Initialized MultithreadedTaskDispatcher with 24 workers.
+UnloadTime: 8.096900 ms
+[BattleFlow] 进入六分街：FromLobby=True IsHost=True
+[BattleFlow] 自动启动主机战斗服务器
+[Targetable] OnEnable: 安比(Clone) Team=Player 已注册
+[BattleHost] 来自大厅房间 19，成员 [1,2]
+[BattleFlow] 槽位出生点：0=(0.00, 0.00, -4.05) 1=(2.00, 0.00, -4.05)
+[TcpServer] 开始监听 :7778
+[BattleFlow] 战斗服务器已启动 :7778，房主=1，等待客户端加入
+[BattleHost] 房主本地玩家就绪：1
+[FSM]  → IdleState
+[FSM]  → ActionNullState
+Unloading 46 unused Assets to reduce memory usage. Loaded Objects now: 7935.
+Total: 2.305700 ms (FindLiveObjects: 0.329700 ms CreateObjectMapping: 0.201000 ms MarkObjects: 1.716900 ms  DeleteObjects: 0.057800 ms)
+
+[Perf] FPS=240 总分配内存=243.4MB
+Cannot find matching control scheme for 安比(Clone) (all control schemes are already paired to matching devices)
+[Targetable] OnEnable: 安比(Clone) Team=Player 已注册
+[BattleHost] 远端角色生成：2（槽位 1）
+[Battle] 2 加入战斗，当前 2 人（含房主）
+[FSM]  → IdleState
+[FSM]  → ActionNullState
+[Perf] FPS=240 总分配内存=245.4MB
+[Perf] FPS=240 总分配内存=245.4MB
+[FSM] IdleState → RunState
+[FSM] RunState → IdleState
+[Perf] FPS=240 总分配内存=245.5MB
+[Perf] FPS=240 总分配内存=245.4MB
+[Perf] FPS=240 总分配内存=245.4MB
+[BattleHost] 收到 2 攻击输入（Attack）
+[FSM] ActionNullState → ATKingState
+[yv]预输入窗口开放
+CharacterVFX: 未找到特效 'AnBi_Run_ATK_2'
+[FSM] IdleState → RunState
+[BattleHost] 收到 2 闪避输入（Dash）
+[FSM] RunState → DashingState
+[DashingState] Enter via: DashFront
+[Perf] FPS=40 总分配内存=245.8MB
+[FSM] ATKingState → ActionNullState
+[FSM] DashingState → SprintState
+[Perf] FPS=20 总分配内存=246.0MB
+[Perf] FPS=48 总分配内存=246.1MB
+[FSM] SprintState → IdleState
+[FSM] IdleState → RunState
+[FSM] RunState → IdleState
+[Perf] FPS=27 总分配内存=246.1MB
+[FSM] IdleState → RunState
+[FSM] RunState → IdleState
+[Perf] FPS=24 总分配内存=246.1MB
+[Perf] FPS=24 总分配内存=246.1MB
+[FSM] IdleState → RunState
+[Perf] FPS=18 总分配内存=246.2MB
+[FSM] RunState → IdleState
+[FSM] IdleState → RunState
+[Perf] FPS=24 总分配内存=246.2MB
+[FSM] RunState → IdleState
+[FSM] IdleState → RunState
+[FSM] RunState → IdleState
+[FSM] IdleState → RunState
+[FSM] RunState → IdleState
+[Perf] FPS=27 总分配内存=246.2MB
+[FSM] IdleState → RunState
+[FSM] RunState → IdleState
+[Perf] FPS=24 总分配内存=246.1MB
+[Perf] FPS=20 总分配内存=246.1MB
+[FSM] IdleState → RunState
+[Perf] FPS=24 总分配内存=246.1MB
+[Perf] FPS=30 总分配内存=246.1MB
+[FSM] RunState → IdleState
+[Perf] FPS=40 总分配内存=246.1MB
+[FSM] IdleState → RunState
+[FSM] RunState → DashingState
+[DashingState] Enter via: DashFront
+[FSM] DashingState → SprintState
+[Perf] FPS=60 总分配内存=246.2MB
+[FSM] SprintState → IdleState
+[Perf] FPS=120 总分配内存=246.1MB
+[Perf] FPS=8 总分配内存=246.1MB
+[Perf] FPS=11 总分配内存=246.1MB
+[Perf] FPS=14 总分配内存=246.1MB
+[Perf] FPS=12 总分配内存=246.1MB
+[Perf] FPS=13 总分配内存=246.1MB
+[Perf] FPS=240 总分配内存=246.1MB
+[Perf] FPS=240 总分配内存=246.1MB
+[Perf] FPS=240 总分配内存=246.1MB
+[Perf] FPS=240 总分配内存=246.1MB
+[Perf] FPS=120 总分配内存=246.1MB
+[FSM] IdleState → RunState
+[Perf] FPS=240 总分配内存=246.1MB
+[FSM] RunState → IdleState
+[FSM] IdleState → RunState
+[FSM] RunState → IdleState
+[Perf] FPS=240 总分配内存=246.1MB
+[FSM] IdleState → RunState
+[FSM] RunState → IdleState
+[Perf] FPS=240 总分配内存=246.1MB
+[FSM] IdleState → RunState
+[FSM] RunState → IdleState
+[Perf] FPS=240 总分配内存=246.2MB
+[FSM] IdleState → RunState
+[FSM] RunState → IdleState
+[Perf] FPS=120 总分配内存=246.1MB
+[FSM] IdleState → RunState
+[Perf] FPS=240 总分配内存=246.2MB
+[FSM] RunState → IdleState
+[FSM] IdleState → RunState
+[Perf] FPS=120 总分配内存=246.1MB
+[FSM] RunState → IdleState
+[FSM] IdleState → RunState
+[FSM] RunState → IdleState
+[Perf] FPS=240 总分配内存=246.1MB
+[FSM] IdleState → RunState
+[Perf] FPS=240 总分配内存=246.2MB
+[FSM] RunState → IdleState
+[Perf] FPS=240 总分配内存=246.1MB
+[FSM] IdleState → RunState
+[FSM] RunState → IdleState
+[Perf] FPS=240 总分配内存=246.1MB
+[Perf] FPS=120 总分配内存=246.1MB
+[FSM] IdleState → RunState
+[FSM] RunState → IdleState
+[FSM] IdleState → RunState
+[FSM] RunState → IdleState
+[Perf] FPS=240 总分配内存=246.2MB
+[FSM] IdleState → RunState
+[FSM] RunState → IdleState
+[FSM] IdleState → RunState
+[FSM] RunState → IdleState
+[FSM] IdleState → RunState
+[FSM] RunState → IdleState
+[Perf] FPS=240 总分配内存=246.1MB
+[Perf] FPS=30 总分配内存=246.1MB
+[Perf] FPS=27 总分配内存=246.1MB
+[FSM] IdleState → RunState
+[Perf] FPS=240 总分配内存=246.2MB
+[FSM] RunState → IdleState
+[Perf] FPS=240 总分配内存=246.1MB
+[FSM] IdleState → RunState
+[Perf] FPS=120 总分配内存=246.2MB
+[FSM] RunState → IdleState
+[Perf] FPS=120 总分配内存=246.2MB
+[Perf] FPS=240 总分配内存=246.1MB
+[FSM] IdleState → RunState
+[Perf] FPS=240 总分配内存=246.2MB
+[FSM] RunState → IdleState
+[Perf] FPS=240 总分配内存=246.1MB
+[Perf] FPS=120 总分配内存=246.1MB
+[FSM] IdleState → RunState
+[FSM] RunState → IdleState
+[FSM] IdleState → RunState
+[FSM] RunState → IdleState
+[FSM] IdleState → RunState
+[Perf] FPS=240 总分配内存=246.2MB
+[FSM] RunState → DashingState
+[DashingState] Enter via: DashFront
+[Perf] FPS=240 总分配内存=246.1MB
+[FSM] DashingState → SprintState
+[FSM] SprintState → DashingState
+[DashingState] Enter via: DashFront
+[FSM] DashingState → SprintState
+[Perf] FPS=240 总分配内存=246.2MB
+[FSM] SprintState → DashingState
+[DashingState] Enter via: DashFront
+[FSM] DashingState → SprintState
+[Perf] FPS=240 总分配内存=246.2MB
+[FSM] SprintState → DashingState
+[DashingState] Enter via: DashFront
+[Perf] FPS=240 总分配内存=246.2MB
+[FSM] DashingState → IdleState
+[Perf] FPS=30 总分配内存=246.1MB
+[FSM] IdleState → RunState
+[BattleHost] 收到 2 闪避输入（Dash）
+[FSM] RunState → DashingState
+[DashingState] Enter via: DashFront
+[FSM] DashingState → SprintState
+[Perf] FPS=24 总分配内存=246.2MB
+[BattleHost] 收到 2 闪避输入（Dash）
+[FSM] SprintState → DashingState
+[DashingState] Enter via: DashFront
+[Perf] FPS=18 总分配内存=246.1MB
+[FSM] DashingState → SprintState
+[Perf] FPS=24 总分配内存=246.2MB
+[BattleHost] 收到 2 闪避输入（Dash）
+[FSM] SprintState → DashingState
+[DashingState] Enter via: DashFront
+[Perf] FPS=27 总分配内存=246.1MB
+[FSM] DashingState → SprintState
+[BattleHost] 收到 2 闪避输入（Dash）
+[FSM] SprintState → DashingState
+[DashingState] Enter via: DashFront
+[Perf] FPS=22 总分配内存=246.2MB
+[FSM] DashingState → SprintState
+[Perf] FPS=24 总分配内存=246.2MB
+[FSM] SprintState → IdleState
+[FSM] IdleState → RunState
+[Perf] FPS=20 总分配内存=246.2MB
+[Perf] FPS=27 总分配内存=246.2MB
+[BattleHost] 收到 2 闪避输入（Dash）
+[FSM] RunState → DashingState
+[DashingState] Enter via: DashFront
+[FSM] DashingState → SprintState
+[Perf] FPS=20 总分配内存=246.2MB
+[Perf] FPS=48 总分配内存=246.2MB
+[BattleHost] 收到 2 闪避输入（Dash）
+[FSM] SprintState → DashingState
+[DashingState] Enter via: DashFront
+[Perf] FPS=27 总分配内存=246.1MB
+[FSM] DashingState → SprintState
+[Perf] FPS=27 总分配内存=246.2MB
+[BattleHost] 收到 2 攻击输入（Attack）
+[FSM] ActionNullState → ATKingState
+[yv]预输入窗口开放
+[BattleHost] 收到 2 闪避输入（Dash）
+[FSM] SprintState → DashingState
+[DashingState] Enter via: DashFront
+CharacterVFX: 未找到特效 'AnBi_Run_ATK_2'
+[FSM] ATKingState → ActionNullState
+[FSM] DashingState → SprintState
+[BattleHost] 收到 2 攻击输入（Attack）
+[FSM] ActionNullState → ATKingState
+[Perf] FPS=24 总分配内存=246.4MB
+[yv]预输入窗口开放
+CharacterVFX: 未找到特效 'AnBi_Run_ATK_2'
+[BattleHost] 收到 2 攻击输入（Attack）
+[lianzhao]:1
+[yv]预输入窗口开放
+[FSM] SprintState → IdleState
+[BattleHost] 收到 2 攻击输入（Attack）
+[lianzhao]:2
+[Perf] FPS=34 总分配内存=246.8MB
+[yv]预输入窗口开放
+[FSM] ATKingState → ActionNullState
+[Perf] FPS=34 总分配内存=246.8MB
+[FSM] IdleState → RunState
+[FSM] RunState → DashingState
+[DashingState] Enter via: DashFront
+[Perf] FPS=120 总分配内存=247.8MB
+[FSM] ActionNullState → ATKingState
+[FSM] DashingState → SprintState
+[yv]预输入窗口开放
+CharacterVFX: 未找到特效 'AnBi_Run_ATK_2'
+[lianzhao]:1
+[yv]预输入窗口开放
+[lianzhao]:2
+[Perf] FPS=120 总分配内存=248.2MB
+[yv]预输入窗口开放
+[FSM] SprintState → DashingState
+[DashingState] Enter via: DashFront
+[FSM] ATKingState → ActionNullState
+[FSM] DashingState → SprintState
+[Perf] FPS=240 总分配内存=248.3MB
+[FSM] ActionNullState → ATKingState
+[yv]预输入窗口开放
+CharacterVFX: 未找到特效 'AnBi_Run_ATK_2'
+[lianzhao]:1
+[Perf] FPS=120 总分配内存=248.2MB
+[yv]预输入窗口开放
+[lianzhao]:2
+[yv]预输入窗口开放
+[Perf] FPS=120 总分配内存=248.3MB
+[FSM] SprintState → IdleState
+[FSM] IdleState → RunState
+[FSM] ATKingState → ActionNullState
+[FSM] RunState → DashingState
+[DashingState] Enter via: DashFront
+[FSM] DashingState → SprintState
+[FSM] ActionNullState → ATKingState
+[yv]预输入窗口开放
+[Perf] FPS=240 总分配内存=248.4MB
+CharacterVFX: 未找到特效 'AnBi_Run_ATK_2'
+[lianzhao]:1
+[yv]预输入窗口开放
+[lianzhao]:2
+[FSM] SprintState → DashingState
+[DashingState] Enter via: DashFront
+[yv]预输入窗口开放
+[Perf] FPS=240 总分配内存=248.4MB
+[FSM] ATKingState → ActionNullState
+[FSM] DashingState → SprintState
+[FSM] ActionNullState → ATKingState
+[yv]预输入窗口开放
+CharacterVFX: 未找到特效 'AnBi_Run_ATK_2'
+[lianzhao]:1
+[BossEntrance] 玩家进入 Boss 房入口范围，按 F 键进入战斗（提示预制体未就绪，先用日志代替）
+[Perf] FPS=120 总分配内存=248.6MB
+[BossEntrance] 玩家离开 Boss 房入口范围：安比
+[BossEntrance] 玩家进入 Boss 房入口范围，按 F 键进入战斗（提示预制体未就绪，先用日志代替）
+[FSM] SprintState → IdleState
+[yv]预输入窗口开放
+[FSM] IdleState → RunState
+[FSM] ATKingState → ActionNullState
+[FSM] RunState → DashingState
+[DashingState] Enter via: DashFront
+[BossEntrance] 玩家离开 Boss 房入口范围：安比
+[Perf] FPS=240 总分配内存=248.8MB
+[FSM] DashingState → SprintState
+[Perf] FPS=240 总分配内存=248.8MB
+[Perf] FPS=240 总分配内存=248.8MB
+[FSM] SprintState → IdleState
+[FSM] IdleState → RunState
+[Perf] FPS=240 总分配内存=248.8MB
+[Perf] FPS=240 总分配内存=248.8MB
+[Perf] FPS=240 总分配内存=248.8MB
+[FSM] RunState → IdleState
+[FSM] IdleState → RunState
+[Perf] FPS=240 总分配内存=248.8MB
+[FSM] RunState → IdleState
+[FSM] IdleState → RunState
+[FSM] RunState → IdleState
+[Perf] FPS=240 总分配内存=248.8MB
+[Perf] FPS=240 总分配内存=248.7MB
+[Perf] FPS=240 总分配内存=248.7MB
+[FSM] IdleState → RunState
+[FSM] RunState → DashingState
+[DashingState] Enter via: DashFront
+[FSM] DashingState → SprintState
+[Perf] FPS=240 总分配内存=248.8MB
+[FSM] SprintState → DashingState
+[DashingState] Enter via: DashFront
+[FSM] DashingState → IdleState
+[Perf] FPS=240 总分配内存=248.7MB
+[Perf] FPS=30 总分配内存=248.7MB
+[Perf] FPS=5 总分配内存=248.7MB
+[Perf] FPS=30 总分配内存=248.7MB
+[Perf] FPS=240 总分配内存=248.7MB
+[Perf] FPS=9 总分配内存=248.7MB
+[Perf] FPS=240 总分配内存=248.7MB
+[Perf] FPS=120 总分配内存=248.7MB
+[Perf] FPS=4 总分配内存=248.7MB
+[Perf] FPS=13 总分配内存=248.7MB
+[Perf] FPS=11 总分配内存=248.7MB
+[Perf] FPS=16 总分配内存=248.7MB
+[Perf] FPS=11 总分配内存=248.7MB
+[Perf] FPS=17 总分配内存=248.7MB
+[Perf] FPS=8 总分配内存=248.7MB
+[Perf] FPS=120 总分配内存=248.7MB
+[Perf] FPS=240 总分配内存=248.7MB
+[Perf] FPS=60 总分配内存=248.7MB
+[Perf] FPS=30 总分配内存=248.7MB
+[FSM] IdleState → RunState
+[Perf] FPS=5 总分配内存=248.8MB
+[Perf] FPS=34 总分配内存=248.8MB
+[FSM] RunState → IdleState
+[Perf] FPS=9 总分配内存=248.7MB
+[FSM] IdleState → RunState
+[Perf] FPS=240 总分配内存=248.8MB
+[FSM] RunState → IdleState
+[Perf] FPS=60 总分配内存=248.8MB
+[Perf] FPS=34 总分配内存=248.7MB
+[Perf] FPS=240 总分配内存=248.7MB
+[Perf] FPS=120 总分配内存=248.7MB
+[FSM] IdleState → RunState
+[Perf] FPS=240 总分配内存=248.8MB
+[FSM] RunState → IdleState
+[FSM] IdleState → RunState
+[Perf] FPS=60 总分配内存=248.8MB
+[Perf] FPS=240 总分配内存=248.8MB
+[Perf] FPS=240 总分配内存=248.8MB
+[FSM] RunState → IdleState
+[Perf] FPS=240 总分配内存=248.7MB
+[Perf] FPS=80 总分配内存=248.7MB
+[FSM] IdleState → RunState
+[FSM] RunState → IdleState
+[Perf] FPS=80 总分配内存=248.7MB
+[Perf] FPS=27 总分配内存=248.8MB
+[Perf] FPS=48 总分配内存=248.7MB
+[Perf] FPS=120 总分配内存=248.7MB
+[FSM] IdleState → RunState
+[Perf] FPS=48 总分配内存=248.8MB
+[FSM] RunState → IdleState
+[Perf] FPS=40 总分配内存=248.8MB
+[Perf] FPS=34 总分配内存=248.7MB
+[Perf] FPS=27 总分配内存=248.7MB
+[Perf] FPS=34 总分配内存=248.7MB
+[Perf] FPS=80 总分配内存=248.7MB
+[Perf] FPS=30 总分配内存=248.7MB
+[Perf] FPS=30 总分配内存=248.7MB
+[FSM] IdleState → RunState
+[Perf] FPS=120 总分配内存=248.8MB
+[FSM] RunState → DashingState
+[DashingState] Enter via: DashFront
+[Perf] FPS=240 总分配内存=248.8MB
+[FSM] DashingState → SprintState
+[FSM] SprintState → DashingState
+[DashingState] Enter via: DashFront
+[Perf] FPS=240 总分配内存=248.7MB
+[FSM] DashingState → SprintState
+[Perf] FPS=240 总分配内存=248.8MB
+[FSM] SprintState → IdleState
+[Perf] FPS=240 总分配内存=248.7MB
+[FSM] IdleState → RunState
+[Perf] FPS=240 总分配内存=248.8MB
+[FSM] RunState → IdleState
+[Perf] FPS=120 总分配内存=248.7MB
+[Perf] FPS=27 总分配内存=248.7MB
+[FSM] IdleState → RunState
+[Perf] FPS=22 总分配内存=248.8MB
+[BattleHost] 收到 2 闪避输入（Dash）
+[FSM] RunState → DashingState
+[DashingState] Enter via: DashFront
+[FSM] DashingState → SprintState
+[FSM] SprintState → IdleState
+[FSM] IdleState → RunState
+[Perf] FPS=48 总分配内存=248.8MB
+[BattleHost] 收到 2 闪避输入（Dash）
+[FSM] RunState → DashingState
+[DashingState] Enter via: DashFront
+[FSM] DashingState → SprintState
+[Perf] FPS=48 总分配内存=248.8MB
+[FSM] SprintState → IdleState
+[FSM] IdleState → RunState
+[Perf] FPS=60 总分配内存=248.8MB
+[FSM] RunState → IdleState
+[FSM] IdleState → RunState
+[FSM] RunState → IdleState
+[FSM] IdleState → RunState
+[FSM] RunState → IdleState
+[Perf] FPS=48 总分配内存=248.7MB
+[FSM] IdleState → RunState
+[FSM] RunState → DashingState
+[DashingState] Enter via: DashFront
+[Perf] FPS=240 总分配内存=248.8MB
+[FSM] DashingState → SprintState
+[Perf] FPS=120 总分配内存=248.8MB
+[Perf] FPS=240 总分配内存=248.8MB
+[FSM] SprintState → IdleState
+[Perf] FPS=240 总分配内存=248.8MB
+[FSM] IdleState → RunState
+[Perf] FPS=120 总分配内存=248.8MB
+[FSM] RunState → IdleState
+[FSM] IdleState → RunState
+[Perf] FPS=240 总分配内存=248.8MB
+[FSM] RunState → DashingState
+[DashingState] Enter via: DashFront
+[FSM] DashingState → SprintState
+[Perf] FPS=240 总分配内存=248.8MB
+[FSM] SprintState → DashingState
+[DashingState] Enter via: DashFront
+[FSM] DashingState → IdleState
+[Perf] FPS=240 总分配内存=248.7MB
+[FSM] IdleState → RunState
+[FSM] RunState → IdleState
+[Perf] FPS=240 总分配内存=248.7MB
+[Perf] FPS=240 总分配内存=248.8MB
+[Perf] FPS=240 总分配内存=248.7MB
+[Perf] FPS=120 总分配内存=248.7MB
+[BattleHost] 远端角色销毁：2
+[Battle] 2 离开战斗，当前 1 人（含房主）
+[Perf] FPS=240 总分配内存=247.8MB
+[Perf] FPS=240 总分配内存=247.8MB
+[Perf] FPS=80 总分配内存=247.8MB
+Input System module state changed to: ShutdownInProgress.
+Input System polling thread exited.
+Input System module state changed to: Shutdown.
+[TcpConnection] 接收异常：Unable to read data from the transport connection: Thread was being aborted..
+Memory Statistics:
+[ALLOC_TEMP_TLS] TLS Allocator
+  StackAllocators : 
+    [ALLOC_TEMP_MAIN]
+      Peak usage frame count: [2.0 KB-4.0 KB]: 5005 frames, [8.0 KB-16.0 KB]: 26552 frames, [32.0 KB-64.0 KB]: 3 frames, [128.0 KB-256.0 KB]: 3 frames, [1.0 MB-2.0 MB]: 2 frames, [2.0 MB-4.0 MB]: 1 frames
+      Initial Block Size 4.0 MB
+      Current Block Size 4.0 MB
+      Peak Allocated Bytes 2.1 MB
+      Overflow Count 0
+    [ALLOC_TEMP_Job.Worker 18]
+      Initial Block Size 256.0 KB
+      Current Block Size 464.0 KB
+      Peak Allocated Bytes 464.0 KB
+      Overflow Count 3
+    [ALLOC_TEMP_Loading.PreloadManager]
+      Initial Block Size 256.0 KB
+      Current Block Size 496.0 KB
+      Peak Allocated Bytes 459.4 KB
+      Overflow Count 33
+    [ALLOC_TEMP_Background Job.Worker 8]
+      Initial Block Size 32.0 KB
+      Current Block Size 32.0 KB
+      Peak Allocated Bytes 54 B
+      Overflow Count 0
+    [ALLOC_TEMP_Background Job.Worker 10]
+      Initial Block Size 32.0 KB
+      Current Block Size 32.0 KB
+      Peak Allocated Bytes 54 B
+      Overflow Count 0
+    [ALLOC_TEMP_Job.Worker 16]
+      Initial Block Size 256.0 KB
+      Current Block Size 424.0 KB
+      Peak Allocated Bytes 382.5 KB
+      Overflow Count 0
+    [ALLOC_TEMP_Background Job.Worker 6]
+      Initial Block Size 32.0 KB
+      Current Block Size 32.0 KB
+      Peak Allocated Bytes 54 B
+      Overflow Count 0
+    [ALLOC_TEMP_Job.Worker 4]
+      Initial Block Size 256.0 KB
+      Current Block Size 508.0 KB
+      Peak Allocated Bytes 468.9 KB
+      Overflow Count 4
+    [ALLOC_TEMP_Job.Worker 17]
+      Initial Block Size 256.0 KB
+      Current Block Size 488.0 KB
+      Peak Allocated Bytes 401.4 KB
+      Overflow Count 3
+    [ALLOC_TEMP_Job.Worker 14]
+      Initial Block Size 256.0 KB
+      Current Block Size 508.0 KB
+      Peak Allocated Bytes 506.0 KB
+      Overflow Count 3
+    [ALLOC_TEMP_Job.Worker 3]
+      Initial Block Size 256.0 KB
+      Current Block Size 496.0 KB
+      Peak Allocated Bytes 452.1 KB
+      Overflow Count 1
+    [ALLOC_TEMP_Background Job.Worker 12]
+      Initial Block Size 32.0 KB
+      Current Block Size 32.0 KB
+      Peak Allocated Bytes 54 B
+      Overflow Count 0
+    [ALLOC_TEMP_Background Job.Worker 1]
+      Initial Block Size 32.0 KB
+      Current Block Size 32.0 KB
+      Peak Allocated Bytes 6.7 KB
+      Overflow Count 0
+    [ALLOC_TEMP_AssetGarbageCollectorHelper] x 23
+      Initial Block Size 64.0 KB
+      Current Block Size 64.0 KB
+      Peak Allocated Bytes 138 B
+      Overflow Count 0
+    [ALLOC_TEMP_Background Job.Worker 5]
+      Initial Block Size 32.0 KB
+      Current Block Size 32.0 KB
+      Peak Allocated Bytes 54 B
+      Overflow Count 0
+    [ALLOC_TEMP_Background Job.Worker 13]
+      Initial Block Size 32.0 KB
+      Current Block Size 32.0 KB
+      Peak Allocated Bytes 54 B
+      Overflow Count 0
+    [ALLOC_TEMP_Background Job.Worker 11]
+      Initial Block Size 32.0 KB
+      Current Block Size 32.0 KB
+      Peak Allocated Bytes 54 B
+      Overflow Count 0
+    [ALLOC_TEMP_Job.Worker 2]
+      Initial Block Size 256.0 KB
+      Current Block Size 504.0 KB
+      Peak Allocated Bytes 500.4 KB
+      Overflow Count 4
+    [ALLOC_TEMP_Background Job.Worker 3]
+      Initial Block Size 32.0 KB
+      Current Block Size 32.0 KB
+      Peak Allocated Bytes 54 B
+      Overflow Count 0
+    [ALLOC_TEMP_Background Job.Worker 0]
+      Initial Block Size 32.0 KB
+      Current Block Size 32.0 KB
+      Peak Allocated Bytes 54 B
+      Overflow Count 0
+    [ALLOC_TEMP_Job.Worker 20]
+      Initial Block Size 256.0 KB
+      Current Block Size 500.0 KB
+      Peak Allocated Bytes 499.0 KB
+      Overflow Count 5
+    [ALLOC_TEMP_HIDInput]
+      Initial Block Size 64.0 KB
+      Current Block Size 64.0 KB
+      Peak Allocated Bytes 10.8 KB
+      Overflow Count 0
+    [ALLOC_TEMP_Job.Worker 11]
+      Initial Block Size 256.0 KB
+      Current Block Size 492.0 KB
+      Peak Allocated Bytes 491.7 KB
+      Overflow Count 2
+    [ALLOC_TEMP_Background Job.Worker 4]
+      Initial Block Size 32.0 KB
+      Current Block Size 32.0 KB
+      Peak Allocated Bytes 54 B
+      Overflow Count 0
+    [ALLOC_TEMP_BatchDeleteObjects]
+      Initial Block Size 64.0 KB
+      Current Block Size 64.0 KB
+      Peak Allocated Bytes 54 B
+      Overflow Count 0
+    [ALLOC_TEMP_Job.Worker 6]
+      Initial Block Size 256.0 KB
+      Current Block Size 472.0 KB
+      Peak Allocated Bytes 450.0 KB
+      Overflow Count 2
+    [ALLOC_TEMP_Job.Worker 0]
+      Initial Block Size 256.0 KB
+      Current Block Size 504.0 KB
+      Peak Allocated Bytes 502.9 KB
+      Overflow Count 1
+    [ALLOC_TEMP_Job.Worker 21]
+      Initial Block Size 256.0 KB
+      Current Block Size 444.0 KB
+      Peak Allocated Bytes 442.2 KB
+      Overflow Count 5
+    [ALLOC_TEMP_Job.Worker 5]
+      Initial Block Size 256.0 KB
+      Current Block Size 412.0 KB
+      Peak Allocated Bytes 387.3 KB
+      Overflow Count 4
+    [ALLOC_TEMP_Background Job.Worker 9]
+      Initial Block Size 32.0 KB
+      Current Block Size 32.0 KB
+      Peak Allocated Bytes 54 B
+      Overflow Count 0
+    [ALLOC_TEMP_Background Job.Worker 14]
+      Initial Block Size 32.0 KB
+      Current Block Size 32.0 KB
+      Peak Allocated Bytes 54 B
+      Overflow Count 0
+    [ALLOC_TEMP_Job.Worker 13]
+      Initial Block Size 256.0 KB
+      Current Block Size 508.0 KB
+      Peak Allocated Bytes 442.9 KB
+      Overflow Count 2
+    [ALLOC_TEMP_EnlightenWorker] x 24
+      Initial Block Size 64.0 KB
+      Current Block Size 64.0 KB
+      Peak Allocated Bytes 54 B
+      Overflow Count 0
+    [ALLOC_TEMP_Background Job.Worker 15]
+      Initial Block Size 32.0 KB
+      Current Block Size 32.0 KB
+      Peak Allocated Bytes 54 B
+      Overflow Count 0
+    [ALLOC_TEMP_Background Job.Worker 2]
+      Initial Block Size 32.0 KB
+      Current Block Size 32.0 KB
+      Peak Allocated Bytes 54 B
+      Overflow Count 0
+    [ALLOC_TEMP_Background Job.Worker 7]
+      Initial Block Size 32.0 KB
+      Current Block Size 32.0 KB
+      Peak Allocated Bytes 54 B
+      Overflow Count 0
+    [ALLOC_TEMP_Job.Worker 22]
+      Initial Block Size 256.0 KB
+      Current Block Size 372.0 KB
+      Peak Allocated Bytes 371.5 KB
+      Overflow Count 1
+    [ALLOC_TEMP_UnityGfxDeviceWorker]
+      Initial Block Size 256.0 KB
+      Current Block Size 256.0 KB
+      Peak Allocated Bytes 43.4 KB
+      Overflow Count 0
+    [ALLOC_TEMP_Job.Worker 9]
+      Initial Block Size 256.0 KB
+      Current Block Size 440.0 KB
+      Peak Allocated Bytes 436.3 KB
+      Overflow Count 5
+    [ALLOC_TEMP_Job.Worker 8]
+      Initial Block Size 256.0 KB
+      Current Block Size 484.0 KB
+      Peak Allocated Bytes 483.5 KB
+      Overflow Count 6
+    [ALLOC_TEMP_Job.Worker 7]
+      Initial Block Size 256.0 KB
+      Current Block Size 464.0 KB
+      Peak Allocated Bytes 418.4 KB
+      Overflow Count 2
+    [ALLOC_TEMP_Job.Worker 1]
+      Initial Block Size 256.0 KB
+      Current Block Size 304.0 KB
+      Peak Allocated Bytes 214.5 KB
+      Overflow Count 0
+    [ALLOC_TEMP_Job.Worker 10]
+      Initial Block Size 256.0 KB
+      Current Block Size 424.0 KB
+      Peak Allocated Bytes 422.8 KB
+      Overflow Count 1
+    [ALLOC_TEMP_Job.Worker 15]
+      Initial Block Size 256.0 KB
+      Current Block Size 256.0 KB
+      Peak Allocated Bytes 214.1 KB
+      Overflow Count 0
+    [ALLOC_TEMP_Job.Worker 19]
+      Initial Block Size 256.0 KB
+      Current Block Size 496.0 KB
+      Peak Allocated Bytes 493.7 KB
+      Overflow Count 7
+    [ALLOC_TEMP_Job.Worker 12]
+      Initial Block Size 256.0 KB
+      Current Block Size 488.0 KB
+      Peak Allocated Bytes 487.5 KB
+      Overflow Count 5
+    [ALLOC_TEMP_Loading.AsyncRead]
+      Initial Block Size 64.0 KB
+      Current Block Size 116.0 KB
+      Peak Allocated Bytes 115.6 KB
+      Overflow Count 0
+[ALLOC_DEFAULT] Dual Thread Allocator
+  Peak main deferred allocation count 3231
+    [ALLOC_BUCKET]
+      Large Block size 4.0 MB
+      Used Block count 1
+      Peak Allocated bytes 3.9 MB
+      Failed Allocations. Bucket layout:
+        16B: 12 Subsections = 12288 buckets. Failed count: 484517
+        32B: 24 Subsections = 12288 buckets. Failed count: 0
+        48B: 64 Subsections = 21845 buckets. Failed count: 0
+        64B: 55 Subsections = 14080 buckets. Failed count: 6162
+        80B: 26 Subsections = 5324 buckets. Failed count: 0
+        96B: 16 Subsections = 2730 buckets. Failed count: 107252
+        112B: 21 Subsections = 3072 buckets. Failed count: 0
+        128B: 38 Subsections = 4864 buckets. Failed count: 3094
+    [ALLOC_DEFAULT_MAIN]
+      Peak usage frame count: [16.0 MB-32.0 MB]: 2 frames, [32.0 MB-64.0 MB]: 31564 frames
+      Requested Block Size 16.0 MB
+      Peak Block count 3
+      Peak Allocated memory 48.2 MB
+      Peak Large allocation bytes 8.0 MB
+    [ALLOC_DEFAULT_THREAD]
+      Peak usage frame count: [16.0 MB-32.0 MB]: 4979 frames, [32.0 MB-64.0 MB]: 26574 frames, [64.0 MB-128.0 MB]: 13 frames
+      Requested Block Size 16.0 MB
+      Peak Block count 5
+      Peak Allocated memory 84.1 MB
+      Peak Large allocation bytes 16.0 MB
+[ALLOC_TEMP_JOB_1_FRAME]
+  Initial Block Size 2.0 MB
+  Used Block Count 0
+  Overflow Count (too large) 0
+  Overflow Count (full) 0
+[ALLOC_TEMP_JOB_2_FRAMES]
+  Initial Block Size 2.0 MB
+  Used Block Count 0
+  Overflow Count (too large) 0
+  Overflow Count (full) 0
+[ALLOC_TEMP_JOB_4_FRAMES (JobTemp)]
+  Initial Block Size 2.0 MB
+  Used Block Count 1
+  Overflow Count (too large) 0
+  Overflow Count (full) 0
+[ALLOC_TEMP_JOB_ASYNC (Background)]
+  Initial Block Size 1.0 MB
+  Used Block Count 1
+  Overflow Count (too large) 0
+  Overflow Count (full) 0
+[ALLOC_GFX] Dual Thread Allocator
+  Peak main deferred allocation count 2
+    [ALLOC_BUCKET]
+      Large Block size 4.0 MB
+      Used Block count 1
+      Peak Allocated bytes 3.9 MB
+      Failed Allocations. Bucket layout:
+        16B: 12 Subsections = 12288 buckets. Failed count: 484517
+        32B: 24 Subsections = 12288 buckets. Failed count: 0
+        48B: 64 Subsections = 21845 buckets. Failed count: 0
+        64B: 55 Subsections = 14080 buckets. Failed count: 6162
+        80B: 26 Subsections = 5324 buckets. Failed count: 0
+        96B: 16 Subsections = 2730 buckets. Failed count: 107252
+        112B: 21 Subsections = 3072 buckets. Failed count: 0
+        128B: 38 Subsections = 4864 buckets. Failed count: 3094
+    [ALLOC_GFX_MAIN]
+      Peak usage frame count: [32.0 KB-64.0 KB]: 4250 frames, [64.0 KB-128.0 KB]: 27315 frames, [128.0 KB-256.0 KB]: 1 frames
+      Requested Block Size 16.0 MB
+      Peak Block count 1
+      Peak Allocated memory 177.0 KB
+      Peak Large allocation bytes 0 B
+    [ALLOC_GFX_THREAD]
+      Peak usage frame count: [64.0 MB-128.0 MB]: 31566 frames
+      Requested Block Size 16.0 MB
+      Peak Block count 1
+      Peak Allocated memory 70.3 MB
+      Peak Large allocation bytes 64.0 MB
+[ALLOC_CACHEOBJECTS] Dual Thread Allocator
+  Peak main deferred allocation count 34
+    [ALLOC_BUCKET]
+      Large Block size 4.0 MB
+      Used Block count 1
+      Peak Allocated bytes 3.9 MB
+      Failed Allocations. Bucket layout:
+        16B: 12 Subsections = 12288 buckets. Failed count: 484517
+        32B: 24 Subsections = 12288 buckets. Failed count: 0
+        48B: 64 Subsections = 21845 buckets. Failed count: 0
+        64B: 55 Subsections = 14080 buckets. Failed count: 6162
+        80B: 26 Subsections = 5324 buckets. Failed count: 0
+        96B: 16 Subsections = 2730 buckets. Failed count: 107252
+        112B: 21 Subsections = 3072 buckets. Failed count: 0
+        128B: 38 Subsections = 4864 buckets. Failed count: 3094
+    [ALLOC_CACHEOBJECTS_MAIN]
+      Peak usage frame count: [8.0 MB-16.0 MB]: 31566 frames
+      Requested Block Size 4.0 MB
+      Peak Block count 4
+      Peak Allocated memory 14.6 MB
+      Peak Large allocation bytes 4.7 MB
+    [ALLOC_CACHEOBJECTS_THREAD]
+      Peak usage frame count: [16.0 MB-32.0 MB]: 4921 frames, [32.0 MB-64.0 MB]: 26645 frames
+      Requested Block Size 4.0 MB
+      Peak Block count 13
+      Peak Allocated memory 60.5 MB
+      Peak Large allocation bytes 12.6 MB
+[ALLOC_TYPETREE] Dual Thread Allocator
+  Peak main deferred allocation count 1
+    [ALLOC_BUCKET]
+      Large Block size 4.0 MB
+      Used Block count 1
+      Peak Allocated bytes 3.9 MB
+      Failed Allocations. Bucket layout:
+        16B: 12 Subsections = 12288 buckets. Failed count: 484517
+        32B: 24 Subsections = 12288 buckets. Failed count: 0
+        48B: 64 Subsections = 21845 buckets. Failed count: 0
+        64B: 55 Subsections = 14080 buckets. Failed count: 6162
+        80B: 26 Subsections = 5324 buckets. Failed count: 0
+        96B: 16 Subsections = 2730 buckets. Failed count: 107252
+        112B: 21 Subsections = 3072 buckets. Failed count: 0
+        128B: 38 Subsections = 4864 buckets. Failed count: 3094
+    [ALLOC_TYPETREE_MAIN]
+      Peak usage frame count: [16.0 KB-32.0 KB]: 31566 frames
+      Requested Block Size 2.0 MB
+      Peak Block count 1
+      Peak Allocated memory 18.4 KB
+      Peak Large allocation bytes 0 B
+    [ALLOC_TYPETREE_THREAD]
+      Peak usage frame count: [1.0 MB-2.0 MB]: 31566 frames
+      Requested Block Size 2.0 MB
+      Peak Block count 1
+      Peak Allocated memory 1.7 MB
+      Peak Large allocation bytes 0 B

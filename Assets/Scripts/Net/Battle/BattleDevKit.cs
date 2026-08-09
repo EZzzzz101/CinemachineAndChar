@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
+using UnityEngine.Profiling;
 using Cysharp.Threading.Tasks;
 
 /// <summary>
@@ -20,6 +21,7 @@ public class BattleDevKit : MonoBehaviour
     private bool _showPanel;
     private BattleHostRuntime _host;
     private BattleClientRuntime _client;
+    private float _perfLogTimer;   // [Perf] 性能日志节流（FPS + 内存）
 
     /// <summary>Main 场景加载后自动创建本面板（零场景改动：代码启动开发工具）</summary>
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
@@ -29,8 +31,12 @@ public class BattleDevKit : MonoBehaviour
         // 常驻模块（含 ESC 呼出鼠标的 CursorEscapeToggle）未初始化，这里补齐。
         // GameModules.Init() 内部有防重守卫：从 Boot 正常启动时重复调用无害。
         GameModules.Init();
-        // 直进 Main（无 GameEntry）：兜底驱动资源引导，切 AB 后 HUD 才可用
+        // 直进 Main（无 GameEntry）：兜底驱动资源引导，切 AB 后 HUD 才可用。
+        // 只在打包运行时执行——编辑器保持 EditorAssetProvider 直读项目资源，
+        // 否则改 prefab 后编辑器也会从旧 AB 加载（看不到改动）。
+#if !UNITY_EDITOR
         HotUpdateManager.Instance.RunFlow().Forget();
+#endif
 
         // 注意：RuntimeInitializeOnLoadMethod(AfterSceneLoad) 只在"启动时第一个场景加载后"执行一次，
         // 场景切换不会再次触发。所以本面板必须常驻跨场景，用 sceneLoaded 监听 Main 加载。
@@ -58,13 +64,14 @@ public class BattleDevKit : MonoBehaviour
     }
 
     /// <summary>
-    /// 进入 Main（战斗场景）：从大厅流程则自动起服务器/连客户端，不用手动点面板。
+    /// 进入六分街（游历家园联机）：从大厅流程则自动起服务器/连客户端，不用手动点面板。
+    /// Main（战斗场景）是单人进入，不自动启动联机。
     /// 由场景加载事件驱动（面板常驻跨场景），不是启动时的一次性判断。
     /// </summary>
     private void ApplyForScene(string sceneName)
     {
-        if (sceneName != "Main") return;
-        Debug.Log($"[BattleFlow] 进入 Main：FromLobby={BattleSessionState.FromLobby} IsHost={BattleSessionState.IsHost}");
+        if (sceneName != "SixthStreet") return;
+        Debug.Log($"[BattleFlow] 进入六分街：FromLobby={BattleSessionState.FromLobby} IsHost={BattleSessionState.IsHost}");
         if (!BattleSessionState.FromLobby) return;
 
         if (BattleSessionState.IsHost)
@@ -82,6 +89,16 @@ public class BattleDevKit : MonoBehaviour
 
     private void Update()
     {
+        // [Perf] 性能日志：每秒打一次 FPS + 总分配内存（查卡顿/GC 分配用）
+        _perfLogTimer -= Time.unscaledDeltaTime;
+        if (_perfLogTimer <= 0f)
+        {
+            _perfLogTimer = 1f;
+            float fps = Time.unscaledDeltaTime > 0f ? 1f / Time.unscaledDeltaTime : 0f;
+            float mb = Profiler.GetTotalAllocatedMemoryLong() / (1024f * 1024f);
+            Debug.Log($"[Perf] FPS={fps:F0} 总分配内存={mb:F1}MB");
+        }
+
         if (Keyboard.current != null && Keyboard.current.f9Key.wasPressedThisFrame)
         {
             _showPanel = !_showPanel;

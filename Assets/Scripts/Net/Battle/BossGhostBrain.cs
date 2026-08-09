@@ -38,7 +38,5 @@ public class BossGhostBrain : MonoBehaviour, IDamageable
 
         // 命中上报：让主机判定扣血（客机本地打中 ≠ 主机判定，必须显式上报）
         OnBossHit?.Invoke(attacker, damage);
-
-        Debug.Log("[BossGhost] 玩家命中 Boss 幽灵（已上报主机判定）");
     }
 }

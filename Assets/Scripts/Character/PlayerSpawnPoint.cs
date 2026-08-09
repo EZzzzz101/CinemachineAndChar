@@ -1,6 +1,7 @@
 using UnityEngine;
 using Cinemachine;
 using Cysharp.Threading.Tasks;
+using UnityEngine.SceneManagement;
 
 /// <summary>
 /// 玩家出生点 — 挂在场景里的空物体上（六分街/战斗场景）。
@@ -32,6 +33,12 @@ public class PlayerSpawnPoint : MonoBehaviour
 
     private async void Start()
     {
+        // 邦布策略：六分街（游历家园联机）不生成，战斗场景（Main）生成。
+        // 运行时按场景覆盖 Inspector 配置，避免六分街多一个要同步的邦布。
+        string sceneName = SceneManager.GetActiveScene().name;
+        if (sceneName == "SixthStreet") spawnBangboo = false;
+        else if (sceneName == "Main") spawnBangboo = true;
+
         // 服务器权威：客户端角色（非房主）不由场景 PlayerSpawnPoint 生成，
         // 改由 BattleClientRuntime 按服务器下发的出生点生成（避免"先生成再搬"）。
         if (BattleSessionState.FromLobby && !BattleSessionState.IsHost)

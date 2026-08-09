@@ -50,8 +50,9 @@ public class BattleClientRuntime : MonoBehaviour
     private bool _serverSpawnSet;    // 是否已收到服务器出生点
     private bool _waitFirstSelfSnap; // 加入后等第一帧"自己"快照：期间锁移动，避免开局错位
     private float _inputGateTimer;   // 入场缓冲剩余时间（解锁后短暂忽略攻击/闪避）
-    private Vector3 _lastSelfTarget; // 最后的主机快照位置（诊断：本地偏离时对比）
-    private float _syncLogTimer;     // [SyncDebug] 偏差日志节流
+    private Vector3 _lastSelfTarget; // 最后的主机快照位置（[SyncDebug] 偏差采样用）
+    private float _syncLogTimer;     // [SyncDebug] 偏差日志节流（测试用，低频）
+    private float _inputSendTimer;   // 移动输入上报节流（30Hz，减半 GC 分配；边沿事件仍即时）
 
     public bool Connected => _client != null && _client.Connected;
     public string MyName => _myName;
@@ -122,44 +123,25 @@ public class BattleClientRuntime : MonoBehaviour
             local.GateEdges = false;
         }
 
-        // 诊断：本地角色偏离主机快照位置时，打印本地动画/状态，定位"谁把本地推回"
-        if (!_waitFirstSelfSnap && _localPlayer != null && _lastSelfTarget != Vector3.zero && Time.frameCount % 30 == 0)
+        // 移动输入 30Hz 定频上报（减半 GC 分配，30Hz 对移动同步足够；边沿事件仍由 OnEdge 即时发）
+        _inputSendTimer -= Time.unscaledDeltaTime;
+        if (_inputSendTimer <= 0f && _localPlayer != null && Connected)
         {
-            float drift = Vector3.Distance(_localPlayer.transform.position, _lastSelfTarget);
-            if (drift > 0.5f)
-            {
-                string clip = "?";
-                if (_localPlayer.Animator != null)
-                {
-                    var ci = _localPlayer.Animator.GetCurrentAnimatorClipInfo(0);
-                    if (ci.Length > 0) clip = ci[0].clip.name;
-                }
-                float mv = _localPlayer.Animator != null ? _localPlayer.Animator.GetFloat("Movement") : -1f;
-                Debug.LogWarning(
-                    $"[BattleClient] 本地偏离主机 {drift:F2}m | 本地 {_localPlayer.transform.position} vs 主机 {_lastSelfTarget} | " +
-                    $"Movement={mv:F2} 动画={clip} Loco={_localPlayer.Locomotion?.CurrentState?.GetType().Name} " +
-                    $"Action={_localPlayer.Action?.CurrentState?.GetType().Name}");
-            }
+            _inputSendTimer = 0.033f;
+            var flags = _localPlayer.Input != null && _localPlayer.Input.SprintHeld
+                ? BattleInputFlags.Sprint : BattleInputFlags.None;
+            Vector2 world = WorldMove();
+            var pos = _localPlayer.transform.position;
+            _client.SendInput(world.x, world.y, flags, pos.x, pos.y, pos.z);
         }
 
-        // [SyncDebug] 偏差采样：每 0.5s 打一次"本地 vs 主机"距离（持续看偏差，不只纠偏时）
+        // [SyncDebug] 偏差采样（测试用，低频不刷屏）：每 0.5s 打一次"本地 vs 主机"距离
         _syncLogTimer -= Time.unscaledDeltaTime;
         if (_syncLogTimer <= 0f && !_waitFirstSelfSnap && _localPlayer != null && _lastSelfTarget != Vector3.zero)
         {
             _syncLogTimer = 0.5f;
             float drift = Vector3.Distance(_localPlayer.transform.position, _lastSelfTarget);
             Debug.Log($"[SyncDebug] 偏差 {drift:F2}m | 本地 {_localPlayer.transform.position} vs 主机 {_lastSelfTarget}");
-        }
-
-        // 移动输入每帧上报：主机模拟的"我"和本地预测的"我"输入节奏一致，偏差才小。
-        // 带宽约 60 帧 × 14 字节 ≈ 1KB/s/客户端，局域网无压力（边沿事件仍由 OnEdge 即时发）。
-        if (_localPlayer != null && Connected)
-        {
-            var flags = _localPlayer.Input != null && _localPlayer.Input.SprintHeld
-                ? BattleInputFlags.Sprint : BattleInputFlags.None;
-            Vector2 world = WorldMove();
-            var pos = _localPlayer.transform.position;
-            _client.SendInput(world.x, world.y, flags, pos.x, pos.y, pos.z);
         }
 
         // M11：客户端不模拟 Boss——把本地 Boss 幽灵化（销毁 AI/碰撞，保留 Animator 按快照演）
@@ -333,8 +315,8 @@ public class BattleClientRuntime : MonoBehaviour
                 else
                 {
                     ReconcileLocal(item);
+                    _lastSelfTarget = new Vector3(item.PosX, item.PosY, item.PosZ);
                 }
-                _lastSelfTarget = new Vector3(item.PosX, item.PosY, item.PosZ);
             }
             else if (item.Name == "Boss")
             {
@@ -412,14 +394,6 @@ public class BattleClientRuntime : MonoBehaviour
             _localPlayer.transform.rotation = Quaternion.Slerp(
                 _localPlayer.transform.rotation, Quaternion.Euler(0f, item.RotY, 0f), 10f * Time.deltaTime);
 
-            // 诊断"谁在动"：对比本地 Movement 参数 vs 主机快照的 MoveSpeed。
-            // 本地=2、主机=0 → 客户端在走但主机版"我"停了（输入没到/状态没同步）；
-            // 本地=0、主机=2 → 主机版在走但客户端本地停了（本地被锁/输入语义）。
-            float localMove = _localPlayer.Animator != null ? _localPlayer.Animator.GetFloat("Movement") : -1f;
-            Debug.Log(
-                $"[SyncDebug] 纠偏 {item.Name}: 本地 {_localPlayer.transform.position} vs " +
-                $"主机 ({item.PosX:F2},{item.PosY:F2},{item.PosZ:F2}) | 偏差 {dist:F2}m | " +
-                $"本地Movement={localMove:F2} 主机MoveSpeed={item.MoveSpeed:F2}");
         }
     }
 

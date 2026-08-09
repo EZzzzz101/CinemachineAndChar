@@ -9,6 +9,8 @@ public class GameEntry : MonoBehaviour
 {
     private void Awake()
     {
+        // 保险：联机双开时窗口失焦也不降帧（Windows 后台省电可能压帧率）
+        Application.runInBackground = true;
         DontDestroyOnLoad(gameObject);
         GameModules.Init();
         // 资源引导挂启动器：与读条 UI 解耦（LoadingFlow 只订阅进度显示，不驱动流程）。

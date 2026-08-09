@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 /// <summary>
 /// 战斗客户端会话 — 连房主（Listen Server）的封装，与 LobbyClient 同套路。
@@ -12,6 +13,7 @@ public class BattleClient : IDisposable
     private TcpConnection _conn;
     private string _name;
     private int _inputSeq;   // 输入序号：TCP 下用于调试；将来换 UDP 时用于乱序检测
+    private readonly List<byte> _sendBuf = new();   // 输入上报复用缓冲区（消 GC 分配）
 
     public bool Connected => _conn != null && _conn.IsConnected;
     public string MyName => _name;
@@ -70,7 +72,9 @@ public class BattleClient : IDisposable
                           float posX, float posY, float posZ)
     {
         if (!Connected) return;
-        Send(NetMessage.BattleInput, MsgBattleInput.Encode(++_inputSeq, moveX, moveZ, flags, posX, posY, posZ));
+        _sendBuf.Clear();
+        MsgBattleInput.EncodeInto(_sendBuf, ++_inputSeq, moveX, moveZ, flags, posX, posY, posZ);
+        _conn.Send(_sendBuf);
     }
 
     /// <summary>上报"客机命中 Boss"：主机据此宽容判定后扣真 Boss 血（M11 伤害闭环）</summary>

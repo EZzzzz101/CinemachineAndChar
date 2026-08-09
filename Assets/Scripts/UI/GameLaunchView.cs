@@ -104,6 +104,7 @@ public class GameLaunchView : UIView
         // 先关闭登录窗口 + Boot 专属 UI（BG/读条）：都在常驻 Canvas 上，不藏会盖住下一个场景
         gameObject.SetActive(false);
         PersistentUIRoot.Instance?.HideBootUI();
+        // 登录成功 → 直接进六分街（nextSceneName 由预制体配置，默认 SixthStreet）
         SceneLoader.Instance.LoadScene(nextSceneName);
     }
 

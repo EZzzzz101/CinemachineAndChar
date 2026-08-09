@@ -65,10 +65,7 @@ public class SimBattleBot : MonoBehaviour
         {
             _hostIp = ip;
             Log($"[Bot] 加入房间 {roomId}：房主 {hostName} @ {ip}:{port}");
-        };
-        _lobby.OnRoomStart += roomId =>
-        {
-            Log($"[Bot] 收到开始战斗（房间 {roomId}）→ 连接房主战斗服务器");
+            // 六分街联机：加入房间即连房主战斗服务器（不再等"开始战斗"广播）
             ConnectBattle();
         };
         _lobby.Connect(lobbyIp, lobbyPort, botName);

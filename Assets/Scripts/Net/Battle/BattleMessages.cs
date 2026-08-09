@@ -122,6 +122,15 @@ public class MsgBattleInput
                                 float posX, float posY, float posZ)
     {
         var buf = new List<byte>();
+        EncodeInto(buf, seq, moveX, moveZ, flags, posX, posY, posZ);
+        return buf.ToArray();
+    }
+
+    /// <summary>高频发送：写进复用列表（不 new 数组），完整 payload = [msgId][body]</summary>
+    public static void EncodeInto(List<byte> buf, int seq, float moveX, float moveZ, BattleInputFlags flags,
+                                  float posX, float posY, float posZ)
+    {
+        NetIO.WriteInt(buf, NetMessage.BattleInput);
         NetIO.WriteInt(buf, seq);
         NetIO.WriteFloat(buf, moveX);
         NetIO.WriteFloat(buf, moveZ);
@@ -129,7 +138,6 @@ public class MsgBattleInput
         NetIO.WriteFloat(buf, posX);
         NetIO.WriteFloat(buf, posY);
         NetIO.WriteFloat(buf, posZ);
-        return buf.ToArray();
     }
 
     public static MsgBattleInput Decode(byte[] body)
@@ -157,6 +165,14 @@ public class MsgBattleSnapshot
     public static byte[] Encode(int tick, List<BattleSnapshotItem> items)
     {
         var buf = new List<byte>();
+        EncodeInto(buf, tick, items);
+        return buf.ToArray();
+    }
+
+    /// <summary>高频发送：写进复用列表（不 new 数组），完整 payload = [msgId][body]</summary>
+    public static void EncodeInto(List<byte> buf, int tick, List<BattleSnapshotItem> items)
+    {
+        NetIO.WriteInt(buf, NetMessage.BattleSnapshot);
         NetIO.WriteInt(buf, tick);
         NetIO.WriteInt(buf, items.Count);
         foreach (var it in items)
@@ -179,7 +195,6 @@ public class MsgBattleSnapshot
             NetIO.WriteBool(buf, it.BossIsSolo);
             NetIO.WriteBool(buf, it.BossIsMoving);
         }
-        return buf.ToArray();
     }
 
     public static MsgBattleSnapshot Decode(byte[] body)

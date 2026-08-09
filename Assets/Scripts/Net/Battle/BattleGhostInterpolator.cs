@@ -81,9 +81,9 @@ public class BattleGhostInterpolator : MonoBehaviour
         // 它们是动画事件的接收者（PlayFootSound / PlayWeaponBackSound / ATK / PlayVFX 等），
         // 销毁会导致 "AnimationEvent has no receiver" 刷屏；且它们都不引用已销毁的控制器（安全）。
         // 保留后幽灵走路/攻击还有音效和特效，视觉表现更完整。
-        // CharacterController 是 Collider 子类，只销毁 Collider 即可全部覆盖（防重复销毁警告）
-        foreach (var c in GetComponentsInChildren<Collider>(true)) Destroy(c);
-
+        // 碰撞体必须保留：主机上本地玩家与 Remote 互相碰撞，客户端如果幽灵没有碰撞体就会
+        // "穿透对方"，与主机物理不一致 → 位置分叉（主机被挡住、客户端穿过去 → 大偏移）。
+        // 幽灵位置由插值设 transform，碰撞体跟随，作为静态碰撞体阻挡本地玩家（和主机一致）。
     }
 
     /// <summary>

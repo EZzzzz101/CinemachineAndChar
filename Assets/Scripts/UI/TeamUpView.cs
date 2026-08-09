@@ -18,8 +18,14 @@ public class TeamUpView : UIView
     [Header("开始战斗")]
     [SerializeField] private Button FightButton;
 
-    [Tooltip("点击开始战斗后加载的场景名")]
+    [Tooltip("点击开始战斗后加载的场景名（单人进战斗）")]
     [SerializeField] private string nextSceneName = "Main";
+
+    [Header("游历家园")]
+    [Tooltip("游历家园按钮：联机进六分街（房主广播 RoomStart，双方一起进）")]
+    [SerializeField] private Button HomeButton;
+    [Tooltip("游历家园加载的场景名")]
+    [SerializeField] private string homeSceneName = "SixthStreet";
 
     [Header("本地玩家立绘（单机一号位）")]
     [Tooltip("拖入立绘 Sprite；留空时尝试 Resources/UI/Portraits/Player")]
@@ -47,6 +53,10 @@ public class TeamUpView : UIView
         }
         if (FightButton != null)
             FightButton.onClick.AddListener(OnFightButtonClicked);
+        if (HomeButton != null)
+            HomeButton.onClick.AddListener(OnHomeButtonClicked);
+        else
+            AutoFindHomeButton();
 
         // 联机房间：收到"房主开始战斗"广播 → 一起进战斗场景
         if (LobbyClientService.HasInstance)
@@ -83,6 +93,24 @@ public class TeamUpView : UIView
                     FightButton = b;
                     break;
                 }
+            }
+        }
+    }
+
+    /// <summary>自动找"游历家园"按钮（按名字/文案，如"游历"/"家园"）</summary>
+    private void AutoFindHomeButton()
+    {
+        foreach (var b in GetComponentsInChildren<Button>(true))
+        {
+            var label = b.GetComponentInChildren<TMP_Text>(true);
+            bool isHome = b.name.Contains("游历") || b.name.Contains("家园")
+                          || (label != null && (label.text.Contains("游历") || label.text.Contains("家园")));
+            if (isHome)
+            {
+                HomeButton = b;
+                HomeButton.onClick.AddListener(OnHomeButtonClicked);
+                Debug.Log($"[TeamUpView] 自动找到游历家园按钮：{b.name}");
+                break;
             }
         }
     }
@@ -206,30 +234,38 @@ public class TeamUpView : UIView
     // 跳转场景
     private void OnFightButtonClicked()
     {
-        PlayerInputGate.ExitUI();       // 恢复操控 + 隐藏鼠标
+        // 开始战斗：各点各的，单人进 Main（不再联机广播）
+        PlayerInputGate.ExitUI();
         gameObject.SetActive(false);
-        Debug.Log($"[BattleFlow] 进入游戏：FromLobby={BattleSessionState.FromLobby} IsHost={BattleSessionState.IsHost}");
-
-        // 联机房间：只有房主点"进入游戏"才广播；客人等 RoomStart 广播再进
-        if (BattleSessionState.FromLobby && !BattleSessionState.IsHost)
-        {
-            Debug.Log("[TeamUpView] 你是客人，等待房主开始战斗");
-            return;
-        }
-        if (LobbyClientService.HasInstance && LobbyClientService.Instance.Registered)
-            LobbyClientService.Instance.RequestStartBattle();   // 房主：请大厅通知全房间
-
-        Debug.Log($"[BattleFlow] 开始加载场景 {nextSceneName}");
+        Debug.Log($"[BattleFlow] 开始战斗：单人加载 {nextSceneName}");
         SceneLoader.Instance.LoadScene(nextSceneName);
     }
 
-    /// <summary>大厅广播"开始战斗"：客人收到后与房主一起进战斗场景</summary>
-    private void OnRoomStart(int roomId)
+    /// <summary>游历家园：房主广播 RoomStart + 自己进六分街；客人等广播（OnRoomStart）</summary>
+    private void OnHomeButtonClicked()
     {
-        Debug.Log($"[TeamUpView] 收到开始战斗广播（房间 {roomId}），进入战斗场景");
         PlayerInputGate.ExitUI();
         gameObject.SetActive(false);
-        SceneLoader.Instance.LoadScene(nextSceneName);
+        Debug.Log($"[BattleFlow] 游历家园：FromLobby={BattleSessionState.FromLobby} IsHost={BattleSessionState.IsHost}");
+
+        if (BattleSessionState.FromLobby && !BattleSessionState.IsHost)
+        {
+            Debug.Log("[TeamUpView] 你是客人，等待房主游历家园广播");
+            return;
+        }
+        if (BattleSessionState.FromLobby && LobbyClientService.HasInstance && LobbyClientService.Instance.Registered)
+            LobbyClientService.Instance.RequestStartBattle();   // 房主：请大厅通知全房间一起游历
+
+        SceneLoader.Instance.LoadScene(homeSceneName);
+    }
+
+    /// <summary>大厅广播"游历家园"：客人收到后一起进六分街</summary>
+    private void OnRoomStart(int roomId)
+    {
+        Debug.Log($"[TeamUpView] 收到游历家园广播（房间 {roomId}），进入六分街");
+        PlayerInputGate.ExitUI();
+        gameObject.SetActive(false);
+        SceneLoader.Instance.LoadScene(homeSceneName);
     }
 
     private void OnDestroy()
@@ -238,6 +274,8 @@ public class TeamUpView : UIView
             LobbyClientService.Instance.OnRoomStart -= OnRoomStart;
         if (FightButton != null)
             FightButton.onClick.RemoveListener(OnFightButtonClicked);
+        if (HomeButton != null)
+            HomeButton.onClick.RemoveListener(OnHomeButtonClicked);
         foreach (var button in AddButtons)
         {
             if (button != null)
