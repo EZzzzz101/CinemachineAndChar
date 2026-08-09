@@ -52,11 +52,17 @@ public struct BattleSnapshotItem
     public float PosY;
     public float PosZ;
     public float RotY;
-    public float MoveSpeed;        // Animator "Movement" 参数，远端驱动走/跑
+    public float MoveSpeed;        // Animator 速度（root motion 位移速度），远端驱动走/跑
     public BattleAnimState Anim;   // 动画状态枚举
     public float HP;
     public float MaxHP;
     public bool Placeholder;       // true = 该玩家 Remote 尚未生成，位置只是出生点占位（客户端不能据此解锁）
+    public int AnimHash;           // Boss 专用：主机当前 Animator 状态 hash（客户端 CrossFade 同名状态）
+    public float BossNormalizedTime; // Boss 专用：当前状态归一化时间（客户端锁动画相位，防滑步/滞后）
+    public float BossSpeedX;       // Boss 专用：对峙 2D 混合树 SpeedX（主机采样，客户端回放）
+    public float BossSpeedY;       // Boss 专用：对峙 2D 混合树 SpeedY
+    public bool BossIsSolo;        // Boss 专用：对峙开关（IsSolo）
+    public bool BossIsMoving;      // Boss 专用：走位/移动开关（IsMoving）
 }
 
 /// <summary>一帧快照：tick 用于调试/后续换 UDP 的乱序检测</summary>

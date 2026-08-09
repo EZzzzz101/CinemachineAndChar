@@ -7,7 +7,11 @@ using UnityEngine.InputSystem;
 /// </summary>
 public class PlayerController : MonoBehaviour, IDamageable
 {
-    int id =1;
+    /// <summary>
+    /// 血条/结算用 id（GamePanel 用 id==1 显示玩家血条、id==100 显示 Boss 血条）。
+    /// 联机时 Remote 克隆必须分配不同 id（2、3...），否则它的 HP 事件会串到主机自己的血条上。
+    /// </summary>
+    public int id = 1;
     [Header("配置")]
     public float SpeedSmoothTime=0.2f;
     [SerializeField] private float rotationSpeed = 10f;

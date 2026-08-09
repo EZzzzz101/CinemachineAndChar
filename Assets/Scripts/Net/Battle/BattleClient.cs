@@ -73,6 +73,14 @@ public class BattleClient : IDisposable
         Send(NetMessage.BattleInput, MsgBattleInput.Encode(++_inputSeq, moveX, moveZ, flags, posX, posY, posZ));
     }
 
+    /// <summary>上报"客机命中 Boss"：主机据此宽容判定后扣真 Boss 血（M11 伤害闭环）</summary>
+    public void SendBossHit(string attacker, float posX, float posY, float posZ,
+                            float fwdX, float fwdZ, float damage)
+    {
+        if (!Connected) return;
+        Send(NetMessage.BattleBossHit, MsgBossHit.Encode(attacker, posX, posY, posZ, fwdX, fwdZ, damage));
+    }
+
     public void Disconnect() => _conn?.Disconnect();
 
     private void Send(int msgId, byte[] body)

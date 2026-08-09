@@ -67,6 +67,14 @@ public static class AttackHitHelper
         foreach (var damageable in targets)
         {
             if (damageable == null) continue;
+
+            // 主机权威（M11）：远端克隆玩家（主机模拟的"别人"）不直接扣 Boss 血——
+            // 客机对 Boss 的伤害由客机命中幽灵时上报、主机统一宽容判定，
+            // 避免"Remote 克隆恰好打中 + 客机上报"双重扣血。
+            if (attacker != null && attacker.GetComponent<PlayerController>() is PlayerController atk
+                && atk.IsRemote && damageable is BossBrain)
+                continue;
+
             anyHit = true;
 
             // 暴击判定：critRate<=0（或未传属性）永不暴击 —— 怪物不传属性即可

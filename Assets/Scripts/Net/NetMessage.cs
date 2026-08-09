@@ -26,6 +26,7 @@ public static class NetMessage
     public const int BattleInput       = 14;  // 客户端→房主：输入上报（边沿事件即时 + 移动定频）
     public const int BattleSnapshot    = 15;  // 房主→客户端：主机权威状态快照（定频）
     public const int BattleEvent       = 16;  // 房主→客户端：一次性事件（伤害/死亡等）
+    public const int BattleBossHit     = 18;  // 客户端→房主：客机命中 Boss 幽灵上报（主机宽容判定）
 
     // ---- 大厅→战斗 过渡 ----
     public const int RoomStart         = 17;  // 房主→大厅：请求开始战斗；大厅→房间其他成员：开始战斗

@@ -37,6 +37,8 @@ public class BattleClientRuntime : MonoBehaviour
 
     private BattleClient _client;
     private readonly Dictionary<string, BattleGhostInterpolator> _ghosts = new();
+    private BattleGhostInterpolator _bossGhost;   // M11：客户端 Boss 幽灵（按主机快照显示）
+    private float _bossMaxHp;                     // Boss 最大血量（从快照更新，事件用）
     private PlayerController _localPlayer;
     private string _myName = "Guest";
     private bool _bossHandled;
@@ -160,15 +162,14 @@ public class BattleClientRuntime : MonoBehaviour
             _client.SendInput(world.x, world.y, flags, pos.x, pos.y, pos.z);
         }
 
-        // 客户端不模拟 Boss：等场景的 MonsterSpawnPoint 异步生成后禁用（M11 再改为主机快照）
-        if (!_bossHandled && hideLocalBoss)
+        // M11：客户端不模拟 Boss——把本地 Boss 幽灵化（销毁 AI/碰撞，保留 Animator 按快照演）
+        if (!_bossHandled && !singleProcessDemo)
         {
-            var bosses = FindObjectsOfType<BossBrain>();
-            if (bosses.Length > 0)
+            var boss = FindObjectOfType<BossBrain>();
+            if (boss != null)
             {
-                foreach (var b in bosses) b.gameObject.SetActive(false);
+                GhostifyBoss(boss);
                 _bossHandled = true;
-                Debug.Log("[BattleClient] 客户端隐藏本地 Boss（主机权威，M11 再同步）");
             }
         }
     }
@@ -335,9 +336,55 @@ public class BattleClientRuntime : MonoBehaviour
                 }
                 _lastSelfTarget = new Vector3(item.PosX, item.PosY, item.PosZ);
             }
+            else if (item.Name == "Boss")
+            {
+                _bossGhost?.ApplySnapshot(item, snap.Tick);   // Boss 幽灵：位置/动画/HP 全由主机快照驱动
+                _bossMaxHp = item.MaxHP;
+            }
             else if (_ghosts.TryGetValue(item.Name, out var ghost))
                 ghost.ApplySnapshot(item);
         }
+    }
+
+    /// <summary>
+    /// M11：客户端 Boss 幽灵化——销毁本地 AI/碰撞，保留 Animator，
+    /// 挂 BattleGhostInterpolator 按主机快照插值/播动画（不再本地模拟，避免双端 Boss 分叉）。
+    /// </summary>
+    private void GhostifyBoss(BossBrain boss)
+    {
+        var go = boss.gameObject;
+        go.name = "BossGhost";
+
+        // 销毁前先拷走原 BossBrain 的受击特效（动态 AddComponent 的 BossGhostBrain 没有序列化引用）
+        var hitVfx = boss.HitVfxPrefab;
+
+        // 销毁"模拟大脑"：BossBrain/行为树等（客户端不跑 Boss AI，防双端分叉）。
+        // 保留"表现身体"：Animator（动画）、Collider/CharacterController（碰撞挡人）、模型。
+        foreach (var mb in go.GetComponents<MonoBehaviour>())
+        {
+            if (mb is Animator || mb is BossGhostBrain) continue;
+            Destroy(mb);
+        }
+
+        // 受击表现接口：玩家攻击能命中（伤害由主机判定，这里只播表现 + 上报命中）
+        var bossGhost = go.AddComponent<BossGhostBrain>();
+        bossGhost.hitVfxPrefab = hitVfx;
+        bossGhost.OnBossHit = SendBossHit;   // 命中 → 上报主机宽容判定扣真 Boss 血（M11）
+        var ghost = go.AddComponent<BattleGhostInterpolator>();
+        ghost.SetupAsBoss("BeHit", "Death");   // 受击动画状态名是 BeHit（Hit 是 Trigger，不是状态）
+        _bossGhost = ghost;
+        Debug.Log("[BattleFlow] 客户端 Boss 幽灵化：按主机快照显示");
+    }
+
+    /// <summary>客机命中 Boss 幽灵 → 上报主机（M11 伤害闭环：主机宽容判定后扣真 Boss 血）</summary>
+    private void SendBossHit(GameObject attacker, float damage)
+    {
+        if (!Connected || attacker == null || singleProcessDemo) return;
+        var t = attacker.transform;
+        var f = t.forward;
+        // [BossHit] 客户端发出命中上报：主机应该收到并打出 [Host] 判定日志
+        Debug.Log($"[BossHit] [Clnt] 命中Boss上报 damage={damage:F1} pos={t.position:F1}");
+        _client.SendBossHit(_myName, t.position.x, t.position.y, t.position.z, f.x, f.z, damage);
     }
 
     /// <summary>本地预测纠偏：误差小继续让本地跑（手感优先），误差大才被主机拉回（权威兜底）</summary>
@@ -381,8 +428,36 @@ public class BattleClientRuntime : MonoBehaviour
         // 单进程演示：客户端没有独立玩家，伤害事件会作用到"房主本地玩家"上造成血量串台，跳过
         if (singleProcessDemo) return;
 
-        // 只处理"打我"的事件；别人的伤害由快照的动画状态表现
-        if (e.To != _myName || _localPlayer == null) return;
+        // Boss 事件（主机权威 HP）：更新客户端 Boss 血条 / 胜利结算
+        if (e.To == "Boss")
+        {
+            if (e.Type == BattleEventType.Damage)
+            {
+                float maxHp = _bossMaxHp > 0f ? _bossMaxHp : 100f;
+                // [BossSync] 客户端确认主机广播的 Boss 掉血（血条更新依据）
+                Debug.Log($"[BossSync] [Clnt] Boss掉血 {e.V1:F1} → 剩 {e.V2:F1}/{maxHp:F0}");
+                EventBus.Emit(GameEvents.HPChanged, new HPData(100, e.V2, maxHp));
+                EventBus.Emit(GameEvents.HPTextChanged, new HPData(100, e.V2, maxHp));
+            }
+            else if (e.Type == BattleEventType.Death)
+            {
+                EventBus.Emit(GameEvents.EnemyDied);   // 胜利结算（GamePanel 打开 WinView）
+            }
+            return;
+        }
+
+        // 别人的伤害：在对应幽灵头上跳伤害数字（受击动作由快照动画状态表现）
+        // —— 修复"主机被打客机看不见"：主机掉血对客机来说只有幽灵动画，没有反馈
+        if (e.To != _myName)
+        {
+            if (e.Type == BattleEventType.Damage && _ghosts.TryGetValue(e.To, out var other))
+                EventBus.Emit(GameEvents.HitLanded,
+                    new DamageData(e.V1, false, other.transform.position + Vector3.up * 1.8f));
+            return;
+        }
+
+        // 只处理"打我"的事件；自己的伤害由 ApplyNetworkDamage 应用
+        if (_localPlayer == null) return;
 
         switch (e.Type)
         {

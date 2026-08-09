@@ -171,6 +171,13 @@ public class MsgBattleSnapshot
             NetIO.WriteFloat(buf, it.HP);
             NetIO.WriteFloat(buf, it.MaxHP);
             NetIO.WriteBool(buf, it.Placeholder);
+            NetIO.WriteInt(buf, it.AnimHash);
+            // Boss 专用参数：动画相位 + 对峙 2D 树 SpeedX/SpeedY + IsSolo/IsMoving（客户端回放）
+            NetIO.WriteFloat(buf, it.BossNormalizedTime);
+            NetIO.WriteFloat(buf, it.BossSpeedX);
+            NetIO.WriteFloat(buf, it.BossSpeedY);
+            NetIO.WriteBool(buf, it.BossIsSolo);
+            NetIO.WriteBool(buf, it.BossIsMoving);
         }
         return buf.ToArray();
     }
@@ -194,9 +201,56 @@ public class MsgBattleSnapshot
                 HP = NetIO.ReadFloat(body, ref offset),
                 MaxHP = NetIO.ReadFloat(body, ref offset),
                 Placeholder = NetIO.ReadBool(body, ref offset),
+                AnimHash = NetIO.ReadInt(body, ref offset),
+                BossNormalizedTime = NetIO.ReadFloat(body, ref offset),
+                BossSpeedX = NetIO.ReadFloat(body, ref offset),
+                BossSpeedY = NetIO.ReadFloat(body, ref offset),
+                BossIsSolo = NetIO.ReadBool(body, ref offset),
+                BossIsMoving = NetIO.ReadBool(body, ref offset),
             });
         }
         return msg;
+    }
+}
+
+/// <summary>客户端→房主：客机玩家命中 Boss 幽灵的上报（M11 伤害闭环）</summary>
+public class MsgBossHit
+{
+    public string Attacker;   // 攻击者名字（连接名，主机据此对账）
+    public float PosX;        // 攻击者位置（客机本地命中的那一刻）
+    public float PosY;
+    public float PosZ;
+    public float FwdX;        // 攻击者朝向（水平 XZ）
+    public float FwdZ;
+    public float Damage;      // 客机本地结算的伤害（主机宽容判定后采纳）
+
+    public static byte[] Encode(string attacker, float posX, float posY, float posZ,
+                                float fwdX, float fwdZ, float damage)
+    {
+        var buf = new List<byte>();
+        NetIO.WriteString(buf, attacker);
+        NetIO.WriteFloat(buf, posX);
+        NetIO.WriteFloat(buf, posY);
+        NetIO.WriteFloat(buf, posZ);
+        NetIO.WriteFloat(buf, fwdX);
+        NetIO.WriteFloat(buf, fwdZ);
+        NetIO.WriteFloat(buf, damage);
+        return buf.ToArray();
+    }
+
+    public static MsgBossHit Decode(byte[] body)
+    {
+        int offset = 0;
+        return new MsgBossHit
+        {
+            Attacker = NetIO.ReadString(body, ref offset),
+            PosX = NetIO.ReadFloat(body, ref offset),
+            PosY = NetIO.ReadFloat(body, ref offset),
+            PosZ = NetIO.ReadFloat(body, ref offset),
+            FwdX = NetIO.ReadFloat(body, ref offset),
+            FwdZ = NetIO.ReadFloat(body, ref offset),
+            Damage = NetIO.ReadFloat(body, ref offset),
+        };
     }
 }
 

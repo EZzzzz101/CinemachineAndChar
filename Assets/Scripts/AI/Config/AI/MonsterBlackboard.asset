@@ -19,3 +19,11 @@ MonoBehaviour:
     Type: 1
   - Name: _timeSincePlayerAttack
     Type: 1
+  - Name: _faceTarget
+    Type: 2
+  - Name: _standoff
+    Type: 0
+  - Name: _standoffX
+    Type: 1
+  - Name: _standoffY
+    Type: 1

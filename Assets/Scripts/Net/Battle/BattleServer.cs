@@ -31,6 +31,8 @@ public class BattleServer : IDisposable
 
     /// <summary>收到客户端输入：参数 = 玩家名 + 输入状态（Unity 运行时接住，喂给对应 RemoteInputProvider）</summary>
     public event Action<string, BattleInputState> OnInput;
+    /// <summary>收到客机命中 Boss 上报：参数 = 玩家名 + 命中信息（Unity 运行时宽容判定后扣真 Boss 血）</summary>
+    public event Action<string, MsgBossHit> OnBossHit;
     /// <summary>新玩家加入（可用于日志 / UI）</summary>
     public event Action<string> OnPlayerJoined;
     /// <summary>玩家离开 / 断线（Unity 运行时据此销毁对应的远端角色）</summary>
@@ -40,6 +42,7 @@ public class BattleServer : IDisposable
     {
         _router.Register(NetMessage.BattleJoin, OnBattleJoin);
         _router.Register(NetMessage.BattleInput, OnBattleInput);
+        _router.Register(NetMessage.BattleBossHit, OnBossHitMsg);
 
         _server.OnClientConnected += OnClientConnected;
         return _server.Start(port);
@@ -171,6 +174,13 @@ public class BattleServer : IDisposable
             PosY = msg.PosY,
             PosZ = msg.PosZ,
         });
+    }
+
+    private void OnBossHitMsg(TcpConnection conn, byte[] body)
+    {
+        // 未加入就发命中：忽略
+        if (!_connNames.TryGetValue(conn, out var name)) return;
+        OnBossHit?.Invoke(name, MsgBossHit.Decode(body));
     }
 
     // ================= 主机权威广播 =================

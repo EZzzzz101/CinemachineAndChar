@@ -25,6 +25,8 @@ public class BossBrain : MonoBehaviour, IDamageable
     [Header("受击反馈")]
     [Tooltip("受击特效（自身播放）")]
     [SerializeField] private GameObject hitVfxPrefab;
+    /// <summary>读受击特效（客机幽灵化时拷贝给 BossGhostBrain）</summary>
+    public GameObject HitVfxPrefab => hitVfxPrefab;
 
     [Header("攻击配置")]
     [Tooltip("每段攻击的伤害/时机/音效/特效，写入黑板供 BTAttack 节点读取")]
