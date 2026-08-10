@@ -8,11 +8,6 @@ using UnityEngine.UI;
 
 /// <summary>
 /// UI 总控 — View 用类型做 key 缓存，懒加载
-/// View 继承 UIView 自动注册，不需要手动调 Register
-///
-/// Canvas 策略：优先接收场景注册的常驻 Canvas（PersistentUIRoot.BindRoot）；
-/// 没有注册时（如直接 Play 非启动场景）自动创建常驻 Canvas，保证面板永远有根，
-/// 不再用 FindObjectOfType 乱找当前场景里的 Canvas。
 /// </summary>
 public class UIManager : GameModule<UIManager>
 {
@@ -20,7 +15,7 @@ public class UIManager : GameModule<UIManager>
     [SerializeField] private Transform _root;
     [SerializeField] private Canvas _canvas;
 
-    private bool _selfCreatedCanvas;   // 标记当前 Canvas 是自建兜底（BindRoot 时需清理）
+    private bool _selfCreatedCanvas;   // 标记当前 Canvas 是自建兜底
 
     private readonly Dictionary<Type, IUIView> _views = new();
 
@@ -34,7 +29,7 @@ public class UIManager : GameModule<UIManager>
         Debug.Log("[UIManager] 初始化完成");
     }
 
-    /// <summary>绑定常驻 Canvas（由挂在 Canvas 上的 PersistentUIRoot 在 Awake 时调用）</summary>
+    /// <summary>绑定常驻 Canvas</summary>
     public void BindRoot(RectTransform uiCanvas)
     {
         if (uiCanvas == null) return;

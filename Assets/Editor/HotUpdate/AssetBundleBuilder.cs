@@ -22,7 +22,7 @@ using UnityEngine;
 /// </summary>
 public static class AssetBundleBuilder
 {
-    public const string Version = "1.0.8";   // 资源有改动就 +1，客户端据此判断是否需要热更
+    public const string Version = "1.0.9";   // 资源有改动就 +1，客户端据此判断是否需要热更
     public const string OutputRelative = "Build/AssetBundles/Windows";
     public const string CdnRelative = "HotUpdateCDN";
     public const string StreamingRelative = "Assets/StreamingAssets/HotUpdate/AB";   // 内置首包

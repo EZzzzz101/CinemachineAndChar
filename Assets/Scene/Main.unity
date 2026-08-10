@@ -1550,8 +1550,8 @@ MonoBehaviour:
   _freeCam: {fileID: 0}
   _targetGroup: {fileID: 0}
   _playerTransform: {fileID: 0}
-  _playerGroupWeight: 0.4
-  _enemyGroupWeight: 0.6
+  _playerGroupWeight: 0.6
+  _enemyGroupWeight: 0.4
   _lockCamDistance: 3
   _lockScreenY: 0.45
 --- !u!4 &1529708131
