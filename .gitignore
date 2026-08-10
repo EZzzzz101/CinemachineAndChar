@@ -47,5 +47,8 @@ Assets/StreamingAssets/HotUpdate/
 # Claude local config
 .claude/
 
+# 超大场景资源（485MB，超过 GitHub 100MB 单文件限制，不能入库）
+Assets/场景资源/SixthStreet4.6.fbx
+
 # Asset meta files should be tracked
 # !*.meta
